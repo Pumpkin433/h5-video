@@ -35,7 +35,7 @@
 							</h5>
 						</view>
 						<view class="modal-end-r">
-							<img src="../../static/sports/jiangbei.png" alt="">
+							<!-- <img src="../../static/sports/jiangbei.png" alt=""> -->
 						</view>
 					</view>
 					<view class="modal-end-d">
@@ -73,6 +73,24 @@
 				</view>
 				<!-- 分享弹框结束 -->
 				
+				<!-- 信息填写弹框 -->
+				<view class="modal-msg" v-show="isModalMsg === true" @click="msg_modal"></view>
+				<view class="modal-msg-bg" v-show="isModalMsg === true">
+					<h3>信息填写</h3>
+					<view class="modal-msg-name">
+						<span>用户姓名：</span>
+						<input type="text">
+					</view>
+					<view class="modal-msg-mobile">
+						<span>手机号</span>
+						<input type="text">
+					</view>
+					<view class="modal-msg-button">
+						<span>确认信息</span>
+					</view>
+				</view>
+				<!-- 信息填写弹框 结束-->
+				
 			</view>
 
 		</view>
@@ -88,7 +106,8 @@
 		data() {
 			return {
 				isModalEnd: false,
-				isModalShare:false
+				isModalShare:false,
+				isModalMsg:true,
 			}
 		},
 		onLoad() {
@@ -104,6 +123,10 @@
 			question_share(){
 				this.isModalEnd = false
 				this.isModalShare = true
+			},
+			share_modal(){
+				this.isModalShare = false
+			
 			}
 		},
 
@@ -324,4 +347,91 @@
 		z-index: 100000000;
 		
 	}
+	
+	.modal-share-t{
+		height: 60%;
+		padding: 85rpx 270rpx 0 44rpx;
+	}
+	.modal-share-t h3{
+		font-size:44rpx;
+		font-family:Lantinghei SC;
+		font-weight:600;
+		color:rgba(255,255,255,1);
+	}
+	.modal-share-t h2{
+		font-size:51rpx;
+		font-family:Lantinghei SC;
+		font-weight:600;
+		color:rgba(255,255,255,1);
+	}
+	.modal-share-t h4{
+		font-size:36rpx;
+		font-family:Lantinghei SC;
+		font-weight:600;
+		color:#333333;
+	}
+	.modal-share-t h4 span{
+		color: #FFFFFF;
+	}
+	.modal-share-t h5{
+		font-size:26rpx;
+		font-family:Lantinghei SC;
+		font-weight:600;
+		color:#333333;
+	}
+	.modal-share-t h5 span{
+		color: #FFFFFF;
+	}
+	
+	.modal-share-d {
+		width: 100%;
+		padding:30rpx  44rpx 0 44rpx;
+	}
+	.modal-share-d-l {
+		width: 60%;
+		float: left;
+	}
+	.modal-share-d-r {
+		width: 40%;
+		float: left;
+	}
+	.modal-share-d-r img{
+		width: 118rpx;
+	}
+	
+	.modal-msg {
+		background-color: rgba(0, 0, 0, 0.5);
+		background-position: top;
+		background-size: 100% 100%;
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		z-index: 10000000;
+		top: 0;
+		left: 0;
+	}
+	
+	.modal-msg-bg {
+		background: url(../../static/sports/m-msg-bg.png) no-repeat;
+		background-size: 100% 100%;
+		width: 80%;
+		height: 50%;
+	
+		top: 20%;
+		left: 10%;
+		position: fixed ;
+		z-index: 100000000;
+		
+	}
+	
+	.modal-msg-bg h3{
+		font-size:30rpx;
+		font-family:Lantinghei SC;
+		font-weight:600;
+		color:rgba(51,51,51,1);
+		text-align: center;
+		margin-top: 44rpx;
+	}
+	
+	
 </style>
