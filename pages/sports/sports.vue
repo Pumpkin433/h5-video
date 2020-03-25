@@ -10,7 +10,7 @@
 		</view>
 
 		<view class="index-d">
-			<div class="index-d-bg">
+			<div class="index-d-bg"  @tap="turn_question">
 				<span>开始挑战</span>
 			</div>
 		</view>
@@ -38,6 +38,11 @@
 			turn_rule(){
 				uni.navigateTo({
 					url:'rule'
+				})
+			},
+			turn_question(){
+				uni.navigateTo({
+					url:'question'
 				})
 			}
 			
