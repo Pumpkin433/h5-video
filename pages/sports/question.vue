@@ -18,7 +18,8 @@
 				</view>
 
 				<view class="question-c">
-					<p>{{question.q_name}}</p>
+					<p v-if="question !== {}">{{question.q_name}}</p>
+					<p v-if="question === {}"></p>
 					<ul>
 						<li v-show="this.correct === -1 || this.sIndex !==1"  @click="select_option('A',1)" ><span>A &nbsp;&nbsp;{{question.option_a}}</span></li>
 						<li v-show="this.correct !== -1 && this.sIndex === 1"  @click="select_option('A',1)"  :class=" 'A' === this.correct ? 'question-right' : 'question-wrong'"><span>A &nbsp;&nbsp;{{question.option_a}}</span></li>
@@ -41,7 +42,7 @@
 							<h5>您已经完成所有的问题</h5>
 							<h2>
 								获得了
-								<span>56</span>
+								<span>{{total_score}}</span>
 								积分
 							</h2>
 							<h5>
@@ -52,7 +53,7 @@
 						<view class="modal-end-r"><!-- <img src="../../static/sports/jiangbei.png" alt=""> --></view>
 					</view>
 					<view class="modal-end-d">
-						<div class="modal-end-d-button" @click="question_share"><span>分享战绩</span></div>
+						<div class="modal-end-d-button" @click="score_share_button"><span>分享战绩</span></div>
 
 						<view class="modal-end-d-d">分享可以获得额外的答题机会</view>
 					</view>
@@ -67,7 +68,7 @@
 						<h2>答题赢大奖</h2>
 						<h4>
 							我获得了
-							<span>56</span>
+							<span>{{total_score}}</span>
 							积分
 						</h4>
 						<h5>
@@ -111,7 +112,7 @@
 					<h4>很抱歉您的回答错误</h4>
 					<h3>
 						获得了
-						<span>56</span>
+						<span>{{total_score}}</span>
 						积分
 					</h3>
 					<h5>
@@ -119,7 +120,7 @@
 						<span>50+</span>
 					</h5>
 
-					<view class="modal-a-button"><span>分享战绩</span></view>
+					<view class="modal-a-button" @click="score_share_button"><span>分享战绩</span></view>
 					<view class="modal-a-b-t"><span>分享可以获得额外的答题机会</span></view>
 				</view>
 				<!-- 回答错误弹出框结束 -->
@@ -131,7 +132,7 @@
 					<h4>很抱歉您已经超时</h4>
 					<h3>
 						获得了
-						<span>56</span>
+						<span>{{total_score}}</span>
 						积分
 					</h3>
 					<h5>
@@ -139,7 +140,7 @@
 						<span>50+</span>
 					</h5>
 
-					<view class="modal-t-button"><span>分享战绩</span></view>
+					<view class="modal-t-button" @click="score_share_button"><span>分享战绩</span></view>
 					<view class="modal-t-b-t"><span>分享可以获得额外的答题机会</span></view>
 				</view>
 				<!-- 回答超时弹出框结束 -->
@@ -165,28 +166,54 @@ export default {
 			isModalMsg: false,
 			isModalAnswerError: false,
 			isModalAnswerTimeout: false,
-			second: 15,
+			second: 10,
 			reset: false,
 			questionList:[],
 			q_key:0,
 			question:{},
 			correct:-1,
 			sIndex:0,
-			option_is_true:''
+			option_is_true:'',
+			total_score:0, 
+			total_question:0
 		};
 	},
 	onLoad(option) {
-		console.log(option.q_key+'aaaaa')
+		// console.log(option.q_key+'aaaaa')
 		//我的项目中只赋值一次, 所以直接设为true了
 		// this.reset = !this.reset;
 		//如果还要设置天, 时, 秒, 在上面声明绑定后, 在这里赋值即可
 		// this.second = 15;
 		if(option.q_key !== undefined && option.q_key !== 0){
 			this.q_key = option.q_key
+			
+			
 			// this.question = this.questionList[option.q_key]
 			// console.log(option.q_key)
+			this.getQuestionList()
+		}else{
+			this.q_key = 0
+			this.getQuestionList()
 		}
-		this.getQuestionList()
+		
+		if(option.score != undefined){
+			this.total_score = option.score
+		}
+		
+		if(option.t !== undefined  & option.q_key !== undefined){
+			console.log(option.t)
+			console.log(option.q_key)
+			if(option.q_key === option.t){
+				this.isModalEnd = true
+				this.reset = !this.reset
+				this.second = 0
+				this.question = {}
+			}
+		}
+		
+	
+		
+		
 		
 	},
 	methods: {
@@ -195,41 +222,88 @@ export default {
 			this.correct = this.question.correct
 			this.q_key++
 			
-			uni.navigateTo({
-				url: '/pages/sports/question?q_key='+ this.q_key,
-				success:res=>{
-					console.log(res)
-				}
-			})
+			// console.log(option)
+			// console.log(this.correct)
+			if(option === this.question.correct){
+				this.total_score++
+				setTimeout(function(a,b,c) {
+					console.log(a)
+					console.log(b)
+					uni.redirectTo({
+						url: '/pages/sports/question?q_key='+ a+'&score='+b+'&t='+c,
+						success: res => {},
+						fail: () => {},
+						complete: () => {}
+					})
+				}, 1000,this.q_key,this.total_score,this.total_question);
+			}else{
+				this.isModalAnswerError = true
+				this.reset = !this.reset
+				this.second = 0
+				this.isModalAnswerTimeout = false
+				
+			}
+			
+			
+			
 			// this.q_key += 1
 			// console.log(this.q_key)
 			
 			
 		},
+		score_share_button(){
+				this.isModalShare = true
+				this.isModalAnswerError = false
+				this.isModalAnswerTimeout = false
+				this.isModalEnd = false
+				this.isModalMsg = false
+		},
 		modal_end() {
 			this.isModalEnd = true;
 		},
 		question_modal() {
-			this.isModalEnd = false;
-		},
-		question_share() {
-			this.isModalEnd = false;
-			this.isModalShare = true;
+			uni.reLaunch({
+				url:'/pages/sports/sports'
+			}
+				
+			)
 		},
 		share_modal() {
-			this.isModalShare = false;
+			uni.reLaunch({
+				url:'/pages/sports/sports'
+			}
+				
+			)
 		},
 		msg_modal() {
-			this.isModalMsg = false;
+			uni.reLaunch({
+				url:'/pages/sports/sports'
+			}
+				
+			)
 		},
 		answer_error_modal() {
-			this.isModalAnswerError = false;
+			// this.isModalAnswerError = false;
+			uni.reLaunch({
+				url:'/pages/sports/sports'
+			}
+				
+			)
 		},
 		answer_timeout_modal() {
-			this.isModalAnswerTimeout = false;
+			uni.reLaunch({
+				url:'/pages/sports/sports'
+			}
+				
+			)
 		},
 		timeUp(){
-			this.isModalAnswerTimeout = true
+			if(this.isModalAnswerError === true){
+				this.isModalAnswerTimeout = false
+			}else{
+				this.isModalAnswerTimeout = true
+			}
+			
 		},
 		// 获取问题列表
 		getQuestionList(){
@@ -238,6 +312,7 @@ export default {
 			http.get(base.sq+'/api/v1.h5.Questions/list', [{}]).then((res) => {
 			    // console.log(res)
 				this.questionList = res.data.data.list
+				this.total_question = res.data.data.list.length
 				this.question = res.data.data.list[this.q_key]
 				
 				// console.log(this.question)

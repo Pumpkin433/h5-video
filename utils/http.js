@@ -5,7 +5,7 @@ import axios from '@/js_sdk/gangdiedao-uni-axios'
  */
 function _reqlog(req) {
     if (process.env.NODE_ENV === 'development') {
-        console.log("请求地址：" + req.url, req.data || req.params)
+        // console.log("请求地址：" + req.url, req.data || req.params)
     }
     //TODO 调接口异步写入日志数据库
 }
@@ -15,7 +15,7 @@ function _reqlog(req) {
  */
 function _reslog(res) {
     if (process.env.NODE_ENV === 'development') {
-        console.log(`${res.config.url}响应结果：`, res)
+        // console.log(`${res.config.url}响应结果：`, res)
     }
 }
 
