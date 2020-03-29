@@ -18,8 +18,7 @@
 				</view>
 
 				<view class="question-c">
-					<p v-if="question !== {}">{{question.q_name}}</p>
-					<p v-if="question === {}"></p>
+					<p>{{question.q_name}}</p>
 					<ul>
 						<li v-show="this.correct === -1 || this.sIndex !==1"  @click="select_option('A',1)" ><span>A &nbsp;&nbsp;{{question.option_a}}</span></li>
 						<li v-show="this.correct !== -1 && this.sIndex === 1"  @click="select_option('A',1)"  :class=" 'A' === this.correct ? 'question-right' : 'question-wrong'"><span>A &nbsp;&nbsp;{{question.option_a}}</span></li>
@@ -47,13 +46,13 @@
 							</h2>
 							<h5>
 								您现在排名在
-								<span>50+</span>
+								<span>{{user_rank}}</span>
 							</h5>
 						</view>
 						<view class="modal-end-r"><!-- <img src="../../static/sports/jiangbei.png" alt=""> --></view>
 					</view>
 					<view class="modal-end-d">
-						<div class="modal-end-d-button" @click="score_share_button"><span>分享战绩</span></div>
+						<div class="modal-end-d-button"  @click="score_share_button"><span>分享战绩</span></div>
 
 						<view class="modal-end-d-d">分享可以获得额外的答题机会</view>
 					</view>
@@ -73,13 +72,13 @@
 						</h4>
 						<h5>
 							当前排名
-							<span>50+</span>
+							<span>{{user_rank}}</span>
 						</h5>
 					</view>
 					<view class="modal-share-d">
 						<view class="modal-share-d-l">
 							<p>
-								长按识别二维码
+								长按保存二维码
 								<br />
 								下载全民体育APP 参与活动
 							</p>
@@ -95,13 +94,13 @@
 					<h3>信息填写</h3>
 					<view class="modal-msg-name">
 						<span>用户姓名</span>
-						<input type="text" />
+						<input type="text" v-model="name" />
 					</view>
 					<view class="modal-msg-mobile">
 						<span>手机号</span>
-						<input type="text" />
+						<input type="text" v-model="mobile" />
 					</view>
-					<view class="modal-msg-button"><span>确认信息</span></view>
+					<view class="modal-msg-button" @click="user_msg_add"><span>确认信息</span></view>
 				</view>
 				<!-- 信息填写弹框 结束-->
 
@@ -117,7 +116,7 @@
 					</h3>
 					<h5>
 						您现在排名在
-						<span>50+</span>
+						<span>{{user_rank}}</span>
 					</h5>
 
 					<view class="modal-a-button" @click="score_share_button"><span>分享战绩</span></view>
@@ -137,9 +136,8 @@
 					</h3>
 					<h5>
 						您现在排名在
-						<span>50+</span>
+						<span>{{user_rank}}</span>
 					</h5>
-
 					<view class="modal-t-button" @click="score_share_button"><span>分享战绩</span></view>
 					<view class="modal-t-b-t"><span>分享可以获得额外的答题机会</span></view>
 				</view>
@@ -173,83 +171,185 @@ export default {
 			question:{},
 			correct:-1,
 			sIndex:0,
-			option_is_true:'',
 			total_score:0, 
-			total_question:0
-		};
+			total_question:0,
+			user_rank:1000000,
+			uid:null,
+			name:'',
+			mobile:'',
+		}
 	},
+	
 	onLoad(option) {
+		this.uid = uni.getStorageSync('uid')
+		console.log(this.uid)
 		// console.log(option.q_key+'aaaaa')
 		//我的项目中只赋值一次, 所以直接设为true了
 		// this.reset = !this.reset;
 		//如果还要设置天, 时, 秒, 在上面声明绑定后, 在这里赋值即可
 		// this.second = 15;
-		if(option.q_key !== undefined && option.q_key !== 0){
-			this.q_key = option.q_key
-			
-			
-			// this.question = this.questionList[option.q_key]
-			// console.log(option.q_key)
+		if(option.k !== undefined && option.k !== 0){
+			this.q_key = option.k
 			this.getQuestionList()
 		}else{
-			this.q_key = 0
+			this.k = 0
 			this.getQuestionList()
 		}
 		
-		if(option.score != undefined){
-			this.total_score = option.score
+		if(option.s != undefined){
+			this.total_score = option.s
 		}
 		
-		if(option.t !== undefined  & option.q_key !== undefined){
-			console.log(option.t)
-			console.log(option.q_key)
-			if(option.q_key === option.t){
+		
+		if(option.t !== undefined  && option.q_key !== undefined){
+			// console.log(option.t)
+			// console.log(option.q_key)
+			// 问题回答完毕
+			if(option.k === option.t){
 				this.isModalEnd = true
 				this.reset = !this.reset
 				this.second = 0
-				this.question = {}
+				this.get_user_rank(this.uid,this.total_score)
 			}
+			
 		}
-		
-	
-		
-		
+		uni.shareWithSystem({
+		  summary: '',
+		  href: 'https://uniapp.dcloud.io',
+		  success(){
+		    // 分享完成，请注意此时不一定是成功分享
+		  },
+		  fail(){
+		    // 分享失败
+		  }
+		})
 		
 	},
 	methods: {
+		user_msg_add(){
+			
+			let data = {
+				uid:this.uid,
+				name:this.name,
+				mobile:this.mobile,
+				score:this.total_score,
+				rank:this.user_rank
+			
+			}
+			http.post(base.sq+'/api/v1.h5.Questions/addUserInfo', data).then(res => {
+				console.log(res)
+				if(res.data.data.insert === 1){
+					uni.reLaunch({
+						url:'/pages/sports/sports'
+					}
+						
+					)
+				}else{
+					
+				}
+			
+			
+			
+			
+			}).catch(error => {
+			
+			}).finally(() => {
+			
+			})
+		},
+		check_user_status(uid){
+			let data = {
+				uid:uid
+			}
+			http.post(base.sq+'/api/v1.h5.Questions/uidIsExists', data).then(res => {
+				// console.log(res)
+				let status  = res.data.data.status
+				console.log(status)
+				if(status === 0){
+					this.isModalMsg = true
+					
+				}
+				if(status === 1){
+					this.update_user_score(uid,this.total_score,this.user_rank)
+					uni.reLaunch({
+						url:'/pages/sports/sports'
+					}
+						
+					)
+				}
+			
+			
+			}).catch(error => {
+			
+			}).finally(() => {
+			
+			})
+		},
+		update_user_score(uid,total_score,user_rank){
+			let data = {
+				uid:uid,
+				score:total_score,
+				rank:user_rank
+			}
+			http.post(base.sq+'/api/v1.h5.Questions/updateUserScore', data).then(res => {
+				console.log(res)
+				
+				
+			
+			}).catch(error => {
+			
+			}).finally(() => {
+			
+			})
+		},
+		// 选择答案
 		select_option(option,i){
 			this.sIndex = i
 			this.correct = this.question.correct
 			this.q_key++
 			
-			// console.log(option)
-			// console.log(this.correct)
 			if(option === this.question.correct){
 				this.total_score++
+				
 				setTimeout(function(a,b,c) {
-					console.log(a)
-					console.log(b)
+					// console.log(a)
+					// console.log(b)
 					uni.redirectTo({
-						url: '/pages/sports/question?q_key='+ a+'&score='+b+'&t='+c,
-						success: res => {},
+						url: '/pages/sports/question?k='+ a+'&s='+b+'&t='+c,
+						success: res => {
+							console.log(res)
+						},
 						fail: () => {},
 						complete: () => {}
 					})
 				}, 1000,this.q_key,this.total_score,this.total_question);
 			}else{
+				this.get_user_rank(this.uid,this.total_score)
 				this.isModalAnswerError = true
 				this.reset = !this.reset
 				this.second = 0
 				this.isModalAnswerTimeout = false
+			
+				
 				
 			}
 			
+		},
+		get_user_rank(uid,total_score){
+			let data = {
+				uid:uid,
+				score:total_score
+			}
+			http.post(base.sq+'/api/v1.h5.Questions/getUserRank', data).then(res => {
+				console.log(res)
+				this.user_rank = res.data.data.rank
+				
 			
+			}).catch(error => {
 			
-			// this.q_key += 1
-			// console.log(this.q_key)
+			}).finally(() => {
 			
-			
+			})
 		},
 		score_share_button(){
 				this.isModalShare = true
@@ -260,20 +360,17 @@ export default {
 		},
 		modal_end() {
 			this.isModalEnd = true;
+			this.get_user_rank(this.uid,this.total_score)
 		},
 		question_modal() {
-			uni.reLaunch({
-				url:'/pages/sports/sports'
-			}
-				
-			)
+		
+			this.isModalEnd = false
+			this.check_user_status(this.uid)
 		},
 		share_modal() {
-			uni.reLaunch({
-				url:'/pages/sports/sports'
-			}
-				
-			)
+		
+			this.isModalShare = false
+			this.check_user_status(this.uid)
 		},
 		msg_modal() {
 			uni.reLaunch({
@@ -281,21 +378,22 @@ export default {
 			}
 				
 			)
+			
 		},
 		answer_error_modal() {
-			// this.isModalAnswerError = false;
-			uni.reLaunch({
-				url:'/pages/sports/sports'
-			}
-				
-			)
+		
+			this.check_user_status(this.uid)
+		
+			this.isModalAnswerError = false
 		},
 		answer_timeout_modal() {
-			uni.reLaunch({
-				url:'/pages/sports/sports'
-			}
+			// uni.reLaunch({
+			// 	url:'/pages/sports/sports'
+			// }
 				
-			)
+			// )
+			this.isModalAnswerTimeout = false
+			this.check_user_status(this.uid)
 		},
 		timeUp(){
 			if(this.isModalAnswerError === true){
@@ -314,7 +412,9 @@ export default {
 				this.questionList = res.data.data.list
 				this.total_question = res.data.data.list.length
 				this.question = res.data.data.list[this.q_key]
-				
+				if(this.isModalEnd === true){
+					this.question = {'q_name':'1','option_a':'1','option_b':'1','option_c':'1','option_d':'1','correct':'1'}
+				}
 				// console.log(this.question)
 			
 			}).catch(error => {
@@ -328,7 +428,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .question-bg {
 	width: 100%;
 	height: 100%;
@@ -372,6 +472,7 @@ export default {
 }
 
 .question-c p {
+	height: 100px;
 	font-size: 28rpx;
 	font-family: Lantinghei SC;
 	font-weight: bold;
@@ -403,13 +504,18 @@ export default {
 }
 
 .question-right {
-	background-color: #1aa017;
+
 	border: 2rpx solid rgba(26, 160, 23, 1) !important;
+	background:#1aa017 url(../../static/sports/question-right-icon.png) no-repeat right;
+	background-size: 10% 40%;
 }
 
+
 .question-wrong {
-	background-color: #ff7600;
+	
 	border: 2rpx solid #ff7600 !important;
+	background: #ff7600 url(../../static/sports/question-wrong-icon.png) no-repeat right;
+	background-size: 10% 40%;
 }
 
 .modal-end {
@@ -895,11 +1001,11 @@ export default {
 	display: none;
 }
 /deep/ .uni-countdown__number:nth-child(5) {
-	background: url(../../static/sports/time.png) no-repeat;
+	background: url(../../static/sports/time-2.png) no-repeat;
 	background-size: 100% 100%;
 	margin: 0 auto;
 	width: 227rpx;
-	height: 166rpx;
+	height: 227rpx;
 }
 /deep/ .uni-countdown__number:nth-child(5) span {
 	font-size: 80rpx;

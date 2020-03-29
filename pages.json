@@ -5,76 +5,28 @@
 			"path":"pages/sports/sports",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"app-plus": {
-					"bounce": "vertical",
-					"titleNView": {
-						"buttons": [{
-							"type":"close",
-							"text": "关闭",
-							"float":"left",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "14px",
-							"color": "#FFFFFF"
-						}]
-					}
-				}
+				"navigationStyle":"custom"
 			}
 		},
 		{
 			"path":"pages/sports/rank",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"app-plus": {
-					"bounce": "vertical",
-					"titleNView": {
-						"buttons": [{
-							"type":"close",
-							"text": "关闭",
-							"float":"left",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "14px",
-							"color": "#FFFFFF"
-						}]
-					}
-				}
+				"navigationStyle":"custom"
 			}
 		},
 		{
 			"path":"pages/sports/rule",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"app-plus": {
-					"bounce": "vertical",
-					"titleNView": {
-						"buttons": [{
-							"type":"close",
-							"text": "关闭",
-							"float":"left",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "14px",
-							"color": "#FFFFFF"
-						}]
-					}
-				}
+				"navigationStyle":"custom"
 			}
 		},
 		{
 			"path":"pages/sports/question",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"app-plus": {
-					"bounce": "vertical",
-					"titleNView": {
-						"buttons": [{
-							"type":"close",
-							"text": "关闭",
-							"float":"left",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "14px",
-							"color": "#FFFFFF"
-						}]
-					}
-				}
+				"navigationStyle":"custom"
 			}
 		},
 		{

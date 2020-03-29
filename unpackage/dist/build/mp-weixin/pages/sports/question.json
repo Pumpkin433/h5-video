@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "看图答题赢大奖",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "uni-countdown": "/components/linnian-CountDown/uni-countdown"
+  }
+}
