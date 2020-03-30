@@ -83,7 +83,10 @@
 				})
 			},
 			turn_back(){
-				uni.navigateBack()
+				// uni.navigateBack()
+				uni.reLaunch({
+					url:'/pages/sports/sports'
+				})
 			}
 			
 		},
