@@ -5,28 +5,60 @@
 			"path":"pages/sports/sports",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"navigationStyle":"custom"
+				// "navigationStyle":"custom",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+								"type": "share"
+							}
+						]
+					}
+				}
 			}
 		},
 		{
 			"path":"pages/sports/rank",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"navigationStyle":"custom"
+				// "navigationStyle":"custom",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+								"type": "share"
+							}
+						]
+					}
+				}
 			}
 		},
 		{
 			"path":"pages/sports/rule",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"navigationStyle":"custom"
+				// "navigationStyle":"custom",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+								"type": "share"
+							}
+						]
+					}
+				}
 			}
 		},
 		{
 			"path":"pages/sports/question",
 			"style":{
 				"navigationBarTitleText": "看图答题赢大奖",
-				"navigationStyle":"custom"
+				// "navigationStyle":"custom",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+								"type": "share"
+							}
+						]
+					}
+				}
 			}
 		},
 		{
@@ -1173,6 +1205,7 @@
 		}
 	],
 	"globalStyle": {
+		"navigationStyle":"custom",
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "看图答题赢大奖",

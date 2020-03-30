@@ -49,7 +49,7 @@
 								<span>{{user_rank}}</span>
 							</h5>
 						</view>
-						<view class="modal-end-r"><!-- <img src="../../static/sports/jiangbei.png" alt=""> --></view>
+						<view class="modal-end-r"><!-- <img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/jiangbei.png" alt=""> --></view>
 					</view>
 					<view class="modal-end-d">
 						<div class="modal-end-d-button"  @click="score_share_button"><span>分享战绩</span></div>
@@ -83,7 +83,7 @@
 								下载全民体育APP 参与活动
 							</p>
 						</view>
-						<view class="modal-share-d-r"><img src="../../static/sports/m-share-qrcode.png" alt="" /></view>
+						<view class="modal-share-d-r"><img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-share-qrcode.png" alt="" /></view>
 					</view>
 				</view>
 				<!-- 分享弹框结束 -->
@@ -107,7 +107,7 @@
 				<!-- 回答错误弹出框 -->
 				<view class="modal-answer-error" v-show="isModalAnswerError === true" @click="answer_error_modal"></view>
 				<view class="modal-answer-error-bg" v-show="isModalAnswerError === true">
-					<view class="modal-a-circle"><img src="../../static/sports/a-error-circle.png" alt="" /></view>
+					<view class="modal-a-circle"><img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-circle.png" alt="" /></view>
 					<h4>很抱歉您的回答错误</h4>
 					<h3>
 						获得了
@@ -127,7 +127,7 @@
 				<!-- 回答超时弹出框 -->
 				<view class="modal-answer-timeout" v-show="isModalAnswerTimeout === true" @click="answer_timeout_modal"></view>
 				<view class="modal-answer-timeout-bg" v-show="isModalAnswerTimeout === true">
-					<view class="modal-t-circle"><img src="../../static/sports/a-timeout-circle.png" alt="" /></view>
+					<view class="modal-t-circle"><img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-timeout-circle.png" alt="" /></view>
 					<h4>很抱歉您已经超时</h4>
 					<h3>
 						获得了
@@ -164,7 +164,7 @@ export default {
 			isModalMsg: false,
 			isModalAnswerError: false,
 			isModalAnswerTimeout: false,
-			second: 10,
+			second: 15,
 			reset: false,
 			questionList:[],
 			q_key:0,
@@ -175,14 +175,25 @@ export default {
 			total_question:0,
 			user_rank:1000000,
 			uid:null,
+			ns_device_id:null,
 			name:'',
 			mobile:'',
 		}
 	},
-	
+	onNavigationBarButtonTap(event){
+		// console.log(event)
+		if(event.type === 'share'){
+			
+		  this.update_answer_chance(this.uid, 1);
+		
+			
+		}
+	},
 	onLoad(option) {
+		
 		this.uid = uni.getStorageSync('uid')
-		console.log(this.uid)
+		this.ns_device_id = uni.getStorageSync('ns_device_id')
+		// console.log(this.uid)
 		// console.log(option.q_key+'aaaaa')
 		//我的项目中只赋值一次, 所以直接设为true了
 		// this.reset = !this.reset;
@@ -213,16 +224,7 @@ export default {
 			}
 			
 		}
-		uni.shareWithSystem({
-		  summary: '',
-		  href: 'https://uniapp.dcloud.io',
-		  success(){
-		    // 分享完成，请注意此时不一定是成功分享
-		  },
-		  fail(){
-		    // 分享失败
-		  }
-		})
+		
 		
 	},
 	methods: {
@@ -236,20 +238,17 @@ export default {
 				rank:this.user_rank
 			
 			}
-			http.post(base.sq+'/api/v1.h5.Questions/addUserInfo', data).then(res => {
-				console.log(res)
-				if(res.data.data.insert === 1){
+			http.post(base.sq+'/api/v1.h5.Questions/updateUserInfo', data).then(res => {
+				// console.log(res)
+				if(res.data.data.updateRow === 1){
 					uni.reLaunch({
-						url:'/pages/sports/sports'
+						url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
 					}
 						
 					)
 				}else{
 					
 				}
-			
-			
-			
 			
 			}).catch(error => {
 			
@@ -265,18 +264,18 @@ export default {
 				// console.log(res)
 				let status  = res.data.data.status
 				console.log(status)
-				if(status === 0){
+				// if(status === 0){
 					this.isModalMsg = true
 					
-				}
-				if(status === 1){
-					this.update_user_score(uid,this.total_score,this.user_rank)
-					uni.reLaunch({
-						url:'/pages/sports/sports'
-					}
+				// }
+				// if(status === 1){
+				// 	this.update_user_score(uid,this.total_score,this.user_rank)
+				// 	uni.reLaunch({
+				// 		url:'/pages/sports/sports'
+				// 	}
 						
-					)
-				}
+				// 	)
+				// }
 			
 			
 			}).catch(error => {
@@ -284,6 +283,36 @@ export default {
 			}).finally(() => {
 			
 			})
+		},
+		update_answer_chance(uid, chance) {
+			let data = {
+				uid: uid,
+				chance: chance
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/updateUserAnswerChance', data)
+				.then(res => {
+					console.log(res);
+					let data = {
+						uid: uid
+					};
+					http.post(base.sq + '/api/v1.h5.Questions/questionShare', data)
+						.then(res => {
+							console.log(res);
+							let insert = res.data.data.insert;
+		
+							if (insert > 0) {
+								console.log(insert);
+							} else {
+								alert('分享失败');
+							}
+						})
+						.catch(error => {})
+						.finally(() => {});
+						
+						
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		update_user_score(uid,total_score,user_rank){
 			let data = {
@@ -374,7 +403,7 @@ export default {
 		},
 		msg_modal() {
 			uni.reLaunch({
-				url:'/pages/sports/sports'
+				url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
 			}
 				
 			)
@@ -432,7 +461,7 @@ export default {
 .question-bg {
 	width: 100%;
 	height: 100%;
-	background: url(../../static/sports/rule-bg.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rule-bg.png) no-repeat;
 	background-size: 100% 100%;
 	background-position: center;
 }
@@ -440,7 +469,7 @@ export default {
 .question-bg-1 {
 	width: 100%;
 	height: 100%;
-	background: url(../../static/sports/index-bg.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-bg.png) no-repeat;
 	background-size: 100% 100%;
 	background-position: center;
 }
@@ -448,7 +477,7 @@ export default {
 .question-bg-2 {
 	width: 100%;
 	height: 100%;
-	background: url(../../static/sports/rule-bg-1.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rule-bg-1.png) no-repeat;
 	background-size: 100% 80%;
 	background-position: center;
 }
@@ -506,7 +535,7 @@ export default {
 .question-right {
 
 	border: 2rpx solid rgba(26, 160, 23, 1) !important;
-	background:#1aa017 url(../../static/sports/question-right-icon.png) no-repeat right;
+	background:#1aa017 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-right-icon.png) no-repeat right;
 	background-size: 10% 40%;
 }
 
@@ -514,7 +543,7 @@ export default {
 .question-wrong {
 	
 	border: 2rpx solid #ff7600 !important;
-	background: #ff7600 url(../../static/sports/question-wrong-icon.png) no-repeat right;
+	background: #ff7600 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-wrong-icon.png) no-repeat right;
 	background-size: 10% 40%;
 }
 
@@ -531,7 +560,7 @@ export default {
 }
 
 .modal-end-bg {
-	background: url(../../static/sports/q-end-bg.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/q-end-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 50%;
@@ -597,7 +626,7 @@ export default {
 	height: 75rpx;
 	margin: 0 auto;
 	text-align: center;
-	background: url(../../static/sports/question-button.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-button.png) no-repeat;
 	background-size: 100% 100%;
 	line-height: 75rpx;
 	cursor: pointer;
@@ -633,7 +662,7 @@ export default {
 }
 
 .modal-share-bg {
-	background: url(../../static/sports/m-share-bg.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-share-bg.png) no-repeat;
 	background-size: 120% 100%;
 	width: 80%;
 	height: 50%;
@@ -717,7 +746,7 @@ export default {
 }
 
 .modal-msg-bg {
-	background: url(../../static/sports/m-msg-bg.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-msg-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 50%;
@@ -787,7 +816,7 @@ export default {
 	margin: 0 auto;
 	margin-top: 100rpx;
 	text-align: center;
-	background: url(../../static/sports/question-button.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-button.png) no-repeat;
 	background-size: 100% 100%;
 	cursor: pointer;
 }
@@ -812,7 +841,7 @@ export default {
 }
 
 .modal-answer-error-bg {
-	background: url(../../static/sports/a-error-bg.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 50%;
@@ -871,7 +900,7 @@ export default {
 	height: 72rpx;
 	margin: 0 auto;
 	margin-top: 20px;
-	background: url(../../static/sports/a-error-button.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
 	background-size: 100% 100%;
 	text-align: center;
 }
@@ -908,7 +937,7 @@ export default {
 }
 
 .modal-answer-timeout-bg {
-	background: url(../../static/sports/a-error-bg.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 50%;
@@ -967,7 +996,7 @@ export default {
 	height: 72rpx;
 	margin: 0 auto;
 	margin-top: 20px;
-	background: url(../../static/sports/a-error-button.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
 	background-size: 100% 100%;
 	text-align: center;
 }
@@ -1001,7 +1030,7 @@ export default {
 	display: none;
 }
 /deep/ .uni-countdown__number:nth-child(5) {
-	background: url(../../static/sports/time-2.png) no-repeat;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/time-2.png) no-repeat;
 	background-size: 100% 100%;
 	margin: 0 auto;
 	width: 227rpx;

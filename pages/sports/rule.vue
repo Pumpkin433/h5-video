@@ -96,7 +96,7 @@
 	.rule-bg{
 		width: 100%;
 		height: 100%;
-		background: url(../../static/sports/rule-bg.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rule-bg.png) no-repeat;
 		background-size: 100% 100%;
 		background-position: center;
 	}
@@ -104,7 +104,7 @@
 		width: 100%;
 		height: 90%;
 		/* overflow-y: scroll; */
-		background: url(../../static/sports/rule-bg-1.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rule-bg-1.png) no-repeat;
 		background-size: 100% 100%;
 		background-position: center;
 	}
@@ -119,7 +119,7 @@
 		float: left;
 		width: 131rpx;
 		height: 67rpx;
-		background: url('../../static/sports/index-t-l.png') no-repeat left;
+		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-l.png') no-repeat left;
 		background-size: 100% 100%;
 		line-height: 67rpx;
 		text-align: left;
@@ -140,7 +140,7 @@
 		width: 125rpx;
 		height: 67rpx;
 		line-height: 67rpx;
-		background: url('../../static/sports/index-t-r.png') no-repeat right;
+		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-r.png') no-repeat right;
 		background-size: 100% 100%;
 		text-align: right;
 		cursor: pointer;
@@ -169,7 +169,7 @@
 		font-family:Lantinghei SC;
 		font-weight:600;
 		color:rgba(254,254,254,1);
-		background: url(../../static/sports/r-b-1-t.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/r-b-1-t.png) no-repeat;
 		background-size: 100% 100%;
 		background-position: center;
 	}
@@ -194,7 +194,7 @@
 		font-family:Lantinghei SC;
 		font-weight:600;
 		color:rgba(254,254,254,1);
-		background: url(../../static/sports/r-b-1-t.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/r-b-1-t.png) no-repeat;
 		background-size: 100% 100%;
 		background-position: center;
 	}
@@ -228,7 +228,7 @@
 		font-family:Lantinghei SC;
 		font-weight:600;
 		color:rgba(254,254,254,1);
-		background: url(../../static/sports/r-b-1-t.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/r-b-1-t.png) no-repeat;
 		background-size: 100% 100%;
 		background-position: center;
 	}
@@ -237,7 +237,7 @@
 		/* width: 280rpx; */
 		width: 50%;
 		height: 190rpx;
-		background: url('../../static/sports/shoes.png') no-repeat;
+		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/shoes.png') no-repeat;
 		background-size: 100% 100%;
 		
 	}

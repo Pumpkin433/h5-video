@@ -26,12 +26,12 @@
 					</ul>
 				</view>
 				
-				<view class="rank-bg-2-c" v-if="!userInfo">
+				<view class="rank-bg-2-c" v-if="this.user_rank > 50">
 					<span>我的积分</span>
 					<span>0积分</span>
 					<span>排名未进前50</span> 
 				</view>
-				<view class="rank-bg-2-c" v-if="userInfo">
+				<view class="rank-bg-2-c" v-if="this.user_rank < 50">
 					<span>我的积分</span>
 					<span>{{userInfo.score}}积分</span>
 					<span>排名未进前{{userInfo.rank - 1}}</span> 
@@ -56,6 +56,7 @@
 				rankList:[],
 				uid:null,
 				userInfo:{},
+				user_rank:0
 			
 				
 				
@@ -74,7 +75,7 @@
 				http.post(base.sq+'/api/v1.h5.Questions/getUserInfo',data).then((res) => {
 				    console.log(res)
 					this.userInfo =  res.data.data.info
-					
+					this.user_rank = res.data.data.info.rank
 				
 				}).catch(error => {
 				    
@@ -112,7 +113,7 @@
 
 <style>
 	.rank-bg {
-		background: url(../../static/sports/rank-bg.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-bg.png) no-repeat;
 		width: 100%;
 		height: 100%;
 		background-size: 100% 100%;
@@ -128,7 +129,7 @@
 		float: left;
 		width: 131rpx;
 		height: 67rpx;
-		background: url('../../static/sports/index-t-l.png') no-repeat left;
+		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-l.png') no-repeat left;
 		background-size: 100% 100%;
 		line-height: 67rpx;
 		text-align: left;
@@ -149,7 +150,7 @@
 		width: 125rpx;
 		height: 67rpx;
 		line-height: 67rpx;
-		background: url('../../static/sports/index-t-r.png') no-repeat right;
+		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-r.png') no-repeat right;
 		background-size: 100% 100%;
 		text-align: right;
 		cursor: pointer;
@@ -164,7 +165,7 @@
 	}
 
 	.rank-bg-1 {
-		background: url(../../static/sports/rank-bg-1-2.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-bg-1-2.png) no-repeat;
 		background-size: 100% 110%;
 		background-position:bottom;
 		height: 80%;
@@ -176,7 +177,7 @@
 	}
 
 	.r-b-1-t {
-		background: url(../../static/sports/r-b-1-t.png) no-repeat;
+		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/r-b-1-t.png) no-repeat;
 		background-size: 100% 100%;
 		width: 162rpx;
 		height: 50rpx;
@@ -282,7 +283,7 @@
 /* 	.rank-bg-2 {
 		width: 100%;
 		height: 200rpx;
-		background:url(../../static/sports/rank-bg-2.png) no-repeat;
+		background:url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-bg-2.png) no-repeat;
 		background-size: 90% 100%;
 		background-position: center;
 		position: absolute;
