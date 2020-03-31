@@ -100,6 +100,7 @@ export default {
 		}
 	},
 	methods: {
+		
 		msg_modal_app(){
 			this.msg_modal_app_share = false
 		},
