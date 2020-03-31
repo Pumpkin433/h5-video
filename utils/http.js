@@ -27,8 +27,9 @@ const http = axios.create({
     withCredentials: true,
     // #endif
     headers: {
-        'Content-Type': 'application/json',
-        //'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json'
+		
+        // 'X-Requested-With': 'XMLHttpRequest',
     },
 })
 
