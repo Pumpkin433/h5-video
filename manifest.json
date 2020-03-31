@@ -120,7 +120,7 @@
             "timeout" : 20000
         },
         "domain" : "h5.hotforest.cn",
-        "title" : "篮球活动",
+        "title" : "NBA谁更懂球-答题赢大奖",
         "publicPath" : "./",
         "devServer" : {
             "port" : 80,

@@ -1,33 +1,50 @@
 <template>
 	<view class="question-bg">
 		<view class="question-bg-1">
-			<view class="question-bg-2">
-				<view class="question-setval">
-					<uni-countdown
-						:show-day="false"
-						background-color="transparent"
-						color="white"
-						:show-colon="true"
-						:day="0"
-						:hour="0"
-						:minute="0"
-						:second=this.second
-						:reset=this.reset
-						@timeup="timeUp"
-					></uni-countdown>
-				</view>
+			<view class="question-setval">
+				<uni-countdown
+					:show-day="false"
+					background-color="transparent"
+					color="white"
+					:show-colon="true"
+					:day="0"
+					:hour="0"
+					:minute="0"
+					:second="this.second"
+					:reset="this.reset"
+					@timeup="timeUp"
+				></uni-countdown>
+			</view>
 
+			<view class="question-bg-2">
 				<view class="question-c">
-					<p>{{question.q_name}}</p>
+					<p>{{ question.q_name }}</p>
+
 					<ul>
-						<li v-show="this.correct === -1 || this.sIndex !==1"  @click="select_option('A',1)" ><span>A &nbsp;&nbsp;{{question.option_a}}</span></li>
-						<li v-show="this.correct !== -1 && this.sIndex === 1"  @click="select_option('A',1)"  :class=" 'A' === this.correct ? 'question-right' : 'question-wrong'"><span>A &nbsp;&nbsp;{{question.option_a}}</span></li>
-						<li v-show="this.correct === -1 || this.sIndex !== 2"  @click="select_option('B',2)"  ><span>B &nbsp;&nbsp;{{question.option_b}}</span></li>
-						<li v-show="this.correct !== -1 && this.sIndex ===2 "  @click="select_option('B',2)"  :class=" 'B' === this.correct ? 'question-right' : 'question-wrong'"><span>B &nbsp;&nbsp;{{question.option_b}}</span></li>
-						<li v-show="this.correct === -1 || this.sIndex !== 3"  @click="select_option('C',3)"><span>C &nbsp;&nbsp;{{question.option_c}}</span></li>
-						<li v-show="this.correct !== -1 & this.sIndex ===3"  @click="select_option('C',3)" :class=" 'C' === this.correct ? 'question-right' : 'question-wrong'"><span>C &nbsp;&nbsp;{{question.option_c}}</span></li>
-						<li v-show="this.correct === -1 || this.sIndex !== 4"  @click="select_option('D',4)"><span>D &nbsp;&nbsp;{{question.option_d}}</span></li>
-						<li v-show="this.correct !== -1 & this.sIndex === 4"  @click="select_option('D',4)" :class=" 'D' === this.correct ? 'question-right' : 'question-wrong'"><span>D &nbsp;&nbsp;{{question.option_d}}</span></li>
+						<li v-show="this.correct === -1 || this.sIndex !== 1" @click="select_option('A', 1)">
+							<span>A &nbsp;&nbsp;{{ question.option_a }}</span>
+						</li>
+						<li v-show="this.correct !== -1 && this.sIndex === 1" @click="select_option('A', 1)" :class="'A' === this.correct ? 'question-right' : 'question-wrong'">
+							<span>A &nbsp;&nbsp;{{ question.option_a }}</span>
+						</li>
+						<li v-show="this.correct === -1 || this.sIndex !== 2" @click="select_option('B', 2)">
+							<span>B &nbsp;&nbsp;{{ question.option_b }}</span>
+						</li>
+						<li v-show="this.correct !== -1 && this.sIndex === 2" @click="select_option('B', 2)" :class="'B' === this.correct ? 'question-right' : 'question-wrong'">
+							<span>B &nbsp;&nbsp;{{ question.option_b }}</span>
+						</li>
+						<li v-show="this.correct === -1 || this.sIndex !== 3" @click="select_option('C', 3)">
+							<span>C &nbsp;&nbsp;{{ question.option_c }}</span>
+						</li>
+						<li v-show="(this.correct !== -1) & (this.sIndex === 3)" @click="select_option('C', 3)" :class="'C' === this.correct ? 'question-right' : 'question-wrong'">
+							<span>C &nbsp;&nbsp;{{ question.option_c }}</span>
+						</li>
+						<li v-show="this.correct === -1 || this.sIndex !== 4" @click="select_option('D', 4)">
+							<span>D &nbsp;&nbsp;{{ question.option_d }}</span>
+						</li>
+						<li v-show="(this.correct !== -1) & (this.sIndex === 4)" @click="select_option('D', 4)" :class="'D' === this.correct ? 'question-right' : 'question-wrong'">
+							<span>D &nbsp;&nbsp;{{ question.option_d }}</span>
+						</li>
 						<!-- @click="modal_end" -->
 					</ul>
 				</view>
@@ -41,18 +58,19 @@
 							<h5>您已经完成所有的问题</h5>
 							<h2>
 								获得了
-								<span>{{total_score}}</span>
+								<span>{{ total_score }}</span>
 								积分
 							</h2>
 							<h5>
 								您现在排名在
-								<span>{{user_rank}}</span>
+								<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
+								<span v-show="user_rank > 100 || user_rank === 0">100+</span>
 							</h5>
 						</view>
 						<view class="modal-end-r"><!-- <img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/jiangbei.png" alt=""> --></view>
 					</view>
 					<view class="modal-end-d">
-						<div class="modal-end-d-button"  @click="score_share_button"><span>分享战绩</span></div>
+						<div class="modal-end-d-button" @click="score_share_button"><span>分享战绩</span></div>
 
 						<view class="modal-end-d-d">分享可以获得额外的答题机会</view>
 					</view>
@@ -67,12 +85,13 @@
 						<h2>答题赢大奖</h2>
 						<h4>
 							我获得了
-							<span>{{total_score}}</span>
+							<span>{{ total_score }}</span>
 							积分
 						</h4>
 						<h5>
 							当前排名
-							<span>{{user_rank}}</span>
+							<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
+							<span v-show="user_rank > 100 || user_rank === 0">100+</span>
 						</h5>
 					</view>
 					<view class="modal-share-d">
@@ -93,11 +112,11 @@
 				<view class="modal-msg-bg" v-show="isModalMsg === true">
 					<h3>信息填写</h3>
 					<view class="modal-msg-name">
-						<span>用户姓名</span>
+						<span>姓名&nbsp;&nbsp;&nbsp;&nbsp;</span>
 						<input type="text" v-model="name" />
 					</view>
 					<view class="modal-msg-mobile">
-						<span>手机号</span>
+						<span>手机号&nbsp;&nbsp;&nbsp;&nbsp;</span>
 						<input type="text" v-model="mobile" />
 					</view>
 					<view class="modal-msg-button" @click="user_msg_add"><span>确认信息</span></view>
@@ -111,12 +130,13 @@
 					<h4>很抱歉您的回答错误</h4>
 					<h3>
 						获得了
-						<span>{{total_score}}</span>
+						<span>{{ total_score }}</span>
 						积分
 					</h3>
 					<h5>
 						您现在排名在
-						<span>{{user_rank}}</span>
+						<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
+						<span v-show="user_rank > 100 || user_rank === 0">100+</span>
 					</h5>
 
 					<view class="modal-a-button" @click="score_share_button"><span>分享战绩</span></view>
@@ -131,12 +151,13 @@
 					<h4>很抱歉您已经超时</h4>
 					<h3>
 						获得了
-						<span>{{total_score}}</span>
+						<span>{{ total_score }}</span>
 						积分
 					</h3>
 					<h5>
 						您现在排名在
-						<span>{{user_rank}}</span>
+						<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
+						<span v-show="user_rank > 100 || user_rank === 0">100+</span>
 					</h5>
 					<view class="modal-t-button" @click="score_share_button"><span>分享战绩</span></view>
 					<view class="modal-t-b-t"><span>分享可以获得额外的答题机会</span></view>
@@ -149,8 +170,8 @@
 
 <script>
 import uniCountdown from '@/components/linnian-CountDown/uni-countdown.vue';
-import http from '@/utils/http.js'
-import base from '@/utils/base.js'
+import http from '@/utils/http.js';
+import base from '@/utils/base.js';
 
 export default {
 	name: 'question',
@@ -166,292 +187,410 @@ export default {
 			isModalAnswerTimeout: false,
 			second: 15,
 			reset: false,
-			questionList:[],
-			q_key:0,
-			question:{},
-			correct:-1,
-			sIndex:0,
-			total_score:0, 
-			total_question:0,
-			user_rank:1000000,
-			uid:null,
-			ns_device_id:null,
-			name:'',
-			mobile:'',
-		}
-	},
-	onNavigationBarButtonTap(event){
-		// console.log(event)
-		if(event.type === 'share'){
-			
-		  this.update_answer_chance(this.uid, 1);
-		
-			
-		}
+			questionList: [],
+			q_key: 0,
+			question: {},
+			correct: -1,
+			sIndex: 0,
+			total_score: 0,
+			total_question: 0,
+			user_rank: 0,
+			uid: null,
+			ns_device_id: null,
+			name: '',
+			mobile: '',
+			isAnswerEnd: false,
+			isAnswerError: false,
+			isAnswerTimeout: false
+		};
 	},
 	onLoad(option) {
-		
-		this.uid = uni.getStorageSync('uid')
-		this.ns_device_id = uni.getStorageSync('ns_device_id')
-		// console.log(this.uid)
-		// console.log(option.q_key+'aaaaa')
+		this.uid = uni.getStorageSync('uid');
+		this.ns_device_id = uni.getStorageSync('ns_device_id');
+
 		//我的项目中只赋值一次, 所以直接设为true了
 		// this.reset = !this.reset;
 		//如果还要设置天, 时, 秒, 在上面声明绑定后, 在这里赋值即可
 		// this.second = 15;
-		if(option.k !== undefined && option.k !== 0){
-			this.q_key = option.k
-			this.getQuestionList()
-		}else{
-			this.k = 0
-			this.getQuestionList()
+
+		//下一题
+		if (option.k !== undefined && option.k !== 0) {
+			this.q_key = option.k;
+			this.getQuestionList();
+		} else {
+			this.k = 0;
+			this.getQuestionList();
 		}
-		
-		if(option.s != undefined){
-			this.total_score = option.s
+
+		// 总积分
+		if (option.s != undefined) {
+			this.total_score = option.s;
 		}
-		
-		
-		if(option.t !== undefined  && option.q_key !== undefined){
-			// console.log(option.t)
-			// console.log(option.q_key)
+
+		// 问题是否答完
+		if (option.t !== undefined && option.q_key !== undefined) {
 			// 问题回答完毕
-			if(option.k === option.t){
-				this.isModalEnd = true
-				this.reset = !this.reset
-				this.second = 0
-				this.get_user_rank(this.uid,this.total_score)
+			if (option.k === option.t) {
+				this.get_user_rank(this.uid, this.total_score);
+				this.isModalEnd = true;
+				this.reset = !this.reset;
 			}
-			
 		}
-		
-		
+
+		// dacuo
+		// console.log(option)
+		if (option.w !== undefined && option.w == 1) {
+			this.get_user_rank(this.uid, option.s);
+			this.isModalAnswerError = true;
+			this.reset = !this.reset;
+			this.second = 0;
+			this.isModalAnswerTimeout = false;
+		}
 	},
 	methods: {
-		user_msg_add(){
-			
+		user_msg_add() {
 			let data = {
-				uid:this.uid,
-				name:this.name,
-				mobile:this.mobile,
-				score:this.total_score,
-				rank:this.user_rank
-			
-			}
-			http.post(base.sq+'/api/v1.h5.Questions/updateUserInfo', data).then(res => {
-				// console.log(res)
-				if(res.data.data.updateRow === 1){
-					uni.reLaunch({
-						url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
-					}
-						
-					)
-				}else{
-					
-				}
-			
-			}).catch(error => {
-			
-			}).finally(() => {
-			
-			})
-		},
-		check_user_status(uid){
-			let data = {
-				uid:uid
-			}
-			http.post(base.sq+'/api/v1.h5.Questions/uidIsExists', data).then(res => {
-				// console.log(res)
-				let status  = res.data.data.status
-				console.log(status)
-				// if(status === 0){
-					this.isModalMsg = true
-					
-				// }
-				// if(status === 1){
-				// 	this.update_user_score(uid,this.total_score,this.user_rank)
-				// 	uni.reLaunch({
-				// 		url:'/pages/sports/sports'
-				// 	}
-						
-				// 	)
-				// }
-			
-			
-			}).catch(error => {
-			
-			}).finally(() => {
-			
-			})
-		},
-		update_answer_chance(uid, chance) {
-			let data = {
-				uid: uid,
-				chance: chance
+				uid: this.uid,
+				name: this.name,
+				mobile: this.mobile,
+				score: this.total_score,
+				rank: this.user_rank
 			};
-			http.post(base.sq + '/api/v1.h5.Questions/updateUserAnswerChance', data)
+			http.post(base.sq + '/api/v1.h5.Questions/updateUserInfo', data)
 				.then(res => {
 					console.log(res);
-					let data = {
-						uid: uid
-					};
-					http.post(base.sq + '/api/v1.h5.Questions/questionShare', data)
-						.then(res => {
-							console.log(res);
-							let insert = res.data.data.insert;
-		
-							if (insert > 0) {
-								console.log(insert);
-							} else {
-								alert('分享失败');
-							}
-						})
-						.catch(error => {})
-						.finally(() => {});
+					if (res.data.data.updateRow === 1) {
+						this.isModalShare = true
 						
+						this.isModalAnswerError = false
+						this.isModalAnswerTimeout = false
+						this.isModalEnd = false
+						this.isModalMsg = false
+						// uni.reLaunch({
+						// 	url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
+						// }
+
+						// )
+					}
 						
 				})
 				.catch(error => {})
 				.finally(() => {});
 		},
-		update_user_score(uid,total_score,user_rank){
-			let data = {
-				uid:uid,
-				score:total_score,
-				rank:user_rank
-			}
-			http.post(base.sq+'/api/v1.h5.Questions/updateUserScore', data).then(res => {
-				console.log(res)
-				
-				
-			
-			}).catch(error => {
-			
-			}).finally(() => {
-			
-			})
-		},
+		// check_user_status(uid){
+		// 	let data = {
+		// 		uid:uid
+		// 	}
+		// 	http.post(base.sq+'/api/v1.h5.Questions/uidIsExists', data).then(res => {
+		// 		// console.log(res)
+		// 		let status  = res.data.data.status
+		// 		console.log(status)
+		// 		if(status === 0){
+		// 			this.reset = !this.reset
+		// 			this.second = 0
+		// 			this.isModalMsg = true
+
+		// 		}
+		// 		if(status === 1){
+		// 			this.update_user_score(uid,this.total_score,this.user_rank)
+		// 			uni.reLaunch({
+		// 				url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
+		// 			}
+
+		// 			)
+		// 		}
+
+		// 	}).catch(error => {
+
+		// 	}).finally(() => {
+
+		// 	})
+		// },
+
+		// update_user_score(uid,total_score,user_rank){
+		// 	let data = {
+		// 		uid:uid,
+		// 		score:total_score,
+		// 		rank:user_rank
+		// 	}
+		// 	http.post(base.sq+'/api/v1.h5.Questions/updateUserScore', data).then(res => {
+		// 		console.log(res)
+
+		// 	}).catch(error => {
+
+		// 	}).finally(() => {
+
+		// 	})
+		// },
 		// 选择答案
-		select_option(option,i){
-			this.sIndex = i
-			this.correct = this.question.correct
-			this.q_key++
-			
-			if(option === this.question.correct){
-				this.total_score++
-				
-				setTimeout(function(a,b,c) {
-					// console.log(a)
-					// console.log(b)
-					uni.redirectTo({
-						url: '/pages/sports/question?k='+ a+'&s='+b+'&t='+c,
-						success: res => {
-							console.log(res)
-						},
-						fail: () => {},
-						complete: () => {}
-					})
-				}, 1000,this.q_key,this.total_score,this.total_question);
-			}else{
-				this.get_user_rank(this.uid,this.total_score)
-				this.isModalAnswerError = true
-				this.reset = !this.reset
-				this.second = 0
-				this.isModalAnswerTimeout = false
-			
-				
-				
+		select_option(option, i) {
+			this.sIndex = i;
+			this.correct = this.question.correct;
+			this.q_key++;
+
+			if (option === this.question.correct) {
+				this.total_score++;
+
+				setTimeout(
+					function(a, b, c) {
+						// console.log(a)
+						// console.log(b)
+						uni.redirectTo({
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c,
+							success: res => {
+								console.log(res);
+							},
+							fail: () => {},
+							complete: () => {}
+						});
+					},
+					1000,
+					this.q_key,
+					this.total_score,
+					this.total_question
+				);
+			} else {
+				setTimeout(
+					function(a, b, c, d) {
+						// console.log(a)
+						// console.log(b)
+						uni.redirectTo({
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c + '&w=1',
+							success: res => {
+								console.log(res);
+							},
+							fail: () => {},
+							complete: () => {}
+						});
+					},
+					1000,
+					this.q_key,
+					this.total_score,
+					this.total_question,
+					1
+				);
 			}
-			
 		},
-		get_user_rank(uid,total_score){
+		get_user_rank(uid, total_score) {
 			let data = {
-				uid:uid,
-				score:total_score
-			}
-			http.post(base.sq+'/api/v1.h5.Questions/getUserRank', data).then(res => {
-				console.log(res)
-				this.user_rank = res.data.data.rank
-				
-			
-			}).catch(error => {
-			
-			}).finally(() => {
-			
-			})
+				uid: uid,
+				score: total_score
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/getUserRank', data)
+				.then(res => {
+					// console.log(res)
+					this.user_rank = res.data.data.rank;
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
-		score_share_button(){
-				this.isModalShare = true
-				this.isModalAnswerError = false
-				this.isModalAnswerTimeout = false
-				this.isModalEnd = false
-				this.isModalMsg = false
+		score_share_button() {
+			//
+			let data = {
+				uid: this.uid
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
+				.then(res => {
+					// console.log(res)
+					let status = res.data.data.status;
+					// console.log(status)
+					if (status === 0) {
+						this.reset = !this.reset;
+						this.isModalMsg = true;
+						
+						this.isModalAnswerError = false;
+						this.isModalAnswerTimeout = false;
+						this.isModalEnd = false;
+						
+						
+					}
+					if (status === 1) {
+						// this.update_user_score(uid,this.total_score,this.user_rank)
+						this.isModalShare = true;
+						this.isModalAnswerError = false;
+						this.isModalAnswerTimeout = false;
+						this.isModalEnd = false;
+						this.isModalMsg = false;
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		modal_end() {
-			this.isModalEnd = true;
-			this.get_user_rank(this.uid,this.total_score)
+			let data = {
+				uid: this.uid
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
+				.then(res => {
+					// console.log(res)
+					let status = res.data.data.status;
+					// console.log(status)
+					if (status === 0) {
+						this.reset = !this.reset;
+						// this.second = 0
+						this.isModalMsg = true;
+					}
+					if (status === 1) {
+						// this.update_user_score(uid,this.total_score,this.user_rank)
+						this.get_user_rank(this.uid, this.total_score);
+						this.isModalEnd = true;
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		question_modal() {
-		
-			this.isModalEnd = false
-			this.check_user_status(this.uid)
+			let data = {
+				uid: this.uid
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
+				.then(res => {
+					// console.log(res)
+					let status = res.data.data.status;
+					// console.log(status)
+					if (status === 0) {
+						this.reset = !this.reset;
+						// this.second = 0
+						this.isModalMsg = true;
+					}
+					if (status === 1) {
+						// this.update_user_score(uid,this.total_score,this.user_rank)
+
+						this.isModalEnd = false;
+						// this.isModalMsg = true
+						// this.check_user_status(this.uid)
+						uni.reLaunch({
+							url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
+						});
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		share_modal() {
-		
-			this.isModalShare = false
-			this.check_user_status(this.uid)
+			let data = {
+				uid: this.uid
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
+				.then(res => {
+					// console.log(res)
+					let status = res.data.data.status;
+					// console.log(status)
+					if (status === 0) {
+						this.reset = !this.reset;
+						// this.second = 0
+						this.isModalMsg = true;
+						
+				
+					
+					this.isModalAnswerError = false;
+					this.isModalAnswerTimeout = false;
+					this.isModalEnd = false;
+					}
+					if (status === 1) {
+						// this.update_user_score(uid,this.total_score,this.user_rank)
+						this.isModalShare = false;
+						// this.check_user_status(this.uid)
+						uni.reLaunch({
+							url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
+						});
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		msg_modal() {
-			uni.reLaunch({
-				url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
-			}
-				
-			)
-			
+			// uni.reLaunch({
+			// 	url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
+			// }
+			// )
 		},
 		answer_error_modal() {
-		
-			this.check_user_status(this.uid)
-		
-			this.isModalAnswerError = false
+			let data = {
+				uid: this.uid
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
+				.then(res => {
+					// console.log(res)
+					let status = res.data.data.status;
+					// console.log(status)
+					if (status === 0) {
+						this.reset = !this.reset;
+						// this.second = 0
+						this.isModalMsg = true;
+						this.isModalAnswerError = false;
+						this.isModalAnswerTimeout = false;
+						this.isModalEnd = false;
+					}
+					if (status === 1) {
+						// this.update_user_score(uid,this.total_score,this.user_rank)
+						this.isModalAnswerError = false;
+						// this.check_user_status(this.uid)
+						uni.reLaunch({
+							url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
+						});
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+			
+			
 		},
 		answer_timeout_modal() {
-			// uni.reLaunch({
-			// 	url:'/pages/sports/sports'
-			// }
-				
-			// )
-			this.isModalAnswerTimeout = false
-			this.check_user_status(this.uid)
-		},
-		timeUp(){
-			if(this.isModalAnswerError === true){
-				this.isModalAnswerTimeout = false
-			}else{
-				this.isModalAnswerTimeout = true
-			}
 			
+			let data = {
+				uid: this.uid
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
+				.then(res => {
+					// console.log(res)
+					let status = res.data.data.status;
+					// console.log(status)
+					if (status === 0) {
+						this.reset = !this.reset;
+						// this.second = 0
+						this.isModalMsg = true;
+						this.isModalAnswerError = false;
+						this.isModalAnswerTimeout = false;
+						this.isModalEnd = false;
+					}
+					if (status === 1) {
+						this.isModalAnswerTimeout = false;
+						// this.check_user_status(this.uid)
+						uni.reLaunch({
+							url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
+						});
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+			
+		},
+		timeUp() {
+			this.get_user_rank(this.uid, this.total_score);
+			// this.update_user_score(uid,this.total_score,this.user_rank)
+			if (this.isModalAnswerError === true) {
+				this.isModalAnswerTimeout = false;
+			} else {
+				this.isModalAnswerTimeout = true;
+			}
 		},
 		// 获取问题列表
-		getQuestionList(){
-		
+		getQuestionList() {
 			// get 请求
-			http.get(base.sq+'/api/v1.h5.Questions/list', [{}]).then((res) => {
-			    // console.log(res)
-				this.questionList = res.data.data.list
-				this.total_question = res.data.data.list.length
-				this.question = res.data.data.list[this.q_key]
-				if(this.isModalEnd === true){
-					this.question = {'q_name':'1','option_a':'1','option_b':'1','option_c':'1','option_d':'1','correct':'1'}
-				}
-				// console.log(this.question)
-			
-			}).catch(error => {
-			    
-			}).finally(() => {
-			    
-			})
-			
+			http.get(base.sq + '/api/v1.h5.Questions/list', [{}])
+				.then(res => {
+					// console.log(res)
+					this.questionList = res.data.data.list;
+					this.total_question = res.data.data.list.length;
+					this.question = res.data.data.list[this.q_key];
+					if (this.isModalEnd === true) {
+						this.question = { q_name: '1', option_a: '1', option_b: '1', option_c: '1', option_d: '1', correct: '1' };
+					}
+					// console.log(this.question)
+				})
+				.catch(error => {})
+				.finally(() => {});
 		}
 	}
 };
@@ -469,40 +608,41 @@ export default {
 .question-bg-1 {
 	width: 100%;
 	height: 100%;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-bg.png) no-repeat;
-	background-size: 100% 100%;
-	background-position: center;
 }
 
 .question-bg-2 {
 	width: 100%;
-	height: 100%;
+	height: 80%;
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rule-bg-1.png) no-repeat;
-	background-size: 100% 80%;
-	background-position: center;
+	background-size: 100%;
+	background-position: top;
+	/* background-position: center; */
 }
 
 .question-setval {
 	text-align: center;
-	width: 227rpx;
-	height: 166rpx;
+	width: 267.05rpx;
+	/* height: 195.29rpx; */
+	height: 15%;
 	margin: 0 auto;
-	padding-top: 40rpx;
-	font-size: 80rpx;
+	padding-top: 5%;
+
+	font-size: 94.11rpx;
 	font-family: Yuanti SC;
 	font-weight: 400;
 	color: rgba(255, 255, 255, 1);
 }
 
 .question-c {
-	width: 512rpx;
+	width: 602.35rpx;
 	margin: 0 auto;
 	padding-top: 200rpx;
 }
 
 .question-c p {
-	height: 100px;
-	font-size: 28rpx;
+	width: 602.35rpx;
+	height: 168.23rpx;
+	font-size: 32.94rpx;
 	font-family: Lantinghei SC;
 	font-weight: bold;
 	color: rgba(255, 255, 255, 1);
@@ -515,36 +655,39 @@ export default {
 }
 
 .question-c ul li {
-	width: 469rpx;
-	height: 76rpx;
+	width: 551.76rpx;
+	height: 89.41rpx;
 	border: 1rpx solid rgba(238, 182, 44, 1);
-	border-radius: 20rpx;
-	text-indent: 12rpx;
-	margin-top: 25rpx;
+	border-radius: 23.52rpx;
+	text-indent: 14.11rpx;
+	margin: 0 auto;
+	margin-top: 35.29rpx;
 }
 
 .question-c ul li span {
-	font-size: 22rpx;
+	line-height: 89.41rpx;
+	font-size: 30rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
-	line-height: 76rpx;
-	cursor: pointer;
+	/* font-size: 30.58rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	
+	cursor: pointer; */
 }
 
 .question-right {
-
 	border: 2rpx solid rgba(26, 160, 23, 1) !important;
-	background:#1aa017 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-right-icon.png) no-repeat right;
-	background-size: 10% 40%;
+	background: #1aa017 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-right-icon.png) no-repeat right;
+	background-size: 51.76rpx 40rpx;
 }
 
-
 .question-wrong {
-	
 	border: 2rpx solid #ff7600 !important;
 	background: #ff7600 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-wrong-icon.png) no-repeat right;
-	background-size: 10% 40%;
+	background-size: 35.29rpx 40rpx;
 }
 
 .modal-end {
@@ -578,25 +721,25 @@ export default {
 .modal-end-l {
 	width: 60%;
 	float: left;
-	padding: 76rpx 0 40rpx 40rpx;
+	padding: 89.41rpx 0 47.05rpx 47.05rpx;
 }
 
 .modal-end-l h3 {
-	font-size: 37rpx;
+	font-size: 43.52rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 }
 
 .modal-end-l h5 {
-	font-size: 26rpx;
+	font-size: 30.58rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
 }
 
 .modal-end-l h2 {
-	font-size: 38rpx;
+	font-size: 44.7rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -622,18 +765,18 @@ export default {
 }
 
 .modal-end-d-button {
-	width: 419rpx;
-	height: 75rpx;
+	width: 492.94rpx;
+	height: 88.23rpx;
 	margin: 0 auto;
 	text-align: center;
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-button.png) no-repeat;
 	background-size: 100% 100%;
-	line-height: 75rpx;
+	line-height: 88.23rpx;
 	cursor: pointer;
 }
 
 .modal-end-d-button span {
-	font-size: 28rpx;
+	font-size: 32.94rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -641,9 +784,9 @@ export default {
 
 .modal-end-d-d {
 	width: 100%;
-	margin-top: 23rpx;
+	margin-top: 27.05rpx;
 	text-align: center;
-	font-size: 22rpx;
+	font-size: 25.88rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -665,7 +808,8 @@ export default {
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-share-bg.png) no-repeat;
 	background-size: 120% 100%;
 	width: 80%;
-	height: 50%;
+	/* height: 50%; */
+	height: 756.47rpx;
 
 	top: 20%;
 	left: 10%;
@@ -675,25 +819,26 @@ export default {
 
 .modal-share-t {
 	height: 60%;
-	padding: 85rpx 270rpx 0 44rpx;
+	padding-top: 100rpx;
+	padding-left: 51.76rpx;
 }
 
 .modal-share-t h3 {
-	font-size: 44rpx;
+	font-size: 51.76rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 }
 
 .modal-share-t h2 {
-	font-size: 51rpx;
+	font-size: 60rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 }
 
 .modal-share-t h4 {
-	font-size: 36rpx;
+	font-size: 42.35rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: #333333;
@@ -704,7 +849,7 @@ export default {
 }
 
 .modal-share-t h5 {
-	font-size: 26rpx;
+	font-size: 30.58rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: #333333;
@@ -716,7 +861,7 @@ export default {
 
 .modal-share-d {
 	width: 100%;
-	padding: 30rpx 44rpx 0 44rpx;
+	padding: 35.29rpx 51.76rpx 0 51.76rpx;
 }
 
 .modal-share-d-l {
@@ -730,7 +875,7 @@ export default {
 }
 
 .modal-share-d-r img {
-	width: 118rpx;
+	width: 138.82rpx;
 }
 
 .modal-msg {
@@ -749,7 +894,7 @@ export default {
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-msg-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
-	height: 50%;
+	height: 564.7rpx;
 
 	top: 20%;
 	left: 10%;
@@ -758,63 +903,65 @@ export default {
 }
 
 .modal-msg-bg h3 {
-	font-size: 30rpx;
+	font-size: 35.29rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
 	text-align: center;
-	margin-top: 44rpx;
+	margin-top: 51.76rpx;
 }
 
 .modal-msg-name {
 	width: 80%;
 	margin: 0 auto;
-	margin-top: 70rpx;
+	margin-top: 82.35rpx;
 }
 
 .modal-msg-mobile {
 	width: 80%;
 	margin: 0 auto;
-	margin-top: 40rpx;
+	margin-top: 47.05rpx;
 }
 
 .modal-msg-name span {
-	font-size: 22rpx;
+	font-size: 25.88rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
 	display: block;
 	float: left;
 	text-align: right;
-	width: 120rpx;
+	width: 121.17rpx;
 }
 
 .modal-msg-name input {
-	width: 281rpx;
+	padding-left: 23.52rpx;
+	width: 330.58rpx;
 	border-bottom: 1px solid #4e4e4e;
 }
 
 .modal-msg-mobile span {
-	font-size: 22rpx;
+	font-size: 25.88rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
 	display: block;
 	float: left;
 	text-align: right;
-	width: 120rpx;
+	width: 121.17rpx;
 }
 
 .modal-msg-mobile input {
-	width: 281rpx;
+	padding-left: 23.52rpx;
+	width: 330.58rpx;
 	border-bottom: 1px solid #4e4e4e;
 }
 
 .modal-msg-button {
-	width: 442rpx;
-	height: 72rpx;
+	width: 520rpx;
+	height: 84.7rpx;
 	margin: 0 auto;
-	margin-top: 100rpx;
+	margin-top: 117.64rpx;
 	text-align: center;
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-button.png) no-repeat;
 	background-size: 100% 100%;
@@ -822,7 +969,7 @@ export default {
 }
 
 .modal-msg-button span {
-	font-size: 36rpx;
+	font-size: 42.35rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -843,9 +990,10 @@ export default {
 .modal-answer-error-bg {
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-bg.png) no-repeat;
 	background-size: 100% 100%;
-	width: 80%;
-	height: 50%;
-
+	/* width: 80%; */
+	/* height: 50%; */
+	width: 589.41rpx;
+	height: 623.52rpx;
 	top: 20%;
 	left: 10%;
 	position: fixed;
@@ -853,10 +1001,10 @@ export default {
 }
 
 .modal-a-circle {
-	width: 198rpx;
-	height: 198rpx;
+	width: 232.94rpx;
+	height: 232.94rpx;
 	margin: 0 auto;
-	margin-top: -80rpx;
+	margin-top: -94.11rpx;
 }
 
 .modal-a-circle img {
@@ -865,18 +1013,18 @@ export default {
 
 .modal-answer-error-bg h4 {
 	text-align: center;
-	font-size: 26rpx;
+	font-size: 30.58rpx;
 	color: #666666;
 	font-family: FZLTZHK--GBK1-0;
-	margin-top: 27px;
+	margin-top: 61.76rpx;
 }
 
 .modal-answer-error-bg h3 {
 	text-align: center;
-	font-size: 38rpx;
+	font-size: 44.7rpx;
 	color: #333333;
 	font-family: FZLTZHK--GBK1-0;
-	margin-top: 8px;
+	margin-top: 9.41rpx;
 }
 
 .modal-answer-error-bg h3 span {
@@ -885,10 +1033,10 @@ export default {
 
 .modal-answer-error-bg h5 {
 	text-align: center;
-	font-size: 26rpx;
+	font-size: 30.58rpx;
 	color: #333333;
 	font-family: FZLTZHK--GBK1-0;
-	margin-top: 8px;
+	margin-top: 9.41rpx;
 }
 
 .modal-answer-error-bg h5 span {
@@ -896,29 +1044,30 @@ export default {
 }
 
 .modal-a-button {
-	width: 419rpx;
-	height: 72rpx;
+	width: 492.94rpx;
+	height: 84.7rpx;
 	margin: 0 auto;
-	margin-top: 20px;
+	margin-top: 38.82rpx;
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
 	background-size: 100% 100%;
 	text-align: center;
 }
 
 .modal-a-button span {
-	line-height: 72rpx;
-	font-size: 28rpx;
+	line-height: 84.7rpx;
+	font-size: 32.94rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 }
 
 .modal-a-b-t {
+	margin-top: 23.52rpx;
 	text-align: center;
 }
 
 .modal-a-b-t span {
-	font-size: 22rpx;
+	font-size: 25.88rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -949,10 +1098,10 @@ export default {
 }
 
 .modal-t-circle {
-	width: 198rpx;
-	height: 198rpx;
+	width: 232.94rpx;
+	height: 232.94rpx;
 	margin: 0 auto;
-	margin-top: -80rpx;
+	margin-top: -94.11rpx;
 }
 
 .modal-t-circle img {
@@ -961,18 +1110,18 @@ export default {
 
 .modal-answer-timeout-bg h4 {
 	text-align: center;
-	font-size: 26rpx;
+	font-size: 30.58rpx;
 	color: #666666;
 	font-family: FZLTZHK--GBK1-0;
-	margin-top: 27px;
+	margin-top: 31.76rpx;
 }
 
 .modal-answer-timeout-bg h3 {
 	text-align: center;
-	font-size: 38rpx;
+	font-size: 44.7rpx;
 	color: #333333;
 	font-family: FZLTZHK--GBK1-0;
-	margin-top: 8px;
+	margin-top: 18.82rpx;
 }
 
 .modal-answer-timeout-bg h3 span {
@@ -981,10 +1130,10 @@ export default {
 
 .modal-answer-timeout-bg h5 {
 	text-align: center;
-	font-size: 26rpx;
+	font-size: 30.58rpx;
 	color: #333333;
 	font-family: FZLTZHK--GBK1-0;
-	margin-top: 8px;
+	margin-top: 18.82rpx;
 }
 
 .modal-answer-timeout-bg h5 span {
@@ -992,18 +1141,18 @@ export default {
 }
 
 .modal-t-button {
-	width: 419rpx;
-	height: 72rpx;
+	width: 492.94rpx;
+	height: 84.7rpx;
 	margin: 0 auto;
-	margin-top: 20px;
+	margin-top: 47.05rpx;
 	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
 	background-size: 100% 100%;
 	text-align: center;
 }
 
 .modal-t-button span {
-	line-height: 72rpx;
-	font-size: 28rpx;
+	line-height: 84.7rpx;
+	font-size: 32.94rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -1014,7 +1163,7 @@ export default {
 }
 
 .modal-t-b-t span {
-	font-size: 22rpx;
+	font-size: 25.88rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -1030,14 +1179,15 @@ export default {
 	display: none;
 }
 /deep/ .uni-countdown__number:nth-child(5) {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/time-2.png) no-repeat;
-	background-size: 100% 100%;
+	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/time-2.png) no-repeat left;
+	background-size: 110% 120%;
 	margin: 0 auto;
-	width: 227rpx;
-	height: 227rpx;
+	width: 267.05rpx;
+	height: 267.05rpx;
+	/* height: 195.29rpx; */
 }
 /deep/ .uni-countdown__number:nth-child(5) span {
-	font-size: 80rpx;
+	font-size: 82.35rpx;
 	font-family: Yuanti SC;
 	font-weight: 400;
 	color: rgba(255, 255, 255, 1);

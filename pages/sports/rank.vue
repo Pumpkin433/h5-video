@@ -26,23 +26,20 @@
 					</ul>
 				</view>
 				
-				<view class="rank-bg-2-c" v-if="this.user_rank > 50">
+				<view class="rank-bg-2-c" v-show="this.user_rank > 50 || this.user_rank === 0">
 					<span>我的积分</span>
 					<span>0积分</span>
-					<span>排名未进前50</span> 
+					<span>当前排名100+</span> 
 				</view>
-				<view class="rank-bg-2-c" v-if="this.user_rank < 50">
+				<view class="rank-bg-2-c" v-show="this.user_rank < 50 & this.user_rank!=0">
 					<span>我的积分</span>
 					<span>{{userInfo.score}}积分</span>
-					<span>排名未进前{{userInfo.rank - 1}}</span> 
+					<span>排名未进前{{userInfo.rank}}</span> 
 				</view>
 			</view>
 		
 			
 		</view>
-		
-
-	
 	</view>
 </template>
 
@@ -64,8 +61,10 @@
 		},
 		onLoad() {
 			this.uid = uni.getStorageSync('uid')
-			this.getRankList()
+			console.log(this.uid)
 			this.get_user_info(this.uid)
+			this.getRankList()
+			
 		},
 		methods:{
 			get_user_info(uid){
@@ -130,17 +129,18 @@
 
 	.index-top-l {
 		float: left;
-		width: 131rpx;
-		height: 67rpx;
+		width: 141rpx;
+		height: 77rpx;
 		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-l.png') no-repeat left;
-		background-size: 100% 100%;
-		line-height: 67rpx;
+		background-size: 110% 100%;
+		background-position: right;
+		line-height: 77rpx;
 		text-align: left;
 		cursor: pointer;
 	}
 
 	.index-top-l span {
-		font-size: 24rpx;
+		font-size: 26rpx;
 		font-family: Lantinghei SC;
 		font-weight: 600;
 		color: rgba(240, 208, 108, 1);
@@ -150,11 +150,12 @@
 
 	.index-top-r {
 		float: right;
-		width: 125rpx;
-		height: 67rpx;
-		line-height: 67rpx;
+		width: 141rpx;
+		height: 77rpx;
+		line-height: 77rpx;
 		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-r.png') no-repeat right;
-		background-size: 100% 100%;
+		background-size: 110% 100%;
+		background-position: left;
 		text-align: right;
 		cursor: pointer;
 	}

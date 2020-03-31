@@ -27,23 +27,29 @@
 					<view class="rule-profile-bg">游戏规则</view>
 				
 					<p>
-						1. 2月27日，在三星旗舰新品中国线上发布会中三星Galaxy Z Flip正式登陆中国市场。 
+						1.活动时间：4月1日~4月8日
 					
 					</p>
 					<p>
-						1. 2月27日，在三星旗舰新品中国线上发布会中三星Galaxy Z Flip正式登陆中国市场。 
+						2. 活动期间玩家每天可以获得1次免费答题的机会 
 					
 					</p>
 					<p>
-						1. 2月27日，在三星旗舰新品中国线上发布会中三星Galaxy Z Flip正式登陆中国市场。 
+						3. 将活动分享给好友可以额外获得1次答题机会（每天1次） 
 					
 					</p>
 					<p>
-						1. 2月27日，在三星旗舰新品中国线上发布会中三星Galaxy Z Flip正式登陆中国市场。 
+						4. 每答对1题获得1积分，答错或倒计时结束没有回答，则游戏结束 
+					</p>
+					<p>
+						5. 系统将取玩家的最好成绩进入排行榜
+					</p>
+					<p>
+						6. 活动结束后，排行榜前3名玩家将获得奖励 
 					</p>
 				</view>
 				
-				<view class="rule-time">
+				<!-- <view class="rule-time">
 					<view class="rule-time-bg">时间表</view>
 					<ul>
 						<li>第一轮  4.16-4.23</li>
@@ -58,7 +64,7 @@
 						<li>第一轮  4.16-4.23</li>
 						
 					</ul>
-				</view>
+				</view> -->
 			</view>
 			
 		</view>
@@ -120,17 +126,18 @@
 	
 	.index-top-l {
 		float: left;
-		width: 131rpx;
-		height: 67rpx;
+		width: 141rpx;
+		height: 77rpx;
 		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-l.png') no-repeat left;
-		background-size: 100% 100%;
-		line-height: 67rpx;
+		background-size: 110% 100%;
+		background-position: right;
+		line-height: 77rpx;
 		text-align: left;
 		cursor: pointer;
 	}
 	
 	.index-top-l span {
-		font-size: 24rpx;
+		font-size: 26rpx;
 		font-family: Lantinghei SC;
 		font-weight: 600;
 		color: rgba(240, 208, 108, 1);
@@ -140,11 +147,12 @@
 	
 	.index-top-r {
 		float: right;
-		width: 125rpx;
-		height: 67rpx;
-		line-height: 67rpx;
+		width: 141rpx;
+		height: 77rpx;
+		line-height: 77rpx;
 		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-r.png') no-repeat right;
-		background-size: 100% 100%;
+		background-size: 110% 100%;
+		background-position: left;
 		text-align: right;
 		cursor: pointer;
 	}

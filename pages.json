@@ -4,7 +4,7 @@
 		{
 			"path":"pages/sports/sports",
 			"style":{
-				"navigationBarTitleText": "看图答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -19,7 +19,7 @@
 		{
 			"path":"pages/sports/rank",
 			"style":{
-				"navigationBarTitleText": "看图答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -34,7 +34,7 @@
 		{
 			"path":"pages/sports/rule",
 			"style":{
-				"navigationBarTitleText": "看图答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -49,7 +49,7 @@
 		{
 			"path":"pages/sports/question",
 			"style":{
-				"navigationBarTitleText": "看图答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -1208,7 +1208,7 @@
 		"navigationStyle":"custom",
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "看图答题赢大奖",
+		"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
 		"navigationBarBackgroundColor": "#00000",
 		"backgroundColor": "#F8F8F8",
 		"backgroundColorTop": "#000000",
