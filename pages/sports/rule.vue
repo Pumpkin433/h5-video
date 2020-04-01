@@ -27,25 +27,18 @@
 					<view class="rule-profile-bg">游戏规则</view>
 				
 					<p>
-						1.活动时间：4月1日~4月8日
+						1.活动时间：4月2日~4月10日
 					
 					</p>
 					<p>
-						2. 活动期间玩家每天可以获得1次免费答题的机会 
+						2.  每答对1题获得1积分，答错或倒计时结束没有回答，则游戏结束
+					</p>
+					<p>
+						3. 系统将取玩家的最好成绩进入排行榜 
 					
 					</p>
 					<p>
-						3. 将活动分享给好友可以额外获得1次答题机会（每天1次） 
-					
-					</p>
-					<p>
-						4. 每答对1题获得1积分，答错或倒计时结束没有回答，则游戏结束 
-					</p>
-					<p>
-						5. 系统将取玩家的最好成绩进入排行榜
-					</p>
-					<p>
-						6. 活动结束后，排行榜前3名玩家将获得奖励 
+						4. 活动结束后，排行榜前3名玩家将获得奖励
 					</p>
 				</view>
 				
@@ -76,22 +69,25 @@
 		name:'rule',
 		data(){
 			return {
-				
+				uid:null,
+				ns_device_id:null,
 			}
 		},
-		onLoad() {
-			
+		onLoad(option) {
+			this.$uid = option.uid
+			this.uid = option.uid
+			// this.ns_device_id = uni.getStorageSync('ns_device_id')
 		},
 		methods:{
 			turn_rank(){
 				uni.navigateTo({
-					url:'rank'
+					url:'/pages/sports/rank?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 				})
 			},
 			turn_back(){
 				// uni.navigateBack()
 				uni.reLaunch({
-					url:'/pages/sports/sports'
+					url:'/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 				})
 			}
 			

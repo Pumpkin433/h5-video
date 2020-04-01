@@ -11,28 +11,28 @@
 					<p>{{ question.q_name }}</p>
 
 					<ul>
-						<li v-show="this.correct === -1 || this.sIndex !== 1" @click="select_option('A', 1)">
+						<li v-show="this.correct === -1 || this.sIndex !== 1" @click="hasClickOption  && select_option('A', 1)">
 							<span>A &nbsp;&nbsp;{{ question.option_a }}</span>
 						</li>
-						<li v-show="this.correct !== -1 && this.sIndex === 1" @click="select_option('A', 1)" :class="'A' === this.correct ? 'question-right' : 'question-wrong'">
+						<li v-show="this.correct !== -1 && this.sIndex === 1" @click="hasClickOption  && select_option('A', 1)" :class="'A' === this.correct ? 'question-right' : 'question-wrong'">
 							<span>A &nbsp;&nbsp;{{ question.option_a }}</span>
 						</li>
-						<li v-show="this.correct === -1 || this.sIndex !== 2" @click="select_option('B', 2)">
+						<li v-show="this.correct === -1 || this.sIndex !== 2" @click="hasClickOption  && select_option('B', 2)">
 							<span>B &nbsp;&nbsp;{{ question.option_b }}</span>
 						</li>
-						<li v-show="this.correct !== -1 && this.sIndex === 2" @click="select_option('B', 2)" :class="'B' === this.correct ? 'question-right' : 'question-wrong'">
+						<li v-show="this.correct !== -1 && this.sIndex === 2" @click="hasClickOption  && select_option('B', 2)" :class="'B' === this.correct ? 'question-right' : 'question-wrong'">
 							<span>B &nbsp;&nbsp;{{ question.option_b }}</span>
 						</li>
-						<li v-show="this.correct === -1 || this.sIndex !== 3" @click="select_option('C', 3)">
+						<li v-show="this.correct === -1 || this.sIndex !== 3" @click="hasClickOption  &&  select_option('C', 3)">
 							<span>C &nbsp;&nbsp;{{ question.option_c }}</span>
 						</li>
-						<li v-show="(this.correct !== -1) & (this.sIndex === 3)" @click="select_option('C', 3)" :class="'C' === this.correct ? 'question-right' : 'question-wrong'">
+						<li v-show="(this.correct !== -1) & (this.sIndex === 3)" @click="hasClickOption  &&  select_option('C', 3)" :class="'C' === this.correct ? 'question-right' : 'question-wrong'">
 							<span>C &nbsp;&nbsp;{{ question.option_c }}</span>
 						</li>
-						<li v-show="this.correct === -1 || this.sIndex !== 4" @click="select_option('D', 4)">
+						<li v-show="this.correct === -1 || this.sIndex !== 4" @click="hasClickOption  &&  select_option('D', 4)">
 							<span>D &nbsp;&nbsp;{{ question.option_d }}</span>
 						</li>
-						<li v-show="(this.correct !== -1) & (this.sIndex === 4)" @click="select_option('D', 4)" :class="'D' === this.correct ? 'question-right' : 'question-wrong'">
+						<li v-show="(this.correct !== -1) & (this.sIndex === 4)" @click="hasClickOption  &&  select_option('D', 4)" :class="'D' === this.correct ? 'question-right' : 'question-wrong'">
 							<span>D &nbsp;&nbsp;{{ question.option_d }}</span>
 						</li>
 						<!-- @click="modal_end" -->
@@ -160,12 +160,20 @@
 				<!-- 回答超时弹出框结束 -->
 
 				<!-- hai bao -->
-				<view class="modal-answer-timeout" v-show="isModalShareCanvas === true" ></view>
-				<view v-show="isModalShareCanvas === true" style="width:588.23rpx;position: fixed !important;z-index: 999999999;top: 229.41rpx;left: 70.58rpx;height: 756.47rpx;">
+				<!-- <view class="modal-answer-timeout" v-show="isModalShareCanvas === true" ></view>
+				<view v-show="isModalShareCanvas === true" 
+				style="width:588.23rpx;position: fixed !important;
+				z-index: 999999999;
+				height: 756.47rpx;
+				top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;">
 					<posters-layer style="position: fixed !important;" :postersData="postersData" @success="onSuccessCreatePosters" @error="onPostersError">
 					</posters-layer>
-					<img style="width: 120%;" :src="posterImg.path" />
-				</view>
+					<img style="width: 100%;" :src="posterImg.path" />
+				</view> -->
 				<!-- hai bao end -->
 			</view>
 		</view>
@@ -211,13 +219,17 @@
 				isAnswerTimeout: false,
 
 				postersData: {},
-				posterImg: {}
+				posterImg: {},
+				
+				hasClickOption:true, //是否点击了答案
 			};
 		},
 		onLoad(option) {
-			
-			this.uid = uni.getStorageSync('uid');
-			this.ns_device_id = uni.getStorageSync('ns_device_id');
+			this.$uid = option.uid
+			// this.uid = uni.getStorageSync('uid');
+			this.uid = option.uid;
+			// this.ns_device_id = uni.getStorageSync('ns_device_id');
+			// this.ns_device_id = ;
 
 			//我的项目中只赋值一次, 所以直接设为true了
 			// this.reset = !this.reset;
@@ -264,13 +276,13 @@
 			initPostersConfig() {
 				const config = {
 					clear: true,
-					width: 380,
-					height: 378,
+					width: 400,
+					height: 448,
 					background: 'rgba(0,0,0,0)',
 					views: [{
 							type: 'image',
-							width: 380,
-							height: 378,
+							width: 400,
+							height: 448,
 							top: 0,
 							left: 0,
 							// 封面图，测试的时候填上
@@ -281,7 +293,7 @@
 							width: 200,
 							height: 50,
 							left: 20,
-							top: 80,
+							top: 90,
 							fontSize: 30,
 							lineHeight: 40,
 							color:'#fff',
@@ -295,9 +307,9 @@
 							width: 200,
 							height: 50,
 							left: 20,
-							top: 120,
+							top: 140,
 							color:"#fff",
-							fontSize: 30,
+							fontSize: 34,
 							lineHeight: 40,
 							bolder: true,
 							breakWord: true,
@@ -310,7 +322,7 @@
 							width: 200,
 							height: 50,
 							left: 20,
-							top: 170,
+							top: 210,
 							fontSize: 24,
 							lineHeight: 40,
 							bolder: true,
@@ -324,7 +336,7 @@
 							width: 200,
 							height: 50,
 							left: 120,
-							top: 170,
+							top: 210,
 							fontSize: 24,
 							lineHeight: 40,
 							bolder: true,
@@ -338,7 +350,7 @@
 							width: 200,
 							height: 50,
 							left: 130,
-							top: 170,
+							top: 210,
 							fontSize: 24,
 							lineHeight: 40,
 							bolder: true,
@@ -351,7 +363,7 @@
 							type: 'text',
 							width: 400,
 							left: 20,
-							top: 210,
+							top: 250,
 							fontSize: 18,
 							bolder: true,
 							breakWord: true,
@@ -363,7 +375,7 @@
 							type: 'text',
 							width: 400,
 							left: 100,
-							top: 210,
+							top: 250,
 							fontSize: 18,
 							bolder: true,
 							breakWord: true,
@@ -375,8 +387,8 @@
 							type: 'text',
 							width: 400,
 							left: 20,
-							top: 290,
-							fontSize: 12,
+							top: 360,
+							fontSize: 16,
 							bolder: true,
 							breakWord: true,
 							content: '长按识别二维码',
@@ -388,8 +400,8 @@
 							type: 'text',
 							width: 400,
 							left: 20,
-							top: 320,
-							fontSize: 12,
+							top: 400,
+							fontSize: 16,
 							bolder: true,
 							breakWord: true,
 							content: '下载全民体育APP参与活动',
@@ -400,8 +412,8 @@
 							type: 'image',
 							width: 90,
 							height: 90,
-							top: 270,
-							left: 180,
+							top: 340,
+							left: 260,
 							// 二维码图片路径，测试的时候填上
 							url: 'http://h5.hotforest.cn/canvas/m-share-qrcode.png'
 						},
@@ -426,18 +438,18 @@
 					.then(res => {
 						console.log(res);
 						if (res.data.data.updateRow === 1) {
-							this.initPostersConfig();
-							this.isModalShareCanvas = true
+							// this.initPostersConfig();
+							// this.isModalShareCanvas = true
 							
 							this.isModalAnswerError = false
 							this.isModalAnswerTimeout = false
 							this.isModalEnd = false
 							this.isModalMsg = false
-							// uni.reLaunch({
-							// 	url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
-							// }
+							uni.reLaunch({
+								url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
+							}
 
-							// )
+							)
 						}else{
 							// alert('请填写信息')
 						}
@@ -454,32 +466,14 @@
 
 				if (option === this.question.correct) {
 					this.total_score++;
+					this.hasClickOption = false
 
 					setTimeout(
-						function(a, b, c) {
+						function(a, b, c,uid) {
 							// console.log(a)
 							// console.log(b)
 							uni.redirectTo({
-								url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c,
-								success: res => {
-									console.log(res);
-								},
-								fail: () => {},
-								complete: () => {}
-							});
-						},
-						1000,
-						this.q_key,
-						this.total_score,
-						this.total_question
-					);
-				} else {
-					setTimeout(
-						function(a, b, c, d) {
-							// console.log(a)
-							// console.log(b)
-							uni.redirectTo({
-								url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c + '&w=1',
+								url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid,
 								success: res => {
 									console.log(res);
 								},
@@ -491,7 +485,28 @@
 						this.q_key,
 						this.total_score,
 						this.total_question,
-						1
+						this.uid
+					);
+				} else {
+					this.hasClickOption = false
+					setTimeout(
+						function(a, b, c, uid) {
+							// console.log(a)
+							// console.log(b)
+							uni.redirectTo({
+								url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid + '&w=1',
+								success: res => {
+									console.log(res);
+								},
+								fail: () => {},
+								complete: () => {}
+							});
+						},
+						1000,
+						this.q_key,
+						this.total_score,
+						this.total_question,
+						this.uid
 					);
 				}
 			},
@@ -837,8 +852,12 @@
 		width: 80%;
 		height: 50%;
 
-		top: 20%;
-		left: 10%;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		
 		position: fixed;
 		z-index: 100000000;
 	}
@@ -940,8 +959,12 @@
 		/* height: 50%; */
 		height: 756.47rpx;
 
-		top: 20%;
-		left: 10%;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		
 		position: fixed;
 		z-index: 100000000;
 	}
@@ -1025,8 +1048,12 @@
 		width: 80%;
 		height: 564.7rpx;
 
-		top: 20%;
-		left: 10%;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		
 		position: fixed;
 		z-index: 100000000;
 	}
@@ -1123,8 +1150,11 @@
 		/* height: 50%; */
 		width: 589.41rpx;
 		height: 623.52rpx;
-		top: 20%;
-		left: 10%;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
 		position: fixed;
 		z-index: 100000000;
 	}
@@ -1180,6 +1210,7 @@
 		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
 		background-size: 100% 100%;
 		text-align: center;
+		cursor: pointer;
 	}
 
 	.modal-a-button span {
@@ -1219,9 +1250,13 @@
 		background-size: 100% 100%;
 		width: 80%;
 		height: 50%;
-
-		top: 20%;
-		left: 10%;
+		/* marign:auto 0; */
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		
 		position: fixed;
 		z-index: 100000000;
 	}
@@ -1277,6 +1312,7 @@
 		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
 		background-size: 100% 100%;
 		text-align: center;
+		cursor: pointer;
 	}
 
 	.modal-t-button span {

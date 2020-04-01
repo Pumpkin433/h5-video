@@ -52,6 +52,7 @@
 			return {
 				rankList:[],
 				uid:null,
+				ns_device_id:null,
 				userInfo:{},
 				user_rank:0
 			
@@ -59,9 +60,11 @@
 				
 			}
 		},
-		onLoad() {
-			this.uid = uni.getStorageSync('uid')
-			console.log(this.uid)
+		onLoad(option) {
+			this.$uid = option.uid
+			this.uid = option.uid
+			// this.ns_device_id = uni.getStorageSync('ns_device_id')
+			// console.log(this.uid)
 			this.get_user_info(this.uid)
 			this.getRankList()
 			
@@ -85,12 +88,12 @@
 			turn_back(){
 				// uni.navigateBack()
 				uni.reLaunch({
-					url:'/pages/sports/sports'
+					url:'/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 				})
 			},
 			turn_rule(){
 				uni.navigateTo({
-					url:'rule'
+					url:'/pages/sports/rule?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 				})
 			},
 			getRankList(){

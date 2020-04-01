@@ -8,13 +8,16 @@
 		<view class="index-d">
 			<div class="index-d-bg" @tap="turn_question"><span>开始挑战</span></div>
 		</view>
+		
+		
 
 		<!-- 信息提示 弹框 -->
 		<view class="msg-modal" v-show="msg_modal_share === true" @click="msg_modal_close"></view>
 		<view class="msg-modal-bg" v-show="msg_modal_share === true">
 			<view class="modal-msg-t">
-				<h3>您今天答题的机会 <br>已经用完了</h3>
-				<h5>分享可以免费获取一次答题机会</h5>
+				<!-- <h3>您今天答题的机会 <br>已经用完了</h3> -->
+				<h3>请到个人中心 <br>进行登录答题</h3>
+				<!-- <h5>分享可以免费获取一次答题机会</h5> -->
 			
 			</view>
 			<view class="modal-msg-d">
@@ -76,7 +79,10 @@ export default {
 		};
 	},
 	onLoad(option) {
-		// console.log(option)
+		
+		
+		this.$uid = option.uid
+	
 		// let uid = util.randomWord(false, 18);
 		// this.uid = uid;
 		// // this.nickname = util.randomWord(false,5)
@@ -87,17 +93,20 @@ export default {
 
 		// //用户uid ns_device_id 录入
 		// this.add_user(this.uid,this.nickname, this.ns_device_id);
-
-		if (!option.uid && !option.ns_device_id) {
-			return alert('打开全民体育,参与问答活动');
-		} else {
-			uni.setStorageSync('uid', option.uid);
-			uni.setStorageSync('ns_device_id', option.ns_device_id);
+		if(option.uid == '' || option.uid== null || !option.uid){
+			// alert('请到个人中心登录')
+			this.msg_modal_share = true
+		}else{
+			
+			// uni.setStorageSync('uid', option.uid);
+			// uni.setStorageSync('ns_device_id', option.ns_device_id);
 			this.uid = option.uid;
 			this.ns_device_id = option.ns_device_id;
 			//用户uid ns_device_id 录入
 			this.add_user(this.uid, this.nickname,this.ns_device_id);
 		}
+
+	
 	},
 	methods: {
 		
@@ -109,12 +118,12 @@ export default {
 		},
 		turn_rank() {
 			uni.navigateTo({
-				url: '/pages/sports/rank'
+				url:'/pages/sports/rank?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 			});
 		},
 		turn_rule() {
 			uni.navigateTo({
-				url: '/pages/sports/rule'
+				url: '/pages/sports/rule?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 			});
 		},
 		add_user(uid,nickname, ns_device_id) {
@@ -161,7 +170,7 @@ export default {
 						} else {
 							this.update_answer_chance_dec(this.uid, -1);
 							uni.navigateTo({
-								url: '/pages/sports/question'
+								url: '/pages/sports/question?uid='+this.uid
 							});
 						}
 					})
