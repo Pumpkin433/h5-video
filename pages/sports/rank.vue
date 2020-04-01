@@ -26,15 +26,15 @@
 					</ul>
 				</view>
 				
-				<view class="rank-bg-2-c" v-show="this.user_rank > 50 || this.user_rank === 0">
-					<span>我的积分</span>
-					<span>0积分</span>
-					<span>当前排名100+</span> 
-				</view>
-				<view class="rank-bg-2-c" v-show="this.user_rank < 50 & this.user_rank!=0">
+				<view class="rank-bg-2-c" v-show="this.user_rank > 100 || this.user_rank === 0">
 					<span>我的积分</span>
 					<span>{{userInfo.score}}积分</span>
-					<span>排名未进前{{userInfo.rank}}</span> 
+					<span>当前排名100+</span> 
+				</view>
+				<view class="rank-bg-2-c" v-show="this.user_rank < 100 & this.user_rank!=0">
+					<span>我的积分</span>
+					<span>{{userInfo.score}}积分</span>
+					<span>当前排名:{{userInfo.rank}}</span> 
 				</view>
 			</view>
 		
@@ -61,7 +61,7 @@
 			}
 		},
 		onLoad(option) {
-			this.$uid = option.uid
+			// this.$uid = option.uid
 			this.uid = option.uid
 			// this.ns_device_id = uni.getStorageSync('ns_device_id')
 			// console.log(this.uid)
@@ -74,8 +74,9 @@
 				let data = {
 					uid:uid
 				}
-				http.post(base.sq+'/api/v1.h5.Questions/getUserInfo',data).then((res) => {
+				http.post(base.sq + '/api/v1.h5.Questions/getUserInfo',data).then((res) => {
 				    console.log(res)
+					this.score = res.data.data.info.score
 					this.userInfo =  res.data.data.info
 					this.user_rank = res.data.data.info.rank
 				
@@ -98,7 +99,7 @@
 			},
 			getRankList(){
 				// get 请求
-				http.get(base.sq+'/api/v1.h5.Questions/getRankList', [{}]).then((res) => {
+				http.get(base.sq + '/api/v1.h5.Questions/getRankList', [{}]).then((res) => {
 				    console.log(res)
 					this.rankList = res.data.data.list
 					
