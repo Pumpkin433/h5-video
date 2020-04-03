@@ -89,7 +89,7 @@
 						<div class="modal-end-d-button" @click="answer_question_again"><span>再来一次</span></div>
 						<!-- <div class="modal-end-d-button" @click="score_share_button"><span>再来一次</span></div> -->
 
-						<!-- <view class="modal-end-d-d">分享可以获得额外的答题机会</view> -->
+						<view class="modal-end-d-d">下载全民体育,参加更多活动</view>
 					</view>
 				</view>
 				<!-- 问题答完 弹框结束 -->
@@ -134,7 +134,7 @@
 					</view>
 					<view class="modal-msg-mobile">
 						<span>手机号&nbsp;&nbsp;&nbsp;&nbsp;</span>
-						<input type="text" v-model="mobile" />
+						<input type="number" v-model="mobile" />
 					</view>
 					<view class="modal-msg-button" @click="user_msg_add"><span>确认信息</span></view>
 				</view>
@@ -158,7 +158,7 @@
 
 					<view class="modal-a-button" @click="answer_question_again"><span>再来一次</span></view>
 					<!-- <view class="modal-a-button" @click="score_share_button"><span>再来一次</span></view> -->
-					<!-- <view class="modal-a-b-t"><span>分享可以获得额外的答题机会</span></view> -->
+					<view class="modal-a-b-t"><span>下载全民体育,参加更多活动</span></view>
 				</view>
 				<!-- 回答错误弹出框结束 -->
 
@@ -179,7 +179,7 @@
 					</h5>
 					<view class="modal-t-button" @click="answer_question_again"><span>再来一次</span></view>
 					<!-- <view class="modal-t-button" @click="score_share_button"><span>分享战绩</span></view> -->
-					<!-- <view class="modal-t-b-t"><span>分享可以获得额外的答题机会</span></view> -->
+					<view class="modal-t-b-t"><span>下载全民体育,参加更多活动</span></view>
 				</view>
 				<!-- 回答超时弹出框结束 -->
 
@@ -252,44 +252,58 @@ export default {
 	onLoad(option) {
 		// this.$uid = option.uid
 		// this.uid = uni.getStorageSync('uid');
+		this.questionList = this.$question.questionList
+		console.log(this.$question.questionList)
+		// this.$uid = option.uid
+		// this.uid = uni.getStorageSync('uid');
 		this.uid = option.uid;
-		console.log(this.uid)
-		//我的项目中只赋值一次, 所以直接设为true了
-		// this.reset = !this.reset;
-		//如果还要设置天, 时, 秒, 在上面声明绑定后, 在这里赋值即可
-		// this.second = 15;
-
-		//下一题
-		if (option.k !== undefined && option.k !== 0) {
-			this.q_key = option.k;
-			this.getQuestionList();
-		} else {
-			this.k = 0;
-			this.getQuestionList();
-		}
-
+		
 		// 总积分
 		if (option.s != undefined) {
 			this.total_score = option.s;
 		}
-
-		// 问题是否答完
-		if (option.t !== undefined && option.q_key !== undefined) {
+		
+		//下一题
+		if (option.k !== undefined && option.k !== 0) {
+			this.q_key = option.k;
+			
+			this.total_question = this.questionList.length;
+			this.question = this.questionList[this.q_key];
+			
 			// 问题回答完毕
 			if (option.k === option.t) {
+				
+				this.reset = !this.reset;
+				this.second = 0;
 				this.get_user_rank(this.uid, this.total_score);
 				this.isModalEnd = true;
-				this.reset = !this.reset;
+				this.isModalAnswerError = false
+				this.isModalAnswerTimeout = false
+				this.question = {
+					q_name: '1',
+					option_a: '1',
+					option_b: '1',
+					option_c: '1',
+					option_d: '1',
+					correct: '1'
+				};
 			}
+		} else {
+			this.q_key = 0;
+			this.total_question = this.questionList.length;
+			this.question = this.questionList[this.q_key];
+			this.questionList = this.$question.questionList
 		}
-
 		// dacuo
 		// console.log(option)
 		if (option.w !== undefined && option.w == 1) {
-			this.get_user_rank(this.uid, option.s);
-			this.isModalAnswerError = true;
+			
 			this.reset = !this.reset;
 			this.second = 0;
+			this.get_user_rank(this.uid, option.s);
+			
+			this.isModalAnswerError = true;
+			this.isModalEnd = false;
 			this.isModalAnswerTimeout = false;
 		}
 
@@ -522,6 +536,13 @@ export default {
 			};
 			http.post(base.sq + '/api/v1.h5.Questions/updateUserInfo', data)
 				.then(res => {
+					
+					if(this.name == '' || this.name == null){
+						return alert('请填写名字')
+					}
+					if(this.mobile == '' || this.mobile == null){
+						return alert('请填写手机号')
+					}
 					console.log(res);
 					this.isModalAnswerError = false
 					this.isModalAnswerTimeout = false
@@ -897,14 +918,16 @@ export default {
 
 .question-right {
 	border: 2rpx solid rgba(26, 160, 23, 1) !important;
-	background: #1aa017 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-right-icon.png) no-repeat right;
+	background: #1aa017 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-right-icon.png) no-repeat ;
 	background-size: 51.76rpx 40rpx;
+	background-position: right 23.52rpx top 23.52rpx;
 }
 
 .question-wrong {
 	border: 2rpx solid #ff7600 !important;
-	background: #ff7600 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-wrong-icon.png) no-repeat right;
+	background: #ff7600 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-wrong-icon.png) no-repeat ;
 	background-size: 35.29rpx 40rpx;
+	background-position: right 23.52rpx top 23.52rpx;
 }
 
 .modal-end {

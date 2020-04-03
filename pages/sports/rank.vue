@@ -227,12 +227,13 @@
 	}
 	
 	.r-b-1-d ul li:first-child{
-		background:rgba(227,149,49,1);
+		background:rgba(227,149,49,1) url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-one.png) no-repeat;
+		background-size: 32rpx  32rpx ;
+		background-position: left 38rpx top 0;
 		border-radius:21rpx;
 		font-size:24rpx;
 		font-family:Lantinghei SC;
 		font-weight:600;
-		
 		line-height:55rpx;
 	}
 	.r-b-1-d ul li:first-child span{
@@ -245,7 +246,9 @@
 		color:rgba(51,51,51,1) !important;
 	}
 	.r-b-1-d ul li:nth-child(2){
-		background:rgba(221,210,197,1);
+		background:rgba(221,210,197,1) url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-two.png) no-repeat;
+		background-size:  32rpx  32rpx ;
+		background-position: left 38rpx top 0;
 		border-radius:21px;
 		font-size:24rpx;
 		font-family:Lantinghei SC;
@@ -254,7 +257,10 @@
 		line-height:55rpx;
 	}
 	.r-b-1-d ul li:nth-child(3){
-		background:#836A49;
+	
+		background:#836A49 url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-third.png) no-repeat;
+		background-size:  32rpx  32rpx ;
+		background-position: left 38rpx top 0;
 		border-radius:21px;
 		font-size:24rpx;
 		font-family:Lantinghei SC;
@@ -272,6 +278,7 @@
 	}
 	.r-b-1-d ul li span:nth-child(2){
 		/* width: 28rpx; */
+		text-indent: 16.47rpx;
 		width: 60%;
 		display: block;
 		float: left;

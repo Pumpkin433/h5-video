@@ -80,33 +80,57 @@ export default {
 	},
 	onLoad(option) {
 		
-		console.log(option.uid)
-		// this.$uid = option.uid
-	
-		// let uid = util.randomWord(false, 18);
-		// this.uid = uid;
-		// // this.nickname = util.randomWord(false,5)
-		// this.ns_device_id = 'test';
-		// uni.setStorageSync('uid', this.uid);
-
-		// uni.setStorageSync('ns_device_id', this.ns_device_id);
-
-		// //用户uid ns_device_id 录入
-		// this.add_user(this.uid,this.nickname, this.ns_device_id);
+		// console.log(option.from)
+		let storageUid = uni.getStorageSync('uid')
+		let storageDeviceId =  uni.getStorageSync('ns_device_id')
 		
-		if(option.uid == '' || option.uid == 'null' || !option.uid){
-			this.msg_modal_app_share = true
+		
+		//如果来源分享
+		if(option.from){
+			
+			this.uid = util.randomWord(false,18)
+			if(storageUid != null && storageUid != '' && storageUid){
+				this.uid = storageUid
+			}
+			
+			this.ns_device_id =  'web_share'
+			
+			uni.setStorageSync('uid', this.uid);
+			uni.setStorageSync('ns_device_id', this.ns_device_id);
+			this.add_user(this.uid, this.nickname,this.ns_device_id);
+			
 		}else{
 			
-			// uni.setStorageSync('uid', option.uid);
-			// uni.setStorageSync('ns_device_id', option.ns_device_id);
-			this.uid = option.uid;
-			this.ns_device_id = option.ns_device_id;
-			//用户uid ns_device_id 录入
-			this.add_user(this.uid, this.nickname,this.ns_device_id);
+			if(option.uid == '' || option.uid == 'null' || !option.uid ){
+				
+				// this.msg_modal_app_share = true
+				
+				this.ns_device_id =  'web'
+				this.uid = util.randomWord(false,18)
+				
+				if(storageUid != null && storageUid != '' && storageUid){
+					this.uid = storageUid
+				}
+				
+				uni.setStorageSync('uid', this.uid);
+				uni.setStorageSync('ns_device_id', this.ns_device_id);
+				this.add_user(this.uid, this.nickname,this.ns_device_id);
+				
+			}else{
+				
+				// uni.setStorageSync('uid', option.uid);
+				// uni.setStorageSync('ns_device_id', option.ns_device_id);
+				this.uid = option.uid;
+				this.ns_device_id = option.ns_device_id;
+				uni.setStorageSync('uid', this.uid);
+				uni.setStorageSync('ns_device_id', this.ns_device_id);
+				//用户uid ns_device_id 录入
+				this.add_user(this.uid, this.nickname,this.ns_device_id);
+				
+			}
+			
 		}
 
-	
 	},
 	methods: {
 		
@@ -157,29 +181,26 @@ export default {
 			if(!this.uid){
 				this.msg_modal_app_share = true
 			}else{
-				uni.navigateTo({
-					url: '/pages/sports/question?uid='+this.uid
-				});
-				
-				// let data = {
-				// 	uid: this.uid,
-				// 	timestamp: this.now_time
-				// };
-				// http.post('/api/v1.h5.Questions/getUserAnswerChance', data)
-				// 	.then(res => {
-				// 		console.log(res);
-				// 		let answer_chance = res.data.data.chance;
-				// 		if (answer_chance == 0) {
-				// 			this.msg_modal_share = true;
-				// 		} else {
-				// 			this.update_answer_chance_dec(this.uid, -1);
-				// 			uni.navigateTo({
-				// 				url: '/pages/sports/question?uid='+this.uid
-				// 			});
-				// 		}
-				// 	})
-				// 	.catch(error => {})
-				// 	.finally(() => {});
+				// get 请求
+					http.get(base.sq + '/api/v1.h5.Questions/list', [{}])
+						.then(res => {
+							// console.log(res)
+							// this.questionList = res.data.data.list;
+							
+							let that = this
+							that.$question.setQusetionList(res.data.data.list)
+							
+							uni.navigateTo({
+								url: '/pages/sports/question?uid='+this.uid
+							});
+							// this.total_question = res.data.data.list.length;
+							// this.question = res.data.data.list[this.q_key];
+							
+							// console.log(this.question)
+						})
+						.catch(error => {})
+						.finally(() => {});
+
 			}
 		}
 	}
