@@ -34,7 +34,7 @@
 				<view class="rank-bg-2-c" v-show="this.user_rank < 100 & this.user_rank!=0">
 					<span>我的积分</span>
 					<span>{{userInfo.score}}积分</span>
-					<span>当前排名:{{userInfo.rank}}</span> 
+					<span>当前排名:{{user_rank}}</span> 
 				</view>
 			</view>
 		
@@ -78,7 +78,10 @@
 				    console.log(res)
 					this.score = res.data.data.info.score
 					this.userInfo =  res.data.data.info
-					this.user_rank = res.data.data.info.rank
+					
+					// this.user_rank = res.data.data.info.rank
+					//实时获取用户积分
+					this.get_user_rank(uid,0)
 				
 				}).catch(error => {
 				    
@@ -109,7 +112,20 @@
 				}).finally(() => {
 				    
 				})
-			}
+			},
+			get_user_rank(uid, total_score) {
+				let data = {
+					uid: uid,
+					score: total_score
+				};
+				http.post(base.sq + '/api/v1.h5.Questions/getUserRank', data)
+					.then(res => {
+						// console.log(res)
+						this.user_rank = res.data.data.rank;
+					})
+					.catch(error => {})
+					.finally(() => {});
+			},
 			
 		},
 		
