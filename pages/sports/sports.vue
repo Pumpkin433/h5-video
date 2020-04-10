@@ -29,7 +29,7 @@
 					</p>
 				</view>
 				<view class="modal-msg-d-r">
-					<img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-share-qrcode.png" alt="" />
+					<img src="http://aloss.hotforest.cn/h5-basketball/m-share-qrcode.png" alt="" />
 					</view>
 			</view>
 		</view>
@@ -52,7 +52,7 @@
 					</p>
 				</view>
 				<view class="modal-msg-d-r">
-					<img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-share-qrcode.png" alt="" />
+					<img src="http://aloss.hotforest.cn/h5-basketball/m-share-qrcode.png" alt="" />
 					</view>
 			</view>
 		</view>
@@ -141,12 +141,12 @@ export default {
 			this.msg_modal_share = false;
 		},
 		turn_rank() {
-			uni.navigateTo({
+			uni.reLaunch({
 				url:'/pages/sports/rank?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 			});
 		},
 		turn_rule() {
-			uni.navigateTo({
+			uni.reLaunch({
 				url: '/pages/sports/rule?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
 			});
 		},
@@ -190,8 +190,13 @@ export default {
 							let that = this
 							that.$question.setQusetionList(res.data.data.list)
 							
-							uni.navigateTo({
-								url: '/pages/sports/question?uid='+this.uid
+							uni.reLaunch({
+								url: '/pages/sports/question?uid='+this.uid,
+								success(){
+								let page = getCurrentPages().pop(); //跳转页面成功之后
+								if (!page) return;
+								page.onLoad(); //如果页面存在，则重新刷新页面
+								}
 							});
 							// this.total_question = res.data.data.list.length;
 							// this.question = res.data.data.list[this.q_key];
@@ -213,7 +218,7 @@ a {
 }
 
 .msg-modal-bg {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-end-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/question-end-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 756.47rpx;
@@ -286,7 +291,7 @@ a {
 }
 
 .index-bg {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
 	width: 100%;
 	height: 100%;
 	background-size: 100% 100%;
@@ -303,7 +308,7 @@ a {
 	float: left;
 	width: 141rpx;
 	height: 77rpx;
-	background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-l.png') no-repeat;
+	background: url('http://aloss.hotforest.cn/h5-basketball/index-t-l.png') no-repeat;
 	background-size: 110% 100%;
 	background-position: right;
 	line-height: 77rpx;
@@ -324,7 +329,7 @@ a {
 	width: 141rpx;
 	height: 77rpx;
 	line-height: 77rpx;
-	background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-r.png') no-repeat;
+	background: url('http://aloss.hotforest.cn/h5-basketball/index-t-r.png') no-repeat;
 	background-size: 110% 100%;
 	background-position: left;
 	text-align: right;
@@ -349,7 +354,7 @@ a {
 .index-d-bg {
 	width: 471rpx;
 	height: 115rpx;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-d.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/index-d.png) no-repeat;
 	text-align: center;
 	margin: 0 auto;
 

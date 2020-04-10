@@ -135,7 +135,7 @@
 
 <style>
 	.rank-bg {
-		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-bg.png) no-repeat;
+		background: url(http://aloss.hotforest.cn/h5-basketball/rank-bg.png) no-repeat;
 		width: 100%;
 		height: 100%;
 		background-size: 100% 100%;
@@ -151,7 +151,7 @@
 		float: left;
 		width: 141rpx;
 		height: 77rpx;
-		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-l.png') no-repeat left;
+		background: url('http://aloss.hotforest.cn/h5-basketball/index-t-l.png') no-repeat left;
 		background-size: 110% 100%;
 		background-position: right;
 		line-height: 77rpx;
@@ -173,7 +173,7 @@
 		width: 141rpx;
 		height: 77rpx;
 		line-height: 77rpx;
-		background: url('http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/index-t-r.png') no-repeat right;
+		background: url('http://aloss.hotforest.cn/h5-basketball/index-t-r.png') no-repeat right;
 		background-size: 110% 100%;
 		background-position: left;
 		text-align: right;
@@ -189,7 +189,7 @@
 	}
 
 	.rank-bg-1 {
-		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-bg-1-2.png) no-repeat;
+		background: url(http://aloss.hotforest.cn/h5-basketball/rank-bg-1-2.png) no-repeat;
 		background-size: 100% 110%;
 		background-position:bottom;
 		height: 80%;
@@ -201,7 +201,7 @@
 	}
 
 	.r-b-1-t {
-		background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/r-b-1-t.png) no-repeat;
+		background: url(http://aloss.hotforest.cn/h5-basketball/r-b-1-t.png) no-repeat;
 		background-size: 100% 100%;
 		width: 162rpx;
 		height: 50rpx;
@@ -314,7 +314,7 @@
 /* 	.rank-bg-2 {
 		width: 100%;
 		height: 200rpx;
-		background:url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rank-bg-2.png) no-repeat;
+		background:url(http://aloss.hotforest.cn/h5-basketball/rank-bg-2.png) no-repeat;
 		background-size: 90% 100%;
 		background-position: center;
 		position: absolute;

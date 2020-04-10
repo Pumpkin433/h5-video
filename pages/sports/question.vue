@@ -83,7 +83,7 @@
 								<span v-show="user_rank > 100 || user_rank === 0">100+</span>
 							</h5>
 						</view>
-						<view class="modal-end-r"><!-- <img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/jiangbei.png" alt=""> --></view>
+						<view class="modal-end-r"><!-- <img src="http://aloss.hotforest.cn/h5-basketball/jiangbei.png" alt=""> --></view>
 					</view>
 					<view class="modal-end-d">
 						<div class="modal-end-d-button" @click="answer_question_again"><span>再来一次</span></div>
@@ -119,7 +119,7 @@
 								下载全民体育APP 参与活动
 							</p>
 						</view>
-						<view class="modal-share-d-r"><img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-share-qrcode.png" alt="" /></view>
+						<view class="modal-share-d-r"><img src="http://aloss.hotforest.cn/h5-basketball/m-share-qrcode.png" alt="" /></view>
 					</view>
 				</view>
 				<!-- 分享弹框结束 -->
@@ -143,7 +143,7 @@
 				<!-- 回答错误弹出框 -->
 				<view class="modal-answer-error" v-show="isModalAnswerError === true" @click="answer_error_modal"></view>
 				<view class="modal-answer-error-bg" v-show="isModalAnswerError === true">
-					<view class="modal-a-circle"><img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-circle.png" alt="" /></view>
+					<view class="modal-a-circle"><img src="http://aloss.hotforest.cn/h5-basketball/a-error-circle.png" alt="" /></view>
 					<h4>很抱歉您的回答错误</h4>
 					<h3>
 						获得了
@@ -165,7 +165,7 @@
 				<!-- 回答超时弹出框 -->
 				<view class="modal-answer-timeout" v-show="isModalAnswerTimeout === true" @click="answer_timeout_modal"></view>
 				<view class="modal-answer-timeout-bg" v-show="isModalAnswerTimeout === true">
-					<view class="modal-t-circle"><img src="http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-timeout-circle.png" alt="" /></view>
+					<view class="modal-t-circle"><img src="http://aloss.hotforest.cn/h5-basketball/a-timeout-circle.png" alt="" /></view>
 					<h4>很抱歉您已经超时</h4>
 					<h3>
 						获得了
@@ -481,15 +481,11 @@ export default {
 						this.isModalAnswerError = false;
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
-						
-
 					}
 					
 					if(status == 1){
 						this.editUserScore(this.uid,this.total_score,this.user_rank)
 					}
-
-			
 
 				})
 				.catch(error => {})
@@ -838,7 +834,7 @@ export default {
 .question-bg {
 	width: 100%;
 	height: 100%;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rule-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/rule-bg.png) no-repeat;
 	background-size: 100% 100%;
 	background-position: center;
 }
@@ -851,7 +847,7 @@ export default {
 .question-bg-2 {
 	width: 100%;
 	height: 80%;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/rule-bg-1.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/rule-bg-1.png) no-repeat;
 	background-size: 100%;
 	background-position: top;
 	/* background-position: center; */
@@ -918,14 +914,14 @@ export default {
 
 .question-right {
 	border: 2rpx solid rgba(26, 160, 23, 1) !important;
-	background: #1aa017 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-right-icon.png) no-repeat ;
+	background: #1aa017 url(http://aloss.hotforest.cn/h5-basketball/question-right-icon.png) no-repeat ;
 	background-size: 51.76rpx 40rpx;
 	background-position: right 23.52rpx top 23.52rpx;
 }
 
 .question-wrong {
 	border: 2rpx solid #ff7600 !important;
-	background: #ff7600 url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-wrong-icon.png) no-repeat ;
+	background: #ff7600 url(http://aloss.hotforest.cn/h5-basketball/question-wrong-icon.png) no-repeat ;
 	background-size: 35.29rpx 40rpx;
 	background-position: right 23.52rpx top 23.52rpx;
 }
@@ -943,7 +939,7 @@ export default {
 }
 
 .modal-end-bg {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/q-end-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/q-end-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 50%;
@@ -1013,7 +1009,7 @@ export default {
 	height: 88.23rpx;
 	margin: 0 auto;
 	text-align: center;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-button.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/question-button.png) no-repeat;
 	background-size: 100% 100%;
 	line-height: 88.23rpx;
 	cursor: pointer;
@@ -1049,7 +1045,7 @@ export default {
 }
 
 .modal-share-bg {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-share-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/m-share-bg.png) no-repeat;
 	background-size: 120% 100%;
 	width: 80%;
 	/* height: 50%; */
@@ -1139,7 +1135,7 @@ export default {
 }
 
 .modal-msg-bg {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/m-msg-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/m-msg-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 564.7rpx;
@@ -1215,7 +1211,7 @@ export default {
 	margin: 0 auto;
 	margin-top: 117.64rpx;
 	text-align: center;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/question-button.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/question-button.png) no-repeat;
 	background-size: 100% 100%;
 	cursor: pointer;
 }
@@ -1240,7 +1236,7 @@ export default {
 }
 
 .modal-answer-error-bg {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/a-error-bg.png) no-repeat;
 	background-size: 100% 100%;
 	/* width: 80%; */
 	/* height: 50%; */
@@ -1303,7 +1299,7 @@ export default {
 	height: 84.7rpx;
 	margin: 0 auto;
 	margin-top: 38.82rpx;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/a-error-button.png) no-repeat;
 	background-size: 100% 100%;
 	text-align: center;
 	cursor: pointer;
@@ -1342,7 +1338,7 @@ export default {
 }
 
 .modal-answer-timeout-bg {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/a-error-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 80%;
 	height: 50%;
@@ -1405,7 +1401,7 @@ export default {
 	height: 84.7rpx;
 	margin: 0 auto;
 	margin-top: 47.05rpx;
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/a-error-button.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/a-error-button.png) no-repeat;
 	background-size: 100% 100%;
 	text-align: center;
 	cursor: pointer;
@@ -1443,7 +1439,7 @@ export default {
 }
 
 /deep/ .uni-countdown__number:nth-child(5) {
-	background: url(http://h5-activity.oss-cn-shanghai.aliyuncs.com/h5-basketball/time-2.png) no-repeat left;
+	background: url(http://aloss.hotforest.cn/h5-basketball/time-2.png) no-repeat left;
 	background-size: 110% 120%;
 	margin: 0 auto;
 	width: 267.05rpx;
