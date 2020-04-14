@@ -257,6 +257,8 @@ export default {
 		this.uid = option.uid;
 		this.ns_device_id = option.ns_device_id
 		
+		console.log(this.ns_device_id)
+		
 		// 总积分
 		if (option.s != undefined) {
 			this.total_score = option.s;
@@ -306,6 +308,7 @@ export default {
 			this.isModalAnswerTimeout = false;
 		}
 
+		this.ns_device_id = option.ns_device_id
 		// this.initPostersConfig();
 	},
 	methods: {
@@ -566,7 +569,7 @@ export default {
 						this.isModalMsg = false
 						
 						uni.reLaunch({
-							url:'/pages/sports/sports?uid='+this.uid,
+							url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id,
 							success(){
 								
 							}
@@ -590,9 +593,9 @@ export default {
 				this.hasClickOption = false
 
 				setTimeout(
-					function(a, b, c,uid) {
+					function(a, b, c,uid,ns) {
 						uni.redirectTo({
-							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid,
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid+'&ns_device_id='+ns,
 							success(){},
 							fail: () => {},
 							complete: () => {}
@@ -602,16 +605,17 @@ export default {
 					this.q_key,
 					this.total_score,
 					this.total_question,
-					this.uid
+					this.uid,
+					this.ns_device_id
 				);
 			} else {
 				this.hasClickOption = false
 				setTimeout(
-					function(a, b, c, uid) {
+					function(a, b, c, uid,ns) {
 						// console.log(a)
 						// console.log(b)
 						uni.redirectTo({
-							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid + '&w=1',
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid + '&w=1'+'&ns_device_id='+ns,
 							success(){
 							
 							},
@@ -623,7 +627,8 @@ export default {
 					this.q_key,
 					this.total_score,
 					this.total_question,
-					this.uid
+					this.uid,
+					this.ns_device_id
 				);
 			}
 		},

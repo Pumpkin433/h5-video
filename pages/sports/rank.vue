@@ -55,9 +55,6 @@
 				ns_device_id:null,
 				userInfo:{},
 				user_rank:0
-			
-				
-				
 			}
 		},
 		onLoad(option) {
