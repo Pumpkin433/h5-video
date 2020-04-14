@@ -63,6 +63,7 @@
 		onLoad(option) {
 			// this.$uid = option.uid
 			this.uid = option.uid
+			this.ns_device_id = option.ns_device_id
 			// this.ns_device_id = uni.getStorageSync('ns_device_id')
 			// console.log(this.uid)
 			this.get_user_info(this.uid)
@@ -78,11 +79,9 @@
 				    console.log(res)
 					this.score = res.data.data.info.score
 					this.userInfo =  res.data.data.info
-					
-					// this.user_rank = res.data.data.info.rank
 					//实时获取用户积分
 					this.get_user_rank(uid,0)
-				
+									
 				}).catch(error => {
 				    
 				}).finally(() => {
@@ -92,12 +91,18 @@
 			turn_back(){
 				// uni.navigateBack()
 				uni.reLaunch({
-					url:'/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
+					url:'/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
+					success(){
+				
+					}
 				})
 			},
 			turn_rule(){
 				uni.navigateTo({
-					url:'/pages/sports/rule?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
+					url:'/pages/sports/rule?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
+					success(){
+					
+					}
 				})
 			},
 			getRankList(){
@@ -135,7 +140,7 @@
 
 <style>
 	.rank-bg {
-		background: url(http://aloss.hotforest.cn/h5-basketball/rank-bg.png) no-repeat;
+		background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
 		width: 100%;
 		height: 100%;
 		background-size: 100% 100%;

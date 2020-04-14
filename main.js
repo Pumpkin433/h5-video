@@ -7,7 +7,6 @@ import uLink from '@/components/uLink.vue'
 import store from './store'
 import question from '@/common/question.js'
 
-
 Vue.config.productionTip = false
 
 Vue.prototype.$store = store

@@ -17,6 +17,21 @@
 			}
 		},
 		{
+			"path":"pages/sports/share",
+			"style":{
+				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
+				// "navigationStyle":"custom",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+								"type": "share"
+							}
+						]
+					}
+				}
+			}
+		},
+		{
 			"path":"pages/sports/rank",
 			"style":{
 				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
@@ -61,6 +76,7 @@
 				}
 			}
 		},
+		
 		{
 			"path": "pages/tabBar/component/component",
 			"style": {

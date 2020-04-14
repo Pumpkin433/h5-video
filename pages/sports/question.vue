@@ -250,13 +250,12 @@ export default {
 		};
 	},
 	onLoad(option) {
-		// this.$uid = option.uid
-		// this.uid = uni.getStorageSync('uid');
 		this.questionList = this.$question.questionList
 		console.log(this.$question.questionList)
 		// this.$uid = option.uid
 		// this.uid = uni.getStorageSync('uid');
 		this.uid = option.uid;
+		this.ns_device_id = option.ns_device_id
 		
 		// 总积分
 		if (option.s != undefined) {
@@ -287,6 +286,7 @@ export default {
 					option_d: '1',
 					correct: '1'
 				};
+			
 			}
 		} else {
 			this.q_key = 0;
@@ -301,7 +301,6 @@ export default {
 			this.reset = !this.reset;
 			this.second = 0;
 			this.get_user_rank(this.uid, option.s);
-			
 			this.isModalAnswerError = true;
 			this.isModalEnd = false;
 			this.isModalAnswerTimeout = false;
@@ -481,6 +480,7 @@ export default {
 						this.isModalAnswerError = false;
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
+
 					}
 					
 					if(status == 1){
@@ -498,10 +498,10 @@ export default {
 					score:total_score,
 					rank:user_rank
 				}
-				console.log(data)
+				
 				http.post(base.sq + '/api/v1.h5.Questions/changeUserScore', data)
 					.then(res => {
-						console.log(res);
+					
 						// uni.reLaunch({
 						// 	url:'/pages/sports/sports?uid='+this.uid
 						// })
@@ -509,7 +509,10 @@ export default {
 						if (res.data.data.updateRow == 1) {
 
 							uni.reLaunch({
-								url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
+								url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id,
+								success(){
+								
+								}
 							}
 
 							)
@@ -523,6 +526,28 @@ export default {
 
 		},
 		user_msg_add() {
+			
+			
+			if(this.name == '' || this.name == null){
+				alert('请填写名字')
+				return false
+			}
+			if(this.mobile == '' || this.mobile == null){
+				alert('请填写手机号')
+				return false
+			}
+			if(this.name.length > 10){
+				alert('名字不要超过10个字')
+				return false
+			}
+			
+			if(this.mobile.length != 11){
+				alert('请填写正确的手机号')
+				return false;
+			}
+			
+			this.add_user(this.uid, this.name, this.ns_device_id)
+			
 			let data = {
 				uid: this.uid,
 				name: this.name,
@@ -530,34 +555,26 @@ export default {
 				score: this.total_score,
 				rank: this.user_rank
 			};
+			// console.log(data)
 			http.post(base.sq + '/api/v1.h5.Questions/updateUserInfo', data)
 				.then(res => {
 					
-					if(this.name == '' || this.name == null){
-						return alert('请填写名字')
-					}
-					if(this.mobile == '' || this.mobile == null){
-						return alert('请填写手机号')
-					}
-					console.log(res);
-					this.isModalAnswerError = false
-					this.isModalAnswerTimeout = false
-					this.isModalEnd = false
-					this.isModalMsg = false
-					uni.reLaunch({
-						url:'/pages/sports/sports?uid='+this.uid
+					if(res.data.errorCode == 0){
+						this.isModalAnswerError = false
+						this.isModalAnswerTimeout = false
+						this.isModalEnd = false
+						this.isModalMsg = false
+						
+						uni.reLaunch({
+							url:'/pages/sports/sports?uid='+this.uid,
+							success(){
+								
+							}
+						})
+					}else{
+						return alert(res.data.msg)
 					}
 					
-					)
-					// if (res.data.data.updateRow === 1) {
-					// 	// this.initPostersConfig();
-					// 	// this.isModalShareCanvas = true
-
-						
-					// }else{
-					// 	// alert('请填写信息')
-					// }
-
 				})
 				.catch(error => {})
 				.finally(() => {});
@@ -574,13 +591,9 @@ export default {
 
 				setTimeout(
 					function(a, b, c,uid) {
-						// console.log(a)
-						// console.log(b)
 						uni.redirectTo({
 							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid,
-							success: res => {
-								console.log(res);
-							},
+							success(){},
 							fail: () => {},
 							complete: () => {}
 						});
@@ -599,8 +612,8 @@ export default {
 						// console.log(b)
 						uni.redirectTo({
 							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid + '&w=1',
-							success: res => {
-								console.log(res);
+							success(){
+							
 							},
 							fail: () => {},
 							complete: () => {}
@@ -721,10 +734,7 @@ export default {
 				.finally(() => {});
 		},
 		msg_modal() {
-			// uni.reLaunch({
-			// 	url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id
-			// }
-			// )
+			
 		},
 		answer_error_modal() {
 			let data = {
@@ -747,12 +757,7 @@ export default {
 					}
 					if (status === 1) {
 						this.editUserScore(this.uid,this.total_score,this.user_rank)
-						// // this.update_user_score(uid,this.total_score,this.user_rank)
-						// this.isModalAnswerError = false;
-						// // this.check_user_status(this.uid)
-						// uni.reLaunch({
-						// 	url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
-						// });
+					
 					}
 				})
 				.catch(error => {})
@@ -782,11 +787,7 @@ export default {
 					}
 					if (status === 1) {
 						this.editUserScore(this.uid,this.total_score,this.user_rank)
-						// this.isModalAnswerTimeout = false;
-						// // this.check_user_status(this.uid)
-						// uni.reLaunch({
-						// 	url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id
-						// });
+					
 					}
 				})
 				.catch(error => {})
@@ -802,6 +803,19 @@ export default {
 				this.isModalAnswerTimeout = true;
 			}
 		},
+		add_user(uid, nickname, ns_device_id) {
+			let data = {
+				uid: uid,
+				name: nickname,
+				ns_device_id: ns_device_id
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/addUser', data)
+				.then(res => {
+					console.log(res);
+				})
+				.catch(error => {})
+				.finally(() => {});
+		},
 		// 获取问题列表
 		getQuestionList() {
 			// get 请求
@@ -809,6 +823,10 @@ export default {
 				.then(res => {
 					// console.log(res)
 					this.questionList = res.data.data.list;
+					
+					let that = this
+					that.$question.setQusetionList(res.data.data.list)
+					
 					this.total_question = res.data.data.list.length;
 					this.question = res.data.data.list[this.q_key];
 					if (this.isModalEnd === true) {
@@ -825,6 +843,15 @@ export default {
 				})
 				.catch(error => {})
 				.finally(() => {});
+		},
+		turn_back() {
+			// uni.navigateBack()
+			uni.redirectTo({
+				url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
+				success(){
+			
+				}
+			});
 		}
 	}
 };
@@ -834,7 +861,7 @@ export default {
 .question-bg {
 	width: 100%;
 	height: 100%;
-	background: url(http://aloss.hotforest.cn/h5-basketball/rule-bg.png) no-repeat;
+	background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
 	background-size: 100% 100%;
 	background-position: center;
 }
