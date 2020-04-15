@@ -21,8 +21,6 @@
 							<span>{{r.name}}</span>
 							<span>{{r.score}}积分</span>
 						</li>
-					
-						
 					</ul>
 				</view>
 				
@@ -58,11 +56,9 @@
 			}
 		},
 		onLoad(option) {
-			// this.$uid = option.uid
+			
 			this.uid = option.uid
 			this.ns_device_id = option.ns_device_id
-			// this.ns_device_id = uni.getStorageSync('ns_device_id')
-			// console.log(this.uid)
 			this.get_user_info(this.uid)
 			this.getRankList()
 			
@@ -105,7 +101,7 @@
 			getRankList(){
 				// get 请求
 				http.get(base.sq + '/api/v1.h5.Questions/getRankList', [{}]).then((res) => {
-				    console.log(res)
+				    // console.log(res)
 					this.rankList = res.data.data.list
 					
 				
@@ -140,7 +136,8 @@
 		background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
 		width: 100%;
 		height: 100%;
-		background-size: 100% 100%;
+		/* background-size: 100% 100%; */
+		background-size: cover;
 	}
 
 	.index-top {

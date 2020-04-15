@@ -336,8 +336,8 @@ a {
 	background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
 	width: 100%;
 	height: 100%;
-	background-size: 100% 100%;
-	/* background-size: cover; */
+	/* background-size: 100% 100%; */
+	background-size: cover;
 	/* position: absolute; */
 	/* filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='bg-login.png', sizingMethod='scale'); */
 }
@@ -392,7 +392,7 @@ a {
 	position: absolute;
 	width: 100%;
 	height: 172.26rpx;
-	bottom: 40%;
+	bottom:15%;
 }
 
 .index-d-bg {

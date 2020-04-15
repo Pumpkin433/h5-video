@@ -77,16 +77,20 @@
 								<span>{{ total_score }}</span>
 								积分
 							</h2>
-							<h5>
+							<h5 v-show="uidStatus === true">
 								您现在排名
 								<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
 								<span v-show="user_rank > 100 || user_rank === 0">100+</span>
+							</h5>
+							<h5 v-show="uidStatus === false">
+								填写信息 获取排名
 							</h5>
 						</view>
 						<view class="modal-end-r"><!-- <img src="http://aloss.hotforest.cn/h5-basketball/jiangbei.png" alt=""> --></view>
 					</view>
 					<view class="modal-end-d">
-						<div class="modal-end-d-button" @click="answer_question_again"><span>再来一次</span></div>
+						<div v-show="uidStatus === true"  class="modal-end-d-button" @click="answer_question_again"><span>再来一次</span></div>
+						<div v-show="uidStatus === false"  class="modal-end-d-button" @click="answer_question_again"><span>填写信息</span></div>
 						<!-- <div class="modal-end-d-button" @click="score_share_button"><span>再来一次</span></div> -->
 
 						<view class="modal-end-d-d">下载全民体育,参加更多活动</view>
@@ -150,13 +154,17 @@
 						<span>{{ total_score }}</span>
 						积分
 					</h3>
-					<h5>
+					<h5 v-show="uidStatus === true">
 						您现在排名
 						<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
 						<span v-show="user_rank > 100 || user_rank === 0">100+</span>
 					</h5>
+					<h5 v-show="uidStatus === false">
+						填写信息 获取排名
+					</h5>
 
-					<view class="modal-a-button" @click="answer_question_again"><span>再来一次</span></view>
+					<view v-show="uidStatus === true"   class="modal-a-button" @click="answer_question_again"><span>再来一次</span></view>
+					<view v-show="uidStatus === false"  class="modal-a-button" @click="answer_question_again"><span>填写信息</span></view>
 					<!-- <view class="modal-a-button" @click="score_share_button"><span>再来一次</span></view> -->
 					<view class="modal-a-b-t"><span>下载全民体育,参加更多活动</span></view>
 				</view>
@@ -172,12 +180,16 @@
 						<span>{{ total_score }}</span>
 						积分
 					</h3>
-					<h5>
+					<h5 v-show="uidStatus === true">
 						您现在排名
 						<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
 						<span v-show="user_rank > 100 || user_rank === 0">100+</span>
 					</h5>
-					<view class="modal-t-button" @click="answer_question_again"><span>再来一次</span></view>
+					<h5 v-show="uidStatus === false">
+						填写信息 获取排名
+					</h5>
+					<view v-show="uidStatus === true" class="modal-t-button" @click="answer_question_again"><span>再来一次</span></view>
+					<view v-show="uidStatus === false" class="modal-t-button" @click="answer_question_again"><span>填写信息</span></view>
 					<!-- <view class="modal-t-button" @click="score_share_button"><span>分享战绩</span></view> -->
 					<view class="modal-t-b-t"><span>下载全民体育,参加更多活动</span></view>
 				</view>
@@ -245,41 +257,35 @@ export default {
 			postersData: {},
 			posterImg: {},
 
-			hasClickOption:true, //是否点击了答案
-
+			hasClickOption: true ,//是否点击了答案,
+			uidStatus:false
 		};
 	},
 	onLoad(option) {
-		this.questionList = this.$question.questionList
-		console.log(this.$question.questionList)
-		// this.$uid = option.uid
-		// this.uid = uni.getStorageSync('uid');
+		this.questionList = this.$question.questionList;
 		this.uid = option.uid;
-		this.ns_device_id = option.ns_device_id
-		
-		console.log(this.ns_device_id)
-		
+		this.ns_device_id = option.ns_device_id;
+
 		// 总积分
 		if (option.s != undefined) {
 			this.total_score = option.s;
 		}
-		
+
 		//下一题
 		if (option.k !== undefined && option.k !== 0) {
 			this.q_key = option.k;
-			
+
 			this.total_question = this.questionList.length;
 			this.question = this.questionList[this.q_key];
-			
+
 			// 问题回答完毕
 			if (option.k === option.t) {
-				
 				this.reset = !this.reset;
 				this.second = 0;
 				this.get_user_rank(this.uid, this.total_score);
 				this.isModalEnd = true;
-				this.isModalAnswerError = false
-				this.isModalAnswerTimeout = false
+				this.isModalAnswerError = false;
+				this.isModalAnswerTimeout = false;
 				this.question = {
 					q_name: '1',
 					option_a: '1',
@@ -288,18 +294,16 @@ export default {
 					option_d: '1',
 					correct: '1'
 				};
-			
 			}
 		} else {
 			this.q_key = 0;
 			this.total_question = this.questionList.length;
 			this.question = this.questionList[this.q_key];
-			this.questionList = this.$question.questionList
+			this.questionList = this.$question.questionList;
 		}
 		// dacuo
 		// console.log(option)
 		if (option.w !== undefined && option.w == 1) {
-			
 			this.reset = !this.reset;
 			this.second = 0;
 			this.get_user_rank(this.uid, option.s);
@@ -308,8 +312,9 @@ export default {
 			this.isModalAnswerTimeout = false;
 		}
 
-		this.ns_device_id = option.ns_device_id
+		this.ns_device_id = option.ns_device_id;
 		// this.initPostersConfig();
+		this.uid_is_exists()
 	},
 	methods: {
 		initPostersConfig() {
@@ -318,7 +323,8 @@ export default {
 				width: 400,
 				height: 448,
 				background: 'rgba(0,0,0,0)',
-				views: [{
+				views: [
+					{
 						type: 'image',
 						width: 400,
 						height: 448,
@@ -335,7 +341,7 @@ export default {
 						top: 90,
 						fontSize: 30,
 						lineHeight: 40,
-						color:'#fff',
+						color: '#fff',
 						bolder: true,
 						breakWord: true,
 						content: '快来全民体育',
@@ -347,7 +353,7 @@ export default {
 						height: 50,
 						left: 20,
 						top: 140,
-						color:"#fff",
+						color: '#fff',
 						fontSize: 34,
 						lineHeight: 40,
 						bolder: true,
@@ -380,7 +386,7 @@ export default {
 						lineHeight: 40,
 						bolder: true,
 						breakWord: true,
-						content: this.total_score+'',
+						content: this.total_score + '',
 						color: '#fff',
 						MaxLineNumber: 2
 					},
@@ -418,7 +424,7 @@ export default {
 						fontSize: 18,
 						bolder: true,
 						breakWord: true,
-						content: this.user_rank+'',
+						content: this.user_rank + '',
 						color: '#fff',
 						MaxLineNumber: 2
 					},
@@ -455,7 +461,7 @@ export default {
 						left: 260,
 						// 二维码图片路径，测试的时候填上
 						url: 'http://h5.hotforest.cn/canvas/m-share-qrcode.png'
-					},
+					}
 				]
 			};
 			this.postersData = config;
@@ -465,7 +471,7 @@ export default {
 			this.posterImg = res;
 		},
 		onPostersError(res) {},
-		answer_question_again(){
+		answer_question_again() {
 			let data = {
 				uid: this.uid
 			};
@@ -473,114 +479,81 @@ export default {
 				.then(res => {
 					// console.log(res)
 					let status = res.data.data.status;
-					console.log(status)
+					console.log(status);
 					if (status == 0) {
-
 						this.reset = !this.reset;
-						this.second = 0
+						this.second = 0;
 						this.isModalMsg = true;
 
 						this.isModalAnswerError = false;
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
-
-					}
-					
-					if(status == 1){
-						this.editUserScore(this.uid,this.total_score,this.user_rank)
 					}
 
+					if (status == 1) {
+						this.editUserScore(this.uid, this.total_score, this.user_rank);
+					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-
 		},
-		editUserScore(uid,total_score,user_rank){
+		editUserScore(uid, total_score, user_rank) {
 			let data = {
-					uid:uid,
-					score:total_score,
-					rank:user_rank
-				}
-				
-				http.post(base.sq + '/api/v1.h5.Questions/changeUserScore', data)
-					.then(res => {
-					
-						// uni.reLaunch({
-						// 	url:'/pages/sports/sports?uid='+this.uid
-						// })
-						
-						if (res.data.data.updateRow == 1) {
+				uid: uid,
+				score: total_score,
+				rank: user_rank
+			};
 
-							uni.reLaunch({
-								url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id,
-								success(){
-								
-								}
-							}
+			http.post(base.sq + '/api/v1.h5.Questions/changeUserScore', data)
+				.then(res => {
+					// uni.reLaunch({
+					// 	url:'/pages/sports/sports?uid='+this.uid
+					// })
 
-							)
-						}else{
-							alert('积分更新失败')
-						}
-
-					})
-					.catch(error => {})
-					.finally(() => {});
-
+					if (res.data.data.updateRow == 1) {
+						uni.reLaunch({
+							url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
+							success() {}
+						});
+					} else {
+						alert('积分更新失败');
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		user_msg_add() {
-			
-			
-			if(this.name == '' || this.name == null){
-				alert('请填写名字')
-				return false
-			}
-			if(this.mobile == '' || this.mobile == null){
-				alert('请填写手机号')
-				return false
-			}
-			if(this.name.length > 10){
-				alert('名字不要超过10个字')
-				return false
-			}
-			
-			if(this.mobile.length != 11){
-				alert('请填写正确的手机号')
+			if (this.name == '' || this.name == null) {
+				alert('请填写名字');
 				return false;
 			}
-			
-			this.add_user(this.uid, this.name, this.ns_device_id)
-			
-			let data = {
-				uid: this.uid,
-				name: this.name,
-				mobile: this.mobile,
-				score: this.total_score,
-				rank: this.user_rank
-			};
+			if (this.mobile == '' || this.mobile == null) {
+				alert('请填写手机号');
+				return false;
+			}
+			if (this.name.length > 10) {
+				alert('名字不要超过10个字');
+				return false;
+			}
+
+			if (this.mobile.length != 11) {
+				alert('请填写正确的手机号');
+				return false;
+			}
+
+			this.add_user(this.uid, this.name, this.mobile, this.total_score, this.user_rank, this.ns_device_id);
+
+			this.isModalAnswerError = false;
+			this.isModalAnswerTimeout = false;
+			this.isModalEnd = false;
+			this.isModalMsg = false;
+
+			uni.reLaunch({
+				url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
+				success() {}
+			});
+
 			// console.log(data)
-			http.post(base.sq + '/api/v1.h5.Questions/updateUserInfo', data)
-				.then(res => {
-					
-					if(res.data.errorCode == 0){
-						this.isModalAnswerError = false
-						this.isModalAnswerTimeout = false
-						this.isModalEnd = false
-						this.isModalMsg = false
-						
-						uni.reLaunch({
-							url:'/pages/sports/sports?uid='+this.uid+'&ns_device_id='+this.ns_device_id,
-							success(){
-								
-							}
-						})
-					}else{
-						return alert(res.data.msg)
-					}
-					
-				})
-				.catch(error => {})
-				.finally(() => {});
 		},
 		// 选择答案
 		select_option(option, i) {
@@ -590,13 +563,13 @@ export default {
 
 			if (option === this.question.correct) {
 				this.total_score++;
-				this.hasClickOption = false
+				this.hasClickOption = false;
 
 				setTimeout(
-					function(a, b, c,uid,ns) {
+					function(a, b, c, uid, ns) {
 						uni.redirectTo({
-							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid+'&ns_device_id='+ns,
-							success(){},
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c + '&uid=' + uid + '&ns_device_id=' + ns,
+							success() {},
 							fail: () => {},
 							complete: () => {}
 						});
@@ -609,16 +582,14 @@ export default {
 					this.ns_device_id
 				);
 			} else {
-				this.hasClickOption = false
+				this.hasClickOption = false;
 				setTimeout(
-					function(a, b, c, uid,ns) {
+					function(a, b, c, uid, ns) {
 						// console.log(a)
 						// console.log(b)
 						uni.redirectTo({
-							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c+'&uid='+uid + '&w=1'+'&ns_device_id='+ns,
-							success(){
-							
-							},
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c + '&uid=' + uid + '&w=1' + '&ns_device_id=' + ns,
+							success() {},
 							fail: () => {},
 							complete: () => {}
 						});
@@ -645,6 +616,25 @@ export default {
 				.catch(error => {})
 				.finally(() => {});
 		},
+		uid_is_exists(){
+			let data = {
+				uid: this.uid
+			};
+			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
+				.then(res => {
+					// console.log(res)
+					let status = res.data.data.status;
+					// console.log(status)
+					if (status === 0) {
+						this.uidStatus = false
+					}
+					if (status === 1) {
+						this.uidStatus = true
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+		},
 		score_share_button() {
 			//
 			let data = {
@@ -656,7 +646,6 @@ export default {
 					let status = res.data.data.status;
 					// console.log(status)
 					if (status === 0) {
-
 						this.reset = !this.reset;
 						this.isModalMsg = true;
 
@@ -664,9 +653,6 @@ export default {
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
 						this.isModalShareCanvas = false;
-
-
-
 					}
 					if (status === 1) {
 						this.initPostersConfig();
@@ -700,12 +686,9 @@ export default {
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
 						this.isModalShareCanvas = false;
-
 					}
 					if (status === 1) {
-					
-						this.editUserScore(this.uid,this.total_score,this.user_rank)
-						
+						this.editUserScore(this.uid, this.total_score, this.user_rank);
 					}
 				})
 				.catch(error => {})
@@ -725,22 +708,18 @@ export default {
 						// this.second = 0
 						this.isModalMsg = true;
 
-
-
 						this.isModalAnswerError = false;
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
 					}
 					if (status === 1) {
-						this.editUserScore(this.uid,this.total_score,this.user_rank)
+						this.editUserScore(this.uid, this.total_score, this.user_rank);
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
 		},
-		msg_modal() {
-			
-		},
+		msg_modal() {},
 		answer_error_modal() {
 			let data = {
 				uid: this.uid
@@ -758,20 +737,15 @@ export default {
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
 						this.isModalShareCanvas = false;
-
 					}
 					if (status === 1) {
-						this.editUserScore(this.uid,this.total_score,this.user_rank)
-					
+						this.editUserScore(this.uid, this.total_score, this.user_rank);
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-
-
 		},
 		answer_timeout_modal() {
-
 			let data = {
 				uid: this.uid
 			};
@@ -788,16 +762,13 @@ export default {
 						this.isModalAnswerTimeout = false;
 						this.isModalEnd = false;
 						this.isModalShareCanvas = false;
-
 					}
 					if (status === 1) {
-						this.editUserScore(this.uid,this.total_score,this.user_rank)
-					
+						this.editUserScore(this.uid, this.total_score, this.user_rank);
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-
 		},
 		timeUp() {
 			this.get_user_rank(this.uid, this.total_score);
@@ -808,10 +779,13 @@ export default {
 				this.isModalAnswerTimeout = true;
 			}
 		},
-		add_user(uid, nickname, ns_device_id) {
+		add_user(uid, nickname, mobile, score, rank, ns_device_id) {
 			let data = {
 				uid: uid,
 				name: nickname,
+				mobile: mobile,
+				score: score,
+				rank: rank,
 				ns_device_id: ns_device_id
 			};
 			http.post(base.sq + '/api/v1.h5.Questions/addUser', data)
@@ -828,10 +802,10 @@ export default {
 				.then(res => {
 					// console.log(res)
 					this.questionList = res.data.data.list;
-					
-					let that = this
-					that.$question.setQusetionList(res.data.data.list)
-					
+
+					let that = this;
+					that.$question.setQusetionList(res.data.data.list);
+
 					this.total_question = res.data.data.list.length;
 					this.question = res.data.data.list[this.q_key];
 					if (this.isModalEnd === true) {
@@ -853,9 +827,7 @@ export default {
 			// uni.navigateBack()
 			uni.redirectTo({
 				url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
-				success(){
-			
-				}
+				success() {}
 			});
 		}
 	}
@@ -867,8 +839,9 @@ export default {
 	width: 100%;
 	height: 100%;
 	background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
-	background-size: 100% 100%;
-	background-position: center;
+	/* background-size: 100% 100%; */
+	/* background-position: center; */
+	background-size: cover;
 }
 
 .question-bg-1 {
@@ -946,14 +919,14 @@ export default {
 
 .question-right {
 	border: 2rpx solid rgba(26, 160, 23, 1) !important;
-	background: #1aa017 url(http://aloss.hotforest.cn/h5-basketball/question-right-icon.png) no-repeat ;
+	background: #1aa017 url(http://aloss.hotforest.cn/h5-basketball/question-right-icon.png) no-repeat;
 	background-size: 51.76rpx 40rpx;
 	background-position: right 23.52rpx top 23.52rpx;
 }
 
 .question-wrong {
 	border: 2rpx solid #ff7600 !important;
-	background: #ff7600 url(http://aloss.hotforest.cn/h5-basketball/question-wrong-icon.png) no-repeat ;
+	background: #ff7600 url(http://aloss.hotforest.cn/h5-basketball/question-wrong-icon.png) no-repeat;
 	background-size: 35.29rpx 40rpx;
 	background-position: right 23.52rpx top 23.52rpx;
 }

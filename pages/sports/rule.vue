@@ -80,8 +80,10 @@ export default {
 	width: 100%;
 	height: 100%;
 	background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
-	background-size: 100% 100%;
-	background-position: center;
+	/* background-size: 100% 100%; */
+	/* background-position: center; */
+	background-size: cover;
+	
 }
 .rule-bg-1 {
 	width: 100%;

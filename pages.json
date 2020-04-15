@@ -4,7 +4,7 @@
 		{
 			"path":"pages/sports/sports",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -16,25 +16,11 @@
 				}
 			}
 		},
-		{
-			"path":"pages/sports/share",
-			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
-				// "navigationStyle":"custom",
-				"h5": {
-					"titleNView": {
-						"buttons": [{
-								"type": "share"
-							}
-						]
-					}
-				}
-			}
-		},
+	
 		{
 			"path":"pages/sports/rank",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -49,7 +35,7 @@
 		{
 			"path":"pages/sports/rule",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -64,7 +50,7 @@
 		{
 			"path":"pages/sports/question",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
+				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -1224,7 +1210,7 @@
 		"navigationStyle":"custom",
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "NBA谁更懂球-答题赢大奖",
+		"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
 		"navigationBarBackgroundColor": "#00000",
 		"backgroundColor": "#F8F8F8",
 		"backgroundColorTop": "#000000",
