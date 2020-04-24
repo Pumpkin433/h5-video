@@ -1,6 +1,7 @@
 {
 	"pages": [
 		// pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		
 		{
 			"path":"pages/sports/sports",
 			"style":{
@@ -16,7 +17,36 @@
 				}
 			}
 		},
-	
+		{
+			"path":"pages/sports/result",
+			"style":{
+				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+				// "navigationStyle":"custom",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+								"type": "share"
+							}
+						]
+					}
+				}
+			}
+		},
+	{
+		"path":"pages/sports/info",
+		"style":{
+			"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+			// "navigationStyle":"custom",
+			"h5": {
+				"titleNView": {
+					"buttons": [{
+							"type": "share"
+						}
+					]
+				}
+			}
+		}
+	},
 		{
 			"path":"pages/sports/rank",
 			"style":{

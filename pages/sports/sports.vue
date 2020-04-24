@@ -6,16 +6,23 @@
 		</view>
 
 		<view class="flex-item flex-item-V index-d">
-			<div v-show="open_from_app === true && login_app_status === false"  class="index-d-bg" @tap="requireLogin"><span>开始挑战</span></div>
-			<div v-show="open_from_app === true && login_app_status === true "  class="index-d-bg" @tap="turnQuestion(1)"><span>开始挑战</span></div>
-			<div v-show="open_from_app === false" class="index-d-bg" @tap="turnQuestion(2)"><span>我要答题</span></div>
+			<div v-if="contactExists == true">
+				<div v-show="login_app_status == false" class="index-d-bg" @click="loginApp"><span>我要答题</span></div>
+				<div v-show="login_app_status == true" class="index-d-bg" @click="turnQuestion(1)"><span>我要答题</span></div>
+			</div>
+
+			<div v-if="contactExists == false" class="index-d-bg" @click="turnQuestion(2)"><span>我要答题</span></div>
 		</view>
 
 		<!-- 信息提示 弹框 -->
 		<view class="msg-modal" v-show="msg_modal_share === true" @click="msg_modal_close"></view>
 		<view class="msg-modal-bg" v-show="msg_modal_share === true">
 			<view class="modal-msg-t">
-				<h3>您今天答题的机会 <br>已经用完了</h3>
+				<h3>
+					您今天答题的机会
+					<br />
+					已经用完了
+				</h3>
 			</view>
 			<view class="modal-msg-d">
 				<view class="modal-msg-d-l">
@@ -53,6 +60,8 @@
 			</view>
 		</view>
 		<!-- 信息提示弹框结束 -->
+		
+		
 	</view>
 </template>
 
@@ -73,124 +82,128 @@ export default {
 			answer_chance: null,
 			nickname: null,
 			login_app_status: true, //在app中是否登录
-			open_from_app:false,
-			
+			contactExists: false,
+			isModalMsg:false,
+			name:'',
 		};
 	},
 	onLoad(option) {
 		let uid = uni.getStorageSync('uid');
 		let ns_device_id = uni.getStorageSync('ns_device_id');
-		
-		
+
 		//通过判断contact是否被定义来区分 活动是通过app打开的 还是通过web打开的
 		if (typeof contact === 'undefined') {
 			// 表示在外部网页打开
 
-			if (!uid || uid == null || uid == '') {
+			this.contactExists = false;
+
+			if (!uid || uid == null || uid == '' || uid === undefined) {
 				this.uid = util.randomWord(false, 18);
 				uni.setStorageSync('uid', this.uid);
 			} else {
 				this.uid = uid;
 			}
 
-			if (!ns_device_id || ns_device_id == null || ns_device_id == '') {
+			if (!ns_device_id || ns_device_id == null || ns_device_id == '' || ns_device_id === undefined) {
 				this.ns_device_id = 'web';
 				uni.setStorageSync('ns_device_id', this.ns_device_id);
 			} else {
 				this.ns_device_id = ns_device_id;
 			}
-	
-		} else {
-			alert('sldklsalf')
-			if(typeof option.uid === 'undefined' ){
-				this.login_app_status = false
-			}
 			
+		} else {
+			//通过app打开
+			this.contactExists = true;
+
 			//  表示在app中打开
 			contact.onLoginDone = function(uid, token) {
 				this.login_app_status = true;
+				this.uid = uid;
+				this.ns_device_id = option.ns_device_id;
 				uni.setStorageSync('uid', uid);
-			};
+			}
+			
+			if (option.uid === 'null' || option.uid === '' || option.uid === undefined || option.uid === null) {
+				this.login_app_status = false;
+			} else {
+				this.uid = option.uid;
+				this.ns_device_id = option.ns_device_id;
+				uni.setStorageSync('uid',option.uid)
+				this.login_app_status = true;
+			}
+			// alert(option.uid)
+			alert(uni.getStorageSync('uid') + '---' + this.contactExists + '------' + this.login_app_status);
 		}
-
-		
-
 	},
 	methods: {
-		
-		requireLogin(){
+		loginApp() {
 			contact.requireLogin();
 		},
-		turnQuestion(from){
+		turnQuestion(from) {
 			// 获取用户的答题机会
 			let data = {
 				uid: this.uid,
 				activity_id: this.$question.activity_id,
 				from: from
 			};
-			
+
 			http.post(base.sq + '/activity/api.usersAnswerChance/getAnswerChance', data)
 				.then(res => {
 					console.log(res);
-					if(res.status == 200){
-						let answer_chance = res.data.data.answer_chance
+					if (res.status == 200) {
+						let answer_chance = res.data.data.answer_chance;
 						// 答题机会用完
-						if(answer_chance <= 0 ){
-							this.msg_modal_share = true
-						
-						}else{
-							this.getQuestionList(this.$question.activity_id)
+						if (answer_chance <= 0) {
+							this.msg_modal_share = true;
+						} else {
+							this.getQuestionList(this.$question.activity_id);
 						}
-						
-					}else{
-						return alert('server error')
+					} else {
+						return alert('server error');
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-			
 		},
-		getQuestionList(activity_id){
+		getQuestionList(activity_id) {
 			let data = {
-				'activity_id':activity_id
-			}
-			
+				activity_id: activity_id
+			};
+
 			http.post(base.sq + '/activity/api.questions/list', data)
 				.then(res => {
 					// console.log(res);
-					if(res.status == 200){
-						this.$question.setQusetionList(res.data.data)
-						this.updateAnswerChance(this.uid,activity_id,2)
+					if (res.status == 200) {
+						this.$question.setQusetionList(res.data.data);
+						this.updateAnswerChance(this.uid, activity_id, 2);
 						uni.redirectTo({
 							url: '/pages/sports/question',
 							success() {}
 						});
-					}else{
-						return alert('server error')
+					} else {
+						return alert('server error');
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-			
 		},
-		updateAnswerChance(uid,activity_id,type){
+		updateAnswerChance(uid, activity_id, type) {
 			let data = {
-				'uid':uid,
-				'activity_id':activity_id,
-				'type':type
-			}
+				uid: uid,
+				activity_id: activity_id,
+				type: type
+			};
 			http.post(base.sq + '/activity/api.UsersAnswerChance/update', data)
 				.then(res => {
 					console.log(res);
-					if(res.status == 200){
+					if (res.status == 200) {
 						
-					}else{
-						return alert('server error')
+					} else {
+						return alert('server error');
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-			
 		},
 		msg_modal_app() {
 			this.msg_modal_app_share = false;
@@ -200,23 +213,21 @@ export default {
 		},
 		turn_rank() {
 			uni.reLaunch({
-				url: '/pages/sports/rank',
+				url: '/pages/sports/info',
 				success() {}
 			});
 		},
 		turn_rule() {
 			uni.reLaunch({
-				url: '/pages/sports/rule',
+				url: '/pages/sports/info',
 				success() {}
 			});
 		}
-		
 	}
 };
 </script>
 
 <style>
-
 a {
 	text-decoration: none;
 }
@@ -295,8 +306,8 @@ a {
 	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/index-bg.png) no-repeat;
 	width: 100%;
 	height: 100%;
-	/* background-size: 100% 100%; */
-	background-size: cover;
+	background-size: 100% 100%;
+	/* background-size: cover; */
 	/* position: absolute; */
 	/* filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='bg-login.png', sizingMethod='scale'); */
 }
@@ -316,7 +327,6 @@ a {
 	margin-left: 20rpx;
 	cursor: pointer;
 }
-
 
 .index-top-r {
 	float: right;
@@ -346,12 +356,20 @@ a {
 	background-size: 100% 100%;
 }
 .index-d-bg span {
-	font-size:74rpx;
-	font-family:Wawati SC;
-	font-weight:bold;
-	color:rgba(42,100,208,1);
-	line-height:62rpx;
-	-webkit-text-stroke:8rpx rgba(16, 16, 16, 0.7);
-	text-stroke:8rpx rgba(16, 16, 16, 0.7);
+	font-size: 74rpx;
+	font-family:wawaw5;
+	font-weight: bold;
+	color: rgba(42, 100, 208, 1);
+	line-height: 62rpx;
+	-webkit-text-stroke: 4rpx rgba(16, 16, 16, 0.7);
+	text-stroke: 4rpx rgba(16, 16, 16, 0.7);
+}
+@font-face {
+	font-family:'hywawazhuanj';
+	src: url("~@/static/HYWaWaZhuanJ.ttf");
+}
+@font-face {
+	font-family:'wawaw5';
+	src: url("~@/static/huakangwawaW5.ttf");
 }
 </style>

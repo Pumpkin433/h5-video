@@ -1,7 +1,8 @@
 <template>
-	<view class="question-bg">
-		<view class="question-bg-1">
-			<view class="question-setval">
+	<view class="uni-flex uni-column question-bg">
+		<view class="flex-item flex-item-V time-position ">
+			<view class="time-text">时间</view>
+			<view class="time-interval">
 				<uni-countdown
 					:show-day="false"
 					background-color="transparent"
@@ -16,203 +17,61 @@
 				></uni-countdown>
 			</view>
 
-			<view class="question-bg-2">
-				<view class="question-c">
-					<p>{{ question.q_title }}</p>
-
-					<ul>
-						<li v-show="hasClickOption===true" 
-						v-for="(option,k) in question_options" 
-						:class="option.type == 2 ? 'question-right' : 'question-wrong'"
-						>
-							<span>{{option.option}}</span>
-						</li>
-						
-						<li v-show="hasClickOption===false" 
-						v-for="(option,k) in question_options" 
-						@click="selectOption(option.type)"
-						>
-							<span>{{option.option}}</span>
-						</li>
-					</ul>
-				</view>
-
-				<!-- 问题答完 弹框 -->
-				<view class="modal-end" v-show="isModalEnd === true" @click="question_modal"></view>
-				<view class="modal-end-bg" v-show="isModalEnd === true">
-					<view class="modal-end-t">
-						<view class="modal-end-l">
-							<h3>您实在是太棒了!</h3>
-							<h5>您已经完成所有的问题</h5>
-							<h2>
-								获得了
-								<span>{{ total_score }}</span>
-								积分
-							</h2>
-							<h5 v-show="uidStatus === true">
-								您现在排名
-								<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
-								<span v-show="user_rank > 100 || user_rank === 0">100+</span>
-							</h5>
-							<h5 v-show="uidStatus === false">
-								填写信息 获取排名
-							</h5>
-						</view>
-						<view class="modal-end-r"><!-- <img src="http://aloss.hotforest.cn/h5-basketball/jiangbei.png" alt=""> --></view>
-					</view>
-					<view class="modal-end-d">
-						<div v-show="uidStatus === true"  class="modal-end-d-button" @click="answer_question_again"><span>再来一次</span></div>
-						<div v-show="uidStatus === false"  class="modal-end-d-button" @click="answer_question_again"><span>填写信息</span></div>
-						<!-- <div class="modal-end-d-button" @click="score_share_button"><span>再来一次</span></div> -->
-
-						<view class="modal-end-d-d">下载全民体育,参加更多活动</view>
-					</view>
-				</view>
-				<!-- 问题答完 弹框结束 -->
-
-				<!-- 分享 弹框 -->
-				<view class="modal-share" v-show="isModalShare === true" @click="share_modal"></view>
-				<view class="modal-share-bg" v-show="isModalShare === true">
-					<view class="modal-share-t">
-						<h3>快来全民体育</h3>
-						<h2>答题赢大奖</h2>
-						<h4>
-							我获得了
-							<span>{{ total_score }}</span>
-							积分
-						</h4>
-						<h5>
-							当前排名
-							<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
-							<span v-show="user_rank > 100 || user_rank === 0">100+</span>
-						</h5>
-					</view>
-					<view class="modal-share-d">
-						<view class="modal-share-d-l">
-							<p>
-								长按识别二维码
-								<br />
-								下载全民体育APP 参与活动
-							</p>
-						</view>
-						<view class="modal-share-d-r"><img src="http://aloss.hotforest.cn/h5-basketball/m-share-qrcode.png" alt="" /></view>
-					</view>
-				</view>
-				<!-- 分享弹框结束 -->
-
-				<!-- 信息填写弹框 -->
-				<view class="modal-msg" v-show="isModalMsg === true" @click="msg_modal"></view>
-				<view class="modal-msg-bg" v-show="isModalMsg === true">
-					<h3>信息填写</h3>
-					<view class="modal-msg-name">
-						<span>姓名&nbsp;&nbsp;&nbsp;&nbsp;</span>
-						<input type="text" v-model="name" />
-					</view>
-					<view class="modal-msg-mobile">
-						<span>手机号&nbsp;&nbsp;&nbsp;&nbsp;</span>
-						<input type="number" v-model="mobile" />
-					</view>
-					<view class="modal-msg-button" @click="user_msg_add"><span>确认信息</span></view>
-				</view>
-				<!-- 信息填写弹框 结束-->
-
-				<!-- 回答错误弹出框 -->
-				<view class="modal-answer-error" v-show="isModalAnswerError === true" @click="answer_error_modal"></view>
-				<view class="modal-answer-error-bg" v-show="isModalAnswerError === true">
-					<view class="modal-a-circle"><img src="http://aloss.hotforest.cn/h5-basketball/a-error-circle.png" alt="" /></view>
-					<h4>很抱歉您的回答错误</h4>
-					<h3>
-						获得了
-						<span>{{ total_score }}</span>
-						积分
-					</h3>
-					<h5 v-show="uidStatus === true">
-						您现在排名
-						<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
-						<span v-show="user_rank > 100 || user_rank === 0">100+</span>
-					</h5>
-					<h5 v-show="uidStatus === false">
-						填写信息 获取排名
-					</h5>
-
-					<view v-show="uidStatus === true"   class="modal-a-button" @click="answer_question_again"><span>再来一次</span></view>
-					<view v-show="uidStatus === false"  class="modal-a-button" @click="answer_question_again"><span>填写信息</span></view>
-					<!-- <view class="modal-a-button" @click="score_share_button"><span>再来一次</span></view> -->
-					<view class="modal-a-b-t"><span>下载全民体育,参加更多活动</span></view>
-				</view>
-				<!-- 回答错误弹出框结束 -->
-
-				<!-- 回答超时弹出框 -->
-				<view class="modal-answer-timeout" v-show="isModalAnswerTimeout === true" @click="answer_timeout_modal"></view>
-				<view class="modal-answer-timeout-bg" v-show="isModalAnswerTimeout === true">
-					<view class="modal-t-circle"><img src="http://aloss.hotforest.cn/h5-basketball/a-timeout-circle.png" alt="" /></view>
-					<h4>很抱歉您已经超时</h4>
-					<h3>
-						获得了
-						<span>{{ total_score }}</span>
-						积分
-					</h3>
-					<h5 v-show="uidStatus === true">
-						您现在排名
-						<span v-show="(user_rank <= 100) & (user_rank != 0)">{{ user_rank }}</span>
-						<span v-show="user_rank > 100 || user_rank === 0">100+</span>
-					</h5>
-					<h5 v-show="uidStatus === false">
-						填写信息 获取排名
-					</h5>
-					<view v-show="uidStatus === true" class="modal-t-button" @click="answer_question_again"><span>再来一次</span></view>
-					<view v-show="uidStatus === false" class="modal-t-button" @click="answer_question_again"><span>填写信息</span></view>
-					<!-- <view class="modal-t-button" @click="score_share_button"><span>分享战绩</span></view> -->
-					<view class="modal-t-b-t"><span>下载全民体育,参加更多活动</span></view>
-				</view>
-				<!-- 回答超时弹出框结束 -->
-			</view>
+			<view class="time-right-icon">
+				<img src="https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/question-jy.gif" alt="" /></view>
 		</view>
+		<view class="flex-item flex-item-V question-title">
+			<p>{{ question.q_title }}</p>
+		</view>
+
+		<view class="flex-item flex-item-V question-img">
+			<img :src="question.q_image" alt="" />
+		</view>
+		<view class="flex-item flex-item-V question-option">
+			<ul>
+				<li v-show="hasClickOption === true" v-for="(option, k) in question_options" :class="option.type == 2 ? 'question-right' : 'question-wrong'">
+					<span>{{ option.option }}</span>
+				</li>
+
+				<li v-show="hasClickOption === false" v-for="(option, k) in question_options" @click="selectOption(option.type)">
+					<span>{{ option.option }}</span>
+				</li>
+			</ul>
+		</view>
+		
+	
+
 	</view>
 </template>
 
 <script>
 import uniCountdown from '@/components/linnian-CountDown/uni-countdown.vue';
-import postersLayer from '@/components/posters-layer/index';
 import http from '@/utils/http.js';
 import base from '@/utils/base.js';
-import {randomOption} from '@/common/util.js'
+import { randomOption } from '@/common/util.js';
 
 export default {
 	name: 'question',
 	components: {
-		uniCountdown,
-		postersLayer
+		uniCountdown
 	},
 	data() {
 		return {
-			isModalEnd: false,
-			isModalShare: false,
-			isModalShareCanvas: false,
-			isModalMsg: false,
-			isModalAnswerError: false,
-			isModalAnswerTimeout: false,
+		
 			second: 15,
 			reset: false,
 			questionList: [],
 			q_key: 0,
 			question: {},
-			correct: -1,
-			sIndex: 0,
-			total_score: 0,
+			total_score:0,
 			total_question: 0,
-			user_rank: 0,
+			
 			uid: null,
 			ns_device_id: null,
-			name: '',
-			mobile: '',
-			isAnswerEnd: false,
-			isAnswerError: false,
-			isAnswerTimeout: false,
-			
-			hasClickOption: false ,//是否点击了答案,
-			uidStatus:false,
-			question_options: [],
+	
+			hasClickOption: false, //是否点击了答案,
+			uidStatus: false,
+			question_options: []
 		};
 	},
 	onLoad(option) {
@@ -232,126 +91,40 @@ export default {
 			this.total_question = this.questionList.length;
 			this.question = this.questionList[this.q_key];
 
-			this.question_options = randomOption([this.question.option_a,this.question.option_b,
-                this.question.option_c, this.question.correct],4)
+			this.question_options = randomOption([this.question.option_a, this.question.option_b, this.question.option_c, this.question.correct], 4);
 			// 问题回答完毕
 			if (option.k === option.t) {
 				this.reset = !this.reset;
 				this.second = 0;
-				this.isModalEnd = true;
-				this.isModalAnswerError = false;
-				this.isModalAnswerTimeout = false;
 				
+				uni.reLaunch({
+					url:'/pages/sports/result?s='+this.total_score
+				})
 			}
 		} else {
 			this.q_key = 0;
 			this.total_question = this.questionList.length;
 			this.question = this.questionList[this.q_key];
 			this.questionList = this.$question.questionList;
-			this.question_options = randomOption([this.question.option_a,this.question.option_b,
-			    this.question.option_c, this.question.correct],4)
+			this.question_options = randomOption([this.question.option_a, this.question.option_b, this.question.option_c, this.question.correct], 4);
 		}
 		// dacuo
 		if (option.w !== undefined && option.w == 1) {
 			this.reset = !this.reset;
 			this.second = 0;
+				uni.reLaunch({
+					url:'/pages/sports/result?s='+this.total_score
+				})
 		
-			this.isModalAnswerError = true;
-			this.isModalEnd = false;
-			this.isModalAnswerTimeout = false;
 		}
-
 	},
 	methods: {
-		answer_question_again() {
-			let data = {
-				uid: this.uid
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
-				.then(res => {
-					// console.log(res)
-					let status = res.data.data.status;
-					console.log(status);
-					if (status == 0) {
-						this.reset = !this.reset;
-						this.second = 0;
-						this.isModalMsg = true;
-
-						this.isModalAnswerError = false;
-						this.isModalAnswerTimeout = false;
-						this.isModalEnd = false;
-					}
-
-					if (status == 1) {
-						this.editUserScore(this.uid, this.total_score, this.user_rank);
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		editUserScore(uid, total_score, user_rank) {
-			let data = {
-				uid: uid,
-				score: total_score,
-				rank: user_rank
-			};
-
-			http.post(base.sq + '/api/v1.h5.Questions/changeUserScore', data)
-				.then(res => {
-					// uni.reLaunch({
-					// 	url:'/pages/sports/sports?uid='+this.uid
-					// })
-
-					if (res.data.data.updateRow == 1) {
-						uni.reLaunch({
-							url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
-							success() {}
-						});
-					} else {
-						alert('积分更新失败');
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		user_msg_add() {
-			if (this.name == '' || this.name == null) {
-				alert('请填写名字');
-				return false;
-			}
-			if (this.mobile == '' || this.mobile == null) {
-				alert('请填写手机号');
-				return false;
-			}
-			if (this.name.length > 10) {
-				alert('名字不要超过10个字');
-				return false;
-			}
-
-			if (this.mobile.length != 11) {
-				alert('请填写正确的手机号');
-				return false;
-			}
-
-			this.add_user(this.uid, this.name, this.mobile, this.total_score, this.user_rank, this.ns_device_id);
-
-			this.isModalAnswerError = false;
-			this.isModalAnswerTimeout = false;
-			this.isModalEnd = false;
-			this.isModalMsg = false;
-
-			uni.reLaunch({
-				url: '/pages/sports/sports',
-				success() {}
-			});
-
-			// console.log(data)
-		},
+		
+		
 		// 选择答案
 		selectOption(type) {
-		
 			this.q_key++;
-			if(type === 2){
+			if (type === 2) {
 				this.total_score++;
 				this.hasClickOption = true;
 				setTimeout(
@@ -367,16 +140,14 @@ export default {
 					this.q_key,
 					this.total_score,
 					this.total_question
-					
-				)
+				);
 			}
-			if(type ===  1){
+			if (type === 1) {
 				this.hasClickOption = true;
 				setTimeout(
 					function(a, b, c) {
-					
 						uni.redirectTo({
-							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c  + '&w=1',
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c + '&w=1',
 							success() {},
 							fail: () => {},
 							complete: () => {}
@@ -386,205 +157,15 @@ export default {
 					this.q_key,
 					this.total_score,
 					this.total_question
-				
-				)
+				);
 			}
-
-		
-		},
-		get_user_rank(uid, total_score) {
-			let data = {
-				uid: uid,
-				score: total_score
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/getUserRank', data)
-				.then(res => {
-					// console.log(res)
-					this.user_rank = res.data.data.rank;
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		uid_is_exists(){
-			let data = {
-				uid: this.uid
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
-				.then(res => {
-					// console.log(res)
-					let status = res.data.data.status;
-					// console.log(status)
-					if (status === 0) {
-						this.uidStatus = false
-					}
-					if (status === 1) {
-						this.uidStatus = true
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		score_share_button() {
-			//
-			let data = {
-				uid: this.uid
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
-				.then(res => {
-					// console.log(res)
-					let status = res.data.data.status;
-					// console.log(status)
-					if (status === 0) {
-						this.reset = !this.reset;
-						this.isModalMsg = true;
-
-						this.isModalAnswerError = false;
-						this.isModalAnswerTimeout = false;
-						this.isModalEnd = false;
-						this.isModalShareCanvas = false;
-					}
-					if (status === 1) {
-						this.initPostersConfig();
-						this.isModalShareCanvas = true;
-						// this.update_user_score(uid,this.total_score,this.user_rank)
-
-						this.isModalAnswerError = false;
-						this.isModalAnswerTimeout = false;
-						this.isModalEnd = false;
-						this.isModalMsg = false;
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		question_modal() {
-			let data = {
-				uid: this.uid
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
-				.then(res => {
-					// console.log(res)
-					let status = res.data.data.status;
-					// console.log(status)
-					if (status === 0) {
-						this.reset = !this.reset;
-						// this.second = 0
-						this.isModalMsg = true;
-
-						this.isModalAnswerError = false;
-						this.isModalAnswerTimeout = false;
-						this.isModalEnd = false;
-						this.isModalShareCanvas = false;
-					}
-					if (status === 1) {
-						this.editUserScore(this.uid, this.total_score, this.user_rank);
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		share_modal() {
-			let data = {
-				uid: this.uid
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
-				.then(res => {
-					// console.log(res)
-					let status = res.data.data.status;
-					// console.log(status)
-					if (status === 0) {
-						this.reset = !this.reset;
-						// this.second = 0
-						this.isModalMsg = true;
-
-						this.isModalAnswerError = false;
-						this.isModalAnswerTimeout = false;
-						this.isModalEnd = false;
-					}
-					if (status === 1) {
-						this.editUserScore(this.uid, this.total_score, this.user_rank);
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		msg_modal() {},
-		answer_error_modal() {
-			let data = {
-				uid: this.uid
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
-				.then(res => {
-					// console.log(res)
-					let status = res.data.data.status;
-					// console.log(status)
-					if (status === 0) {
-						this.reset = !this.reset;
-						// this.second = 0
-						this.isModalMsg = true;
-						this.isModalAnswerError = false;
-						this.isModalAnswerTimeout = false;
-						this.isModalEnd = false;
-						this.isModalShareCanvas = false;
-					}
-					if (status === 1) {
-						this.editUserScore(this.uid, this.total_score, this.user_rank);
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		answer_timeout_modal() {
-			let data = {
-				uid: this.uid
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/uidIsExists', data)
-				.then(res => {
-					// console.log(res)
-					let status = res.data.data.status;
-					// console.log(status)
-					if (status === 0) {
-						this.reset = !this.reset;
-						// this.second = 0
-						this.isModalMsg = true;
-						this.isModalAnswerError = false;
-						this.isModalAnswerTimeout = false;
-						this.isModalEnd = false;
-						this.isModalShareCanvas = false;
-					}
-					if (status === 1) {
-						this.editUserScore(this.uid, this.total_score, this.user_rank);
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
 		},
 		timeUp() {
-			this.get_user_rank(this.uid, this.total_score);
-			// this.update_user_score(uid,this.total_score,this.user_rank)
-			if (this.isModalAnswerError === true) {
-				this.isModalAnswerTimeout = false;
-			} else {
-				this.isModalAnswerTimeout = true;
-			}
+			uni.reLaunch({
+				url:'/pages/sports/result?s='+this.total_score
+			})
 		},
-		add_user(uid, nickname, mobile, score, rank, ns_device_id) {
-			let data = {
-				uid: uid,
-				name: nickname,
-				mobile: mobile,
-				score: score,
-				rank: rank,
-				ns_device_id: ns_device_id
-			};
-			http.post(base.sq + '/api/v1.h5.Questions/addUser', data)
-				.then(res => {
-					console.log(res);
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-	
+		
 		turn_back() {
 			// uni.navigateBack()
 			uni.redirectTo({
@@ -600,97 +181,110 @@ export default {
 .question-bg {
 	width: 100%;
 	height: 100%;
-	background: url(http://aloss.hotforest.cn/h5-basketball/index-bg.png) no-repeat;
-	/* background-size: 100% 100%; */
+	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/question-bg.png) no-repeat;
+	background-size: 100% 100%;
 	/* background-position: center; */
-	background-size: cover;
+	/* background-size: cover; */
+}
+.time-position {
+	height: 143rpx;
+	position: relative;
 }
 
-.question-bg-1 {
+.time-right-icon {
+	position: absolute;
+	right: 20rpx;
+	top: 10rpx;
+}
+.time-text {
+	/* padding-top: 10rpx; */
+	width: 100%;
+	text-align: center;
+	font-size: 36rpx;
+	font-family: MF LingHei (Noncommercial);
+	font-weight: bold;
+	color: rgba(255, 255, 255, 1);
+}
+.time-interval {
+	width: 100%;
+}
+.time-right-icon {
+	width: 241rpx;
+	height: 133rpx;
+	float: right;
+}
+.time-right-icon img {
 	width: 100%;
 	height: 100%;
 }
 
-.question-bg-2 {
+.question-title {
+	width: 530rpx;
+	margin: 0 auto;
+	margin-top: 40rpx;
+}
+.question-title p {
 	width: 100%;
-	height: 80%;
-	background: url(http://aloss.hotforest.cn/h5-basketball/rule-bg-1.png) no-repeat;
-	background-size: 100%;
-	background-position: top;
-	/* background-position: center; */
-}
-
-.question-setval {
-	text-align: center;
-	width: 267.05rpx;
-	/* height: 195.29rpx; */
-	height: 15%;
-	margin: 0 auto;
-	padding-top: 5%;
-
-	font-size: 94.11rpx;
-	font-family: Yuanti SC;
-	font-weight: 400;
-	color: rgba(255, 255, 255, 1);
-}
-
-.question-c {
-	width: 602.35rpx;
-	margin: 0 auto;
-	padding-top: 200rpx;
-}
-
-.question-c p {
-	width: 602.35rpx;
-	height: 168.23rpx;
-	font-size: 32.94rpx;
+	font-size: 36rpx;
 	font-family: Lantinghei SC;
-	font-weight: bold;
-	color: rgba(255, 255, 255, 1);
+	font-weight: 600;
+	color: rgba(48, 48, 48, 1);
+	line-height: 48rpx;
 }
 
-.question-c ul {
+.question-img {
+	width: 570rpx;
+	height: 355rpx;
+	margin: 0 auto;
+	margin-top: 62rpx;
+	border: 1px solid red;
+}
+
+.question-img img {
+	width: 100%;
+	height: 100%;
+}
+
+.question-option {
+	width: 523rpx;
+	margin: 0 auto;
+	margin-top: 40rpx;
+}
+.question-option ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.question-c ul li {
-	width: 551.76rpx;
-	height: 89.41rpx;
-	border: 1rpx solid rgba(238, 182, 44, 1);
-	border-radius: 23.52rpx;
-	text-indent: 14.11rpx;
+.question-option ul li {
+	width: 523rpx;
+	height: 94rpx;
+
 	margin: 0 auto;
-	margin-top: 35.29rpx;
+	margin-top: 15rpx;
+	text-indent: 40rpx;
+	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/question-option.png) no-repeat center;
+	background-size: 100% 100%;
 }
 
-.question-c ul li span {
-	line-height: 89.41rpx;
+.question-option ul li span {
 	font-size: 30rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
-	/* font-size: 30.58rpx;
-	font-family: Lantinghei SC;
-	font-weight: 600;
-	color: rgba(255, 255, 255, 1);
-	
-	cursor: pointer; */
+	line-height: 94rpx;
 }
 
 .question-right {
-	border: 2rpx solid rgba(26, 160, 23, 1) !important;
-	background: #1aa017 url(http://aloss.hotforest.cn/h5-basketball/question-right-icon.png) no-repeat;
-	background-size: 51.76rpx 40rpx;
-	background-position: right 23.52rpx top 23.52rpx;
+	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/question-right.png) no-repeat !important;
+	background-size: 100% 100% !important;
+	background-position: center !important;
 }
 
 .question-wrong {
-	border: 2rpx solid #ff7600 !important;
-	background: #ff7600 url(http://aloss.hotforest.cn/h5-basketball/question-wrong-icon.png) no-repeat;
-	background-size: 35.29rpx 40rpx;
-	background-position: right 23.52rpx top 23.52rpx;
+	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/question-wrong.png) no-repeat !important;
+	background-size: 100% 100% !important;
+	background-position: center !important;
 }
 
 .modal-end {
@@ -1206,18 +800,15 @@ export default {
 }
 
 /deep/ .uni-countdown__number:nth-child(5) {
-	background: url(http://aloss.hotforest.cn/h5-basketball/time-2.png) no-repeat left;
-	background-size: 110% 120%;
 	margin: 0 auto;
-	width: 267.05rpx;
-	height: 267.05rpx;
-	/* height: 195.29rpx; */
+	width: 77rpx;
+	height: 59rpx;
 }
 
 /deep/ .uni-countdown__number:nth-child(5) span {
-	font-size: 82.35rpx;
-	font-family: Yuanti SC;
-	font-weight: 400;
+	font-size: 80rpx;
+	font-family: MF LingHei (Noncommercial);
+	font-weight: bold;
 	color: rgba(255, 255, 255, 1);
 }
 </style>

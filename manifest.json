@@ -125,7 +125,7 @@
             "disableHostCheck" : true,
             "proxy" : {
                 "/api" : {
-                    "target" : "http://p.hotforest.cn",
+                    "target" : "http://localhost",
                     "changeOrigin" : true,
                     "secure" : false
                 }
