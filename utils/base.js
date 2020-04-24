@@ -3,9 +3,8 @@
  */
 const base = {
     // sq: 'http://h5-admin.com',
-    sq: 'http://p.hotforest.cn',
-    // sq: 'http://www.xllmpp.xyz',
-    // sq: 'https://api.npse.com:8081',
+    // sq: 'http://localhost:8000',
+    sq: 'http://admin.hotforest.cn',
     bd: 'https://api.npse.com:8081'
 }
 

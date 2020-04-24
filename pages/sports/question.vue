@@ -18,50 +18,22 @@
 
 			<view class="question-bg-2">
 				<view class="question-c">
-					<p>{{ question.q_name }}</p>
+					<p>{{ question.q_title }}</p>
 
 					<ul>
-						<li v-show="this.correct === -1 || this.sIndex !== 1" @click="hasClickOption && select_option('A', 1)">
-							<span>A &nbsp;&nbsp;{{ question.option_a }}</span>
-						</li>
-						<li
-							v-show="this.correct !== -1 && this.sIndex === 1"
-							@click="hasClickOption && select_option('A', 1)"
-							:class="'A' === this.correct ? 'question-right' : 'question-wrong'"
+						<li v-show="hasClickOption===true" 
+						v-for="(option,k) in question_options" 
+						:class="option.type == 2 ? 'question-right' : 'question-wrong'"
 						>
-							<span>A &nbsp;&nbsp;{{ question.option_a }}</span>
+							<span>{{option.option}}</span>
 						</li>
-						<li v-show="this.correct === -1 || this.sIndex !== 2" @click="hasClickOption && select_option('B', 2)">
-							<span>B &nbsp;&nbsp;{{ question.option_b }}</span>
-						</li>
-						<li
-							v-show="this.correct !== -1 && this.sIndex === 2"
-							@click="hasClickOption && select_option('B', 2)"
-							:class="'B' === this.correct ? 'question-right' : 'question-wrong'"
+						
+						<li v-show="hasClickOption===false" 
+						v-for="(option,k) in question_options" 
+						@click="selectOption(option.type)"
 						>
-							<span>B &nbsp;&nbsp;{{ question.option_b }}</span>
+							<span>{{option.option}}</span>
 						</li>
-						<li v-show="this.correct === -1 || this.sIndex !== 3" @click="hasClickOption && select_option('C', 3)">
-							<span>C &nbsp;&nbsp;{{ question.option_c }}</span>
-						</li>
-						<li
-							v-show="(this.correct !== -1) & (this.sIndex === 3)"
-							@click="hasClickOption && select_option('C', 3)"
-							:class="'C' === this.correct ? 'question-right' : 'question-wrong'"
-						>
-							<span>C &nbsp;&nbsp;{{ question.option_c }}</span>
-						</li>
-						<li v-show="this.correct === -1 || this.sIndex !== 4" @click="hasClickOption && select_option('D', 4)">
-							<span>D &nbsp;&nbsp;{{ question.option_d }}</span>
-						</li>
-						<li
-							v-show="(this.correct !== -1) & (this.sIndex === 4)"
-							@click="hasClickOption && select_option('D', 4)"
-							:class="'D' === this.correct ? 'question-right' : 'question-wrong'"
-						>
-							<span>D &nbsp;&nbsp;{{ question.option_d }}</span>
-						</li>
-						<!-- @click="modal_end" -->
 					</ul>
 				</view>
 
@@ -194,23 +166,6 @@
 					<view class="modal-t-b-t"><span>下载全民体育,参加更多活动</span></view>
 				</view>
 				<!-- 回答超时弹出框结束 -->
-
-				<!-- hai bao -->
-				<!-- <view class="modal-answer-timeout" v-show="isModalShareCanvas === true" ></view>
-				<view v-show="isModalShareCanvas === true" 
-				style="width:588.23rpx;position: fixed !important;
-				z-index: 999999999;
-				height: 756.47rpx;
-				top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		margin: auto;">
-					<posters-layer style="position: fixed !important;" :postersData="postersData" @success="onSuccessCreatePosters" @error="onPostersError">
-					</posters-layer>
-					<img style="width: 100%;" :src="posterImg.path" />
-				</view> -->
-				<!-- hai bao end -->
 			</view>
 		</view>
 	</view>
@@ -221,6 +176,7 @@ import uniCountdown from '@/components/linnian-CountDown/uni-countdown.vue';
 import postersLayer from '@/components/posters-layer/index';
 import http from '@/utils/http.js';
 import base from '@/utils/base.js';
+import {randomOption} from '@/common/util.js'
 
 export default {
 	name: 'question',
@@ -253,18 +209,16 @@ export default {
 			isAnswerEnd: false,
 			isAnswerError: false,
 			isAnswerTimeout: false,
-
-			postersData: {},
-			posterImg: {},
-
-			hasClickOption: true ,//是否点击了答案,
-			uidStatus:false
+			
+			hasClickOption: false ,//是否点击了答案,
+			uidStatus:false,
+			question_options: [],
 		};
 	},
 	onLoad(option) {
 		this.questionList = this.$question.questionList;
-		this.uid = option.uid;
-		this.ns_device_id = option.ns_device_id;
+		this.uid = uni.getStorageSync('uid');
+		this.ns_device_id = uni.getStorageSync('ns_device_id');
 
 		// 总积分
 		if (option.s != undefined) {
@@ -278,199 +232,37 @@ export default {
 			this.total_question = this.questionList.length;
 			this.question = this.questionList[this.q_key];
 
+			this.question_options = randomOption([this.question.option_a,this.question.option_b,
+                this.question.option_c, this.question.correct],4)
 			// 问题回答完毕
 			if (option.k === option.t) {
 				this.reset = !this.reset;
 				this.second = 0;
-				this.get_user_rank(this.uid, this.total_score);
 				this.isModalEnd = true;
 				this.isModalAnswerError = false;
 				this.isModalAnswerTimeout = false;
-				this.question = {
-					q_name: '1',
-					option_a: '1',
-					option_b: '1',
-					option_c: '1',
-					option_d: '1',
-					correct: '1'
-				};
+				
 			}
 		} else {
 			this.q_key = 0;
 			this.total_question = this.questionList.length;
 			this.question = this.questionList[this.q_key];
 			this.questionList = this.$question.questionList;
+			this.question_options = randomOption([this.question.option_a,this.question.option_b,
+			    this.question.option_c, this.question.correct],4)
 		}
 		// dacuo
-		// console.log(option)
 		if (option.w !== undefined && option.w == 1) {
 			this.reset = !this.reset;
 			this.second = 0;
-			this.get_user_rank(this.uid, option.s);
+		
 			this.isModalAnswerError = true;
 			this.isModalEnd = false;
 			this.isModalAnswerTimeout = false;
 		}
 
-		this.ns_device_id = option.ns_device_id;
-		// this.initPostersConfig();
-		this.uid_is_exists()
 	},
 	methods: {
-		initPostersConfig() {
-			const config = {
-				clear: true,
-				width: 400,
-				height: 448,
-				background: 'rgba(0,0,0,0)',
-				views: [
-					{
-						type: 'image',
-						width: 400,
-						height: 448,
-						top: 0,
-						left: 0,
-						// 封面图，测试的时候填上
-						url: 'http://h5.hotforest.cn/canvas/m-share-bg.png'
-					},
-					{
-						type: 'text',
-						width: 200,
-						height: 50,
-						left: 20,
-						top: 90,
-						fontSize: 30,
-						lineHeight: 40,
-						color: '#fff',
-						bolder: true,
-						breakWord: true,
-						content: '快来全民体育',
-						MaxLineNumber: 2
-					},
-					{
-						type: 'text',
-						width: 200,
-						height: 50,
-						left: 20,
-						top: 140,
-						color: '#fff',
-						fontSize: 34,
-						lineHeight: 40,
-						bolder: true,
-						breakWord: true,
-						content: '答题赢大奖',
-						MaxLineNumber: 2
-					},
-
-					{
-						type: 'text',
-						width: 200,
-						height: 50,
-						left: 20,
-						top: 210,
-						fontSize: 24,
-						lineHeight: 40,
-						bolder: true,
-						breakWord: true,
-						content: '我获得了 ',
-						color: '#333333',
-						MaxLineNumber: 2
-					},
-					{
-						type: 'text',
-						width: 200,
-						height: 50,
-						left: 120,
-						top: 210,
-						fontSize: 24,
-						lineHeight: 40,
-						bolder: true,
-						breakWord: true,
-						content: this.total_score + '',
-						color: '#fff',
-						MaxLineNumber: 2
-					},
-					{
-						type: 'text',
-						width: 200,
-						height: 50,
-						left: 130,
-						top: 210,
-						fontSize: 24,
-						lineHeight: 40,
-						bolder: true,
-						breakWord: true,
-						content: ' 积分',
-						color: '#333333',
-						MaxLineNumber: 2
-					},
-					{
-						type: 'text',
-						width: 400,
-						left: 20,
-						top: 250,
-						fontSize: 18,
-						bolder: true,
-						breakWord: true,
-						content: '当前排名 ',
-						color: '#333333',
-						MaxLineNumber: 2
-					},
-					{
-						type: 'text',
-						width: 400,
-						left: 100,
-						top: 250,
-						fontSize: 18,
-						bolder: true,
-						breakWord: true,
-						content: this.user_rank + '',
-						color: '#fff',
-						MaxLineNumber: 2
-					},
-					{
-						type: 'text',
-						width: 400,
-						left: 20,
-						top: 360,
-						fontSize: 16,
-						bolder: true,
-						breakWord: true,
-						content: '长按识别二维码',
-						color: '#333333',
-						MaxLineNumber: 2
-					},
-
-					{
-						type: 'text',
-						width: 400,
-						left: 20,
-						top: 400,
-						fontSize: 16,
-						bolder: true,
-						breakWord: true,
-						content: '下载全民体育APP参与活动',
-						color: '#333333',
-						MaxLineNumber: 2
-					},
-					{
-						type: 'image',
-						width: 90,
-						height: 90,
-						top: 340,
-						left: 260,
-						// 二维码图片路径，测试的时候填上
-						url: 'http://h5.hotforest.cn/canvas/m-share-qrcode.png'
-					}
-				]
-			};
-			this.postersData = config;
-		},
-		onSuccessCreatePosters(res) {
-			console.log(res);
-			this.posterImg = res;
-		},
-		onPostersError(res) {},
 		answer_question_again() {
 			let data = {
 				uid: this.uid
@@ -549,26 +341,23 @@ export default {
 			this.isModalMsg = false;
 
 			uni.reLaunch({
-				url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
+				url: '/pages/sports/sports',
 				success() {}
 			});
 
 			// console.log(data)
 		},
 		// 选择答案
-		select_option(option, i) {
-			this.sIndex = i;
-			this.correct = this.question.correct;
+		selectOption(type) {
+		
 			this.q_key++;
-
-			if (option === this.question.correct) {
+			if(type === 2){
 				this.total_score++;
-				this.hasClickOption = false;
-
+				this.hasClickOption = true;
 				setTimeout(
-					function(a, b, c, uid, ns) {
+					function(a, b, c) {
 						uni.redirectTo({
-							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c + '&uid=' + uid + '&ns_device_id=' + ns,
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c,
 							success() {},
 							fail: () => {},
 							complete: () => {}
@@ -577,31 +366,31 @@ export default {
 					1000,
 					this.q_key,
 					this.total_score,
-					this.total_question,
-					this.uid,
-					this.ns_device_id
-				);
-			} else {
-				this.hasClickOption = false;
-				setTimeout(
-					function(a, b, c, uid, ns) {
-						// console.log(a)
-						// console.log(b)
-						uni.redirectTo({
-							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c + '&uid=' + uid + '&w=1' + '&ns_device_id=' + ns,
-							success() {},
-							fail: () => {},
-							complete: () => {}
-						});
-					},
-					1000,
-					this.q_key,
-					this.total_score,
-					this.total_question,
-					this.uid,
-					this.ns_device_id
-				);
+					this.total_question
+					
+				)
 			}
+			if(type ===  1){
+				this.hasClickOption = true;
+				setTimeout(
+					function(a, b, c) {
+					
+						uni.redirectTo({
+							url: '/pages/sports/question?k=' + a + '&s=' + b + '&t=' + c  + '&w=1',
+							success() {},
+							fail: () => {},
+							complete: () => {}
+						});
+					},
+					1000,
+					this.q_key,
+					this.total_score,
+					this.total_question
+				
+				)
+			}
+
+		
 		},
 		get_user_rank(uid, total_score) {
 			let data = {
@@ -795,38 +584,11 @@ export default {
 				.catch(error => {})
 				.finally(() => {});
 		},
-		// 获取问题列表
-		getQuestionList() {
-			// get 请求
-			http.get(base.sq + '/api/v1.h5.Questions/list', [{}])
-				.then(res => {
-					// console.log(res)
-					this.questionList = res.data.data.list;
-
-					let that = this;
-					that.$question.setQusetionList(res.data.data.list);
-
-					this.total_question = res.data.data.list.length;
-					this.question = res.data.data.list[this.q_key];
-					if (this.isModalEnd === true) {
-						this.question = {
-							q_name: '1',
-							option_a: '1',
-							option_b: '1',
-							option_c: '1',
-							option_d: '1',
-							correct: '1'
-						};
-					}
-					// console.log(this.question)
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
+	
 		turn_back() {
 			// uni.navigateBack()
 			uni.redirectTo({
-				url: '/pages/sports/sports?uid=' + this.uid + '&ns_device_id=' + this.ns_device_id,
+				url: '/pages/sports/sports',
 				success() {}
 			});
 		}

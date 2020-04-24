@@ -33,6 +33,31 @@ function randomWord(randomFlag, min, max) {
 	  }
 	  return str;
 	}
+function  randomOption(array,num) {
+	
+	        let temp = array
+	        let return_array = []
+	
+	        for(let i=0; i<num; i++){
+	
+	            if(temp.length>0){
+	
+	                let arrIndex = Math.floor(Math.random()*temp.length);
+	
+	                return_array[i] = temp[arrIndex];
+	
+	                temp.splice(arrIndex, 1);
+	
+	            }else{
+	
+	                break
+	
+	            }
+	
+	        }
+	
+	        return return_array
+	}
 function formatLocation(longitude, latitude) {
 	if (typeof longitude === 'string' && typeof latitude === 'string') {
 		longitude = parseFloat(longitude)
@@ -88,5 +113,6 @@ module.exports = {
 	formatTime: formatTime,
 	formatLocation: formatLocation,
 	dateUtils: dateUtils,
-	randomWord:randomWord
+	randomWord:randomWord,
+	randomOption:randomOption,
 }

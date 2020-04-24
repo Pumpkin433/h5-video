@@ -1,4 +1,5 @@
 export default {
+	activity_id:1,
 	total_question:100,
     questionList:[],
     setQusetionList(data){
