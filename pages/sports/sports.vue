@@ -85,6 +85,7 @@ export default {
 			contactExists: false,
 			isModalMsg:false,
 			name:'',
+			user_type:1, //用户类型  1 app  2 外部网页
 		};
 	},
 	onLoad(option) {
@@ -96,6 +97,7 @@ export default {
 			// 表示在外部网页打开
 
 			this.contactExists = false;
+			this.user_type = 2 // 2代表web网页用户
 
 			if (!uid || uid == null || uid == '' || uid === undefined) {
 				this.uid = util.randomWord(false, 18);
@@ -114,6 +116,7 @@ export default {
 		} else {
 			//通过app打开
 			this.contactExists = true;
+			this.user_type = 1 //1  app 用户
 
 			//  表示在app中打开
 			contact.onLoginDone = function(uid, token) {
@@ -359,10 +362,10 @@ a {
 	font-size: 74rpx;
 	font-family:wawaw5;
 	font-weight: bold;
-	color: rgba(42, 100, 208, 1);
+	color: #2A64D0;
 	line-height: 62rpx;
-	-webkit-text-stroke: 4rpx rgba(16, 16, 16, 0.7);
-	text-stroke: 4rpx rgba(16, 16, 16, 0.7);
+	-webkit-text-stroke: 1rpx rgba(16, 16, 16, 0.8);
+	text-stroke: 1rpx rgba(16, 16, 16, 0.8);
 }
 @font-face {
 	font-family:'hywawazhuanj';

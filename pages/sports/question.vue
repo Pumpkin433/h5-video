@@ -72,7 +72,7 @@ export default {
 			hasClickOption: false, //是否点击了答案,
 			uidStatus: false,
 			question_options: []
-		};
+		}
 	},
 	onLoad(option) {
 		this.questionList = this.$question.questionList;

@@ -20,14 +20,34 @@
 		<view class="modal-msg-bg" v-show="isModalMsg === true">
 			<h3>信息填写</h3>
 			<view class="modal-msg-name">
-				<span>姓名&nbsp;&nbsp;&nbsp;&nbsp;</span>
-				<input type="text" v-model="name" />
+				<view class="modal-msg-name-label">
+				姓名
+				</view>
+				<view class="modal-msg-name-input">
+					<input type="text" v-model="name" />
+				</view>
 			</view>
 			<view class="modal-msg-mobile">
-				<span>手机号&nbsp;&nbsp;&nbsp;&nbsp;</span>
-				<input type="number" v-model="mobile" />
+				<view class="modal-msg-mobile-label">
+					手机号
+				</view>
+			
+				<view class="modal-msg-mobile-input">
+					<input type="number" v-model="mobile" />
+				</view>
+				<view class="modal-msg-mobile-button">
+					发送验证码
+				</view>
 			</view>
-			<view class="modal-msg-button" @click="user_msg_add"><span>确认信息</span></view>
+			<view class="modal-msg-qrcode">
+				<view class="modal-msg-qrcode-label">
+					验证码
+				</view>
+				<view class="modal-msg-qrcode-input">
+					<input type="number" v-model="qrcode">
+				</view>
+			</view>
+			<view class="modal-msg-button" @click="addUser"><span>确认信息</span></view>
 		</view>
 		<!-- end -->
 		
@@ -48,6 +68,7 @@ export default {
 			isModalMsg:false,
 			name:'',
 			mobile:'',
+			qrcode:'',
 			
 		};
 	},
@@ -173,5 +194,128 @@ export default {
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 	text-shadow: 0px 3px 8px rgba(223, 28, 88, 1);
+}
+
+
+.modal-msg {
+	background-color: rgba(0, 0, 0, 0.5);
+	background-position: top;
+	background-size: 100% 100%;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	z-index: 10000000;
+	top: 0;
+	left: 0;
+}
+
+.modal-msg-bg {
+	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/msg-modal-bg.png) no-repeat;
+	background-size: 100% 100%;
+	width: 516rpx;
+	height: 546rpx;
+
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	position: fixed;
+	z-index: 100000000;
+}
+
+.modal-msg-bg h3 {
+	font-size:36rpx;
+	font-family:wawaw5;
+	font-weight:bold;
+	color:rgba(41,41,41,1);
+	text-align: center;
+}
+
+.modal-msg-name {
+	width: 90%;
+	height: 80rpx;
+	margin: 0 auto;
+	margin-top: 20rpx;
+}
+.modal-msg-name-label{
+	float: left;
+	width: 19%;
+	text-align: right;
+	font-family: wawaw5;
+}
+.modal-msg-name-input{
+	float: left;
+	width: 79%;
+	border-bottom: 1px solid #000000;
+}
+
+.modal-msg-mobile {
+	width: 90%;
+	height: 80rpx;
+	margin: 0 auto;
+}
+.modal-msg-mobile-label{
+	float: left;
+	width: 19%;
+	text-align: right;
+	font-family: wawaw5;
+}
+.modal-msg-mobile-input{
+	float: left;
+	width: 79%;
+	border-bottom: 1px solid #000000;
+}
+
+.modal-msg-mobile-button{
+	position: absolute;
+	right: 18rpx;
+	
+	font-size:24rpx;
+	font-family:wawaw5;
+	font-weight:400;
+	color:rgba(61,117,210,1);
+	
+}
+
+.modal-msg-qrcode{
+	width: 90%;
+	height: 80rpx;
+	margin: 0 auto;
+}
+
+.modal-msg-qrcode-label{
+	float: left;
+	width: 19%;
+	font-family: wawaw5;
+	text-align: right;
+}
+.modal-msg-qrcode-input{
+	float: left;
+	width: 79%;
+	border-bottom: 1px solid #000000;
+}
+
+.modal-msg-button {
+	width: 330rpx;
+	height: 100rpx;
+	margin: 0 auto;
+	margin-top: 40rpx;
+	
+	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/result-again.png) no-repeat center;
+	background-size: 100% 100%;
+	text-align: center;
+	font-size: 44rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	text-shadow: 0px 3px 8px rgba(223, 28, 88, 1);
+}
+
+
+@font-face {
+	font-family:'wawaw5';
+	src: url("~@/static/huakangwawaW5.ttf");
 }
 </style>
