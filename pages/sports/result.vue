@@ -2,11 +2,11 @@
 	<view class="uni-flex uni-column result-bg">
 		<view class="flex-item flex-item-V res-1">
 			你本次获得
-			<span>{{total_score}}</span>
+			<span>{{ total_score }}</span>
 			积分
 		</view>
 		<view class="flex-item flex-item-V  res-2">
-			历史最高分  {{max_score}}   分
+			历史最高分 {{ max_score }} 分
 			<br />
 			获得称号
 		</view>
@@ -14,9 +14,23 @@
 
 		<view class="flex-item flex-item-V res-4">截图分享给好友</view>
 		<view class="flex-item flex-item-V res-5" @click="answerAgain()">再来一次</view>
-		
+
 		<!-- 输入信息弹框 -->
-		<view></view>
+		<view class="modal-msg" v-show="isModalMsg === true" @click="closeMsgModal"></view>
+		<view class="modal-msg-bg" v-show="isModalMsg === true">
+			<h3>信息填写</h3>
+			<view class="modal-msg-name">
+				<span>姓名&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				<input type="text" v-model="name" />
+			</view>
+			<view class="modal-msg-mobile">
+				<span>手机号&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				<input type="number" v-model="mobile" />
+			</view>
+			<view class="modal-msg-button" @click="user_msg_add"><span>确认信息</span></view>
+		</view>
+		<!-- end -->
+		
 	</view>
 </template>
 
@@ -27,68 +41,69 @@ export default {
 	name: 'result',
 	data() {
 		return {
-			total_score:0,
-			max_score:0,
-			uid:'',
-			ns_device_id:'',
+			total_score: 0,
+			max_score: 0,
+			uid: '',
+			ns_device_id: '',
+			isModalMsg:false,
+			name:'',
+			mobile:'',
+			
 		};
 	},
 	onLoad(option) {
-		this.total_score = option.s
-		this.uid = uni.getStorageSync('uid')
-		this.ns_device_id = uni.getStorageSync('ns_device_id')
+		this.total_score = option.s;
+		this.uid = uni.getStorageSync('uid');
+		this.ns_device_id = uni.getStorageSync('ns_device_id');
 		//获取用户最高分
-		this.getUserMaxScore(this.uid)
-		
+		this.getUserMaxScore(this.uid);
 	},
 	methods: {
-		answerAgain(){
+		closeMsgModal(){
+			this.isModalMsg = false
+		},
+		answerAgain() {
 			let uid = this.uid;
 			let data = {
-				uid:uid,
-			}
+				uid: uid
+			};
 			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
 				.then(res => {
 					console.log(res);
 					if (res.status == 200) {
-						 console.log(res.data.data.count)
-						 let count = res.data.data.count
-						 if(count <= 0){
-							 
-						 }else{
-							 uni.reLaunch({
-							 	url:'/'
-							 })
-						 }
-				
+						console.log(res.data.data.count);
+						let count = res.data.data.count;
+						if (count <= 0) {
+							this.isModalMsg = true
+						} else {
+							uni.reLaunch({
+								url: '/'
+							});
+						}
 					} else {
 						return alert('server error');
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-			
 		},
-		checkUidStatus(uid){
-			
-		},
-		getUserMaxScore(uid){
+		checkUidStatus(uid) {},
+		getUserMaxScore(uid) {
 			let data = {
-				uid:uid,
-			}
+				uid: uid
+			};
 			http.post(base.sq + '/activity/api.users/getUserMaxScore', data)
 				.then(res => {
 					console.log(res);
 					if (res.status == 200) {
-						this.max_score = res.data.data.maxScore ? null : 0 ;
-					
+						this.max_score = res.data.data.maxScore ? null : 0;
 					} else {
 						return alert('server error');
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
-		},
+		}
 	}
 };
 </script>
@@ -121,42 +136,42 @@ export default {
 	font-weight: bold;
 	color: rgba(51, 51, 51, 1);
 }
-.res-3{
+.res-3 {
 	width: 417rpx;
 	height: 82rpx;
 	margin: 0 auto;
 	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/res-button.png) no-repeat center;
 	background-size: 100% 100%;
-	
+
 	text-align: center;
-	font-size:30rpx;
-	font-family:Lantinghei SC;
-	font-weight:bold;
-	color:rgba(238,77,103,1);
-	line-height:82rpx;
+	font-size: 30rpx;
+	font-family: Lantinghei SC;
+	font-weight: bold;
+	color: rgba(238, 77, 103, 1);
+	line-height: 82rpx;
 }
 
-.res-4{
+.res-4 {
 	margin-top: 252rpx;
 	text-align: center;
-	font-size:18rpx;
-	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(102,102,102,1);
+	font-size: 18rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(102, 102, 102, 1);
 }
 
-.res-5{
+.res-5 {
 	width: 330rpx;
 	height: 100rpx;
 	margin: 0 auto;
-	
+
 	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/result-again.png) no-repeat center;
 	background-size: 100% 100%;
 	text-align: center;
-	font-size:44rpx;
-	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(255,255,255,1);
-	text-shadow:0px 3px 8px rgba(223,28,88,1);
+	font-size: 44rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	text-shadow: 0px 3px 8px rgba(223, 28, 88, 1);
 }
 </style>
