@@ -29,11 +29,15 @@
 		</view>
 		<view class="flex-item flex-item-V question-option">
 			<ul>
-				<li v-show="hasClickOption === true" v-for="(option, k) in question_options" :class="option.type == 2 ? 'question-right' : 'question-wrong'">
+				<li v-if="hasClickOption === true" v-for="(option, k) in question_options"
+				 :key="k"
+				 :class="option.type == 2 ? 'question-right' : 'question-wrong'">
 					<span>{{ option.option }}</span>
 				</li>
 
-				<li v-show="hasClickOption === false" v-for="(option, k) in question_options" @click="selectOption(option.type)">
+				<li v-if="hasClickOption === false" v-for="(option, k) in question_options"
+				 :key="k"
+				 @click="selectOption(option.type)">
 					<span>{{ option.option }}</span>
 				</li>
 			</ul>
@@ -237,7 +241,7 @@ export default {
 	height: 355rpx;
 	margin: 0 auto;
 	margin-top: 62rpx;
-	border: 1px solid red;
+	/* border: 1px solid red; */
 }
 
 .question-img img {

@@ -60,8 +60,6 @@
 			</view>
 		</view>
 		<!-- 信息提示弹框结束 -->
-		
-		
 	</view>
 </template>
 
@@ -69,6 +67,7 @@
 import util from '@/common/util.js';
 import http from '@/utils/http.js';
 import base from '@/utils/base.js';
+import qs from 'qs';
 
 export default {
 	name: 'sports',
@@ -77,18 +76,42 @@ export default {
 			msg_modal_share: false,
 			msg_modal_app_share: false,
 			uid: null,
+			token: null,
 			ns_device_id: null,
-			now_time: new Date().getTime(),
+
 			answer_chance: null,
 			nickname: null,
+
 			login_app_status: true, //在app中是否登录
 			contactExists: false,
-			isModalMsg:false,
-			name:'',
-			user_type:1, //用户类型  1 app  2 外部网页
+			isModalMsg: false,
+			name: '',
+			user_type: 1 //用户类型  1 app  2 外部网页
 		};
 	},
 	onLoad(option) {
+		// 	let aaa = 'v9Bw95lNZUQijVFvuAZeDctAWjsb6gZG0Yx7uydoVDcXyxf/zw58skTwcdWPXfcJvMvUzzqG4A0+WKZO+p1B3258aCt2V577ToByq6YdC7DJP+H14kywvG2Rt6bVoG0ZlUqCUuYpQ596oM7WnVIVzVRV+2nHs8Q3VBgqO95NiXg='
+		// 	let req_url = 'https://slapi.npse.com:8081/v3/user/info'
+		// 	let params = {
+		// 		ns_device_id:'86111904506227601F06C32FEB35E32082B963EBB5FF62F20',
+		// 		uid:'469234',
+		// 		token:encodeURI(aaa)
+		// 		}
+
+		// console.log(params)
+		// http.get(req_url, {params:(params)})
+		// 	.then(res => {
+		// 		console.log(res);
+		// 		// alert(res.Status+'--'+res.data)
+		// 		if (res.status == 200) {
+
+		// 		} else {
+		// 			alert('server error');
+		// 		}
+		// 	})
+		// 	.catch(error => {})
+		// 	.finally(() => {});
+
 		let uid = uni.getStorageSync('uid');
 		let ns_device_id = uni.getStorageSync('ns_device_id');
 
@@ -97,7 +120,8 @@ export default {
 			// 表示在外部网页打开
 
 			this.contactExists = false;
-			this.user_type = 2 // 2代表web网页用户
+			this.user_type = 2; // 2代表web网页用户
+			uni.setStorageSync('user_type', 2);
 
 			if (!uid || uid == null || uid == '' || uid === undefined) {
 				this.uid = util.randomWord(false, 18);
@@ -112,30 +136,46 @@ export default {
 			} else {
 				this.ns_device_id = ns_device_id;
 			}
-			
 		} else {
 			//通过app打开
 			this.contactExists = true;
-			this.user_type = 1 //1  app 用户
+			this.user_type = 1; //1  app 用户
+			uni.setStorageSync('user_type', 1);
 
-			//  表示在app中打开
+			//  表示在app中打开 登陆完成之后的回调
 			contact.onLoginDone = function(uid, token) {
 				this.login_app_status = true;
-				this.uid = uid;
-				this.ns_device_id = option.ns_device_id;
+
+				uni.removeStorageSync('uid');
+				uni.removeStorageSync('token');
+				uni.removeStorageSync('ns_device_id');
 				uni.setStorageSync('uid', uid);
+				uni.setStorageSync('token', token);
+				uni.setStorageSync('ns_device_id', option.ns_device_id);
+				location.reload();
 			}
-			
+
 			if (option.uid === 'null' || option.uid === '' || option.uid === undefined || option.uid === null) {
 				this.login_app_status = false;
 			} else {
-				this.uid = option.uid;
-				this.ns_device_id = option.ns_device_id;
-				uni.setStorageSync('uid',option.uid)
+				uni.removeStorageSync('uid');
+				uni.removeStorageSync('token');
+				uni.removeStorageSync('ns_device_id');
+				uni.setStorageSync('uid', option.uid);
+				uni.setStorageSync('token', option.token);
+				uni.setStorageSync('ns_device_id', option.ns_device_id);
 				this.login_app_status = true;
 			}
-			// alert(option.uid)
-			alert(uni.getStorageSync('uid') + '---' + this.contactExists + '------' + this.login_app_status);
+
+			this.uid = uni.getStorageSync('uid');
+			this.token = uni.getStorageSync('token');
+			this.ns_device_id = uni.getStorageSync('ns_device_id');
+
+			//分享成功 答题机会加 1 	
+			contact.onShareDone = function() {
+				this.updateAnswerChance(this.uid, this.$question.activity_id, 1)
+			}
+			// alert(this.uid + '--' + this.token + '--' + this.ns_device_id);
 		}
 	},
 	methods: {
@@ -200,7 +240,7 @@ export default {
 				.then(res => {
 					console.log(res);
 					if (res.status == 200) {
-						
+						// alert(res.data.data.updateRow)
 					} else {
 						return alert('server error');
 					}
@@ -208,6 +248,7 @@ export default {
 				.catch(error => {})
 				.finally(() => {});
 		},
+
 		msg_modal_app() {
 			this.msg_modal_app_share = false;
 		},
@@ -216,18 +257,18 @@ export default {
 		},
 		turn_rank() {
 			uni.reLaunch({
-				url: '/pages/sports/info',
+				url: '/pages/sports/info?click=1',
 				success() {}
 			});
 		},
 		turn_rule() {
 			uni.reLaunch({
-				url: '/pages/sports/info',
+				url: '/pages/sports/info?click=2',
 				success() {}
 			});
 		}
 	}
-};
+}
 </script>
 
 <style>
@@ -360,19 +401,19 @@ a {
 }
 .index-d-bg span {
 	font-size: 74rpx;
-	font-family:wawaw5;
+	font-family: wawaw5;
 	font-weight: bold;
-	color: #2A64D0;
+	color: #2a64d0;
 	line-height: 62rpx;
 	-webkit-text-stroke: 1rpx rgba(16, 16, 16, 0.8);
 	text-stroke: 1rpx rgba(16, 16, 16, 0.8);
 }
 @font-face {
-	font-family:'hywawazhuanj';
-	src: url("~@/static/HYWaWaZhuanJ.ttf");
+	font-family: 'hywawazhuanj';
+	src: url('~@/static/HYWaWaZhuanJ.ttf');
 }
 @font-face {
-	font-family:'wawaw5';
-	src: url("~@/static/huakangwawaW5.ttf");
+	font-family: 'wawaw5';
+	src: url('~@/static/huakangwawaW5.ttf');
 }
 </style>

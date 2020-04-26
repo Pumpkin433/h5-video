@@ -28,9 +28,25 @@
                 }
             })
             // #endif
+			if (typeof contact !== 'undefined') {
+				//  表示在app中打开 登陆完成之后的回调
+				contact.onLoginDone = function(uid, token) {
+					uni.removeStorageSync('uid');
+					uni.removeStorageSync('token');
+					uni.setStorageSync('uid', uid);
+					uni.setStorageSync('token', token);
+				}
+				
+				let uid = uni.getStorageSync('uid')
+				//分享成功 答题机会加 1
+				contact.onShareDone = function() {
+					this.updateAnswerChance(uid, this.$question.activity_id, 1)
+				}
+			}
+
         },
         onShow: function() {
-			
+		
 			
             console.log('App Show')	
         },
