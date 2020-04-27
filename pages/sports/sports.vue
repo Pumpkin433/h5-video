@@ -130,16 +130,19 @@ export default {
 				uni.removeStorageSync('token');
 				uni.setStorageSync('uid', uid);
 				uni.setStorageSync('token', token);
-				console.log(uid + '-' + token);
-				uni.setStorageSync('login_app_status', true);
-				// this.login_app_status = true;
-				
+				// console.log(uid + '-' + token);
+				uni.setStorageSync('login_app_status', true)
+					
+				uni.reLaunch({
+					url:'/pages/sports/mid'
+				})
 			}
-
+		
+			console.log(uni.getStorageSync('login_app_status'))
 			if (option.uid === 'null' || option.uid === '' || option.uid === undefined || option.uid === null) {
 				
 				let hasLogin = uni.getStorageSync('login_app_status');
-				console.log(hasLogin)
+				console.log(hasLogin + '9090')
 				
 				if (hasLogin == true) {
 					this.login_app_status = true;

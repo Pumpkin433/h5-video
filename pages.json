@@ -32,6 +32,21 @@
 				}
 			}
 		},
+		{
+			"path":"pages/sports/mid",
+			"style":{
+				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+				// "navigationStyle":"custom",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+								"type": "share"
+							}
+						]
+					}
+				}
+			}
+		},
 	{
 		"path":"pages/sports/info",
 		"style":{
