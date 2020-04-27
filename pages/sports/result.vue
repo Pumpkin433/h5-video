@@ -227,7 +227,8 @@ export default {
 									device_id: 'website',
 									platform: 'web'
 								};
-								let req_url = 'https://api.npse.com:8081/OTPLogin';
+								let req_url = base.bd+'/OTPLogin'
+								
 								http.post(req_url, data, { headers: header })
 									.then(res => {
 										console.log(res);
