@@ -102,7 +102,8 @@ export default {
 			let data = {
 				uid: this.uid,
 				activity_id: this.$question.activity_id
-			};
+			}
+			
 			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
 				.then(res => {
 					// console.log(res);
@@ -110,21 +111,28 @@ export default {
 						// console.log(res.data.data.count);
 						let count = res.data.data.count;
 						// 如果用户没有添加到数据库
+						// alert(count)
+						
 						if (count <= 0) {
 							
 							let req_url = base.bd + '/v3/user/info';
-							let params = {
+							let headers = {
 								ns_device_id: this.ns_device_id,
 								uid: this.uid,
 								token: this.token
 							};
-							http.get(req_url, { params: params }).then(res => {
+							http.get(req_url, { headers:headers }).then(res => {
 								console.log(res);
+								alert(res.data.Status)
+								
 								if (res.status == 200) {
 									if (res.data.Status == 1) {
 										let nickname = res.data.Data.nickname;
 										let mobile = res.data.Data.phone;
-										this.addUser(this.uid, nickname, mobile, this.$question.activity_id, this.score, this.ns_device_id, 1);
+										// alert(this.uid+'--'+res.data.Data.nickname+'--'+ res.data.Data.phone)
+										this.addUser(this.uid, nickname,mobile,
+										 this.$question.activity_id, 
+										 this.score, this.ns_device_id, 1);
 									} else {
 										return alert(res.data.ErrorMsg);
 									}
@@ -135,7 +143,7 @@ export default {
 							
 						} else {
 							// 更新用户积分
-							this.updateUserScore(this.uid, this.$question.activity_id, this.score);
+							this.updateUserScore(this.uid, this.$question.activity_id, this.score,2);
 						}
 					} else {
 						return alert('server error');
@@ -323,7 +331,8 @@ export default {
 				.then(res => {
 					// console.log(res);
 					if (res.status == 200) {
-						location.reload()
+						alert(res.data.data)
+						// location.reload()
 					} else {
 						return alert('server error');
 					}
@@ -363,7 +372,8 @@ export default {
 				.then(res => {
 					console.log(res);
 					if (res.status == 200) {
-						this.max_score = res.data.data.maxScore ? null : 0;
+						this.max_score = res.data.data.maxScore;
+						console.log(this.max_score)
 					} else {
 						return alert('server error');
 					}
@@ -581,6 +591,6 @@ export default {
 
 @font-face {
 	font-family: 'wawaw5';
-	src: url('~@/static/huakangwawaW5.ttf');
+	src: url(https://aloss.hotforest.cn/basketball-v2/huakangwawaW5.ttf);
 }
 </style>

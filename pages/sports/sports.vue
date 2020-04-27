@@ -86,31 +86,13 @@ export default {
 			contactExists: false,
 			isModalMsg: false,
 			name: '',
-			user_type: 1 //用户类型  1 app  2 外部网页
+			user_type: 1, //用户类型  1 app  2 外部网页
+
+			hasShareDone: false // 是否分享了
 		};
 	},
 	onLoad(option) {
-		// 	let aaa = 'v9Bw95lNZUQijVFvuAZeDctAWjsb6gZG0Yx7uydoVDcXyxf/zw58skTwcdWPXfcJvMvUzzqG4A0+WKZO+p1B3258aCt2V577ToByq6YdC7DJP+H14kywvG2Rt6bVoG0ZlUqCUuYpQ596oM7WnVIVzVRV+2nHs8Q3VBgqO95NiXg='
-		// 	let req_url = 'https://slapi.npse.com:8081/v3/user/info'
-		// 	let params = {
-		// 		ns_device_id:'86111904506227601F06C32FEB35E32082B963EBB5FF62F20',
-		// 		uid:'469234',
-		// 		token:encodeURI(aaa)
-		// 		}
-
-		// console.log(params)
-		// http.get(req_url, {params:(params)})
-		// 	.then(res => {
-		// 		console.log(res);
-		// 		// alert(res.Status+'--'+res.data)
-		// 		if (res.status == 200) {
-
-		// 		} else {
-		// 			alert('server error');
-		// 		}
-		// 	})
-		// 	.catch(error => {})
-		// 	.finally(() => {});
+		uni.setStorageSync('activity_id', this.$question.activity_id);
 
 		let uid = uni.getStorageSync('uid');
 		let ns_device_id = uni.getStorageSync('ns_device_id');
@@ -144,19 +126,26 @@ export default {
 
 			//  表示在app中打开 登陆完成之后的回调
 			contact.onLoginDone = function(uid, token) {
-				this.login_app_status = true;
-
 				uni.removeStorageSync('uid');
 				uni.removeStorageSync('token');
-				uni.removeStorageSync('ns_device_id');
 				uni.setStorageSync('uid', uid);
 				uni.setStorageSync('token', token);
-				uni.setStorageSync('ns_device_id', option.ns_device_id);
-				location.reload();
+				console.log(uid + '-' + token);
+				uni.setStorageSync('login_app_status', true);
+				// this.login_app_status = true;
+				
 			}
 
 			if (option.uid === 'null' || option.uid === '' || option.uid === undefined || option.uid === null) {
-				this.login_app_status = false;
+				
+				let hasLogin = uni.getStorageSync('login_app_status');
+				console.log(hasLogin)
+				
+				if (hasLogin == true) {
+					this.login_app_status = true;
+				} else {
+					this.login_app_status = false;
+				}
 			} else {
 				uni.removeStorageSync('uid');
 				uni.removeStorageSync('token');
@@ -170,14 +159,9 @@ export default {
 			this.uid = uni.getStorageSync('uid');
 			this.token = uni.getStorageSync('token');
 			this.ns_device_id = uni.getStorageSync('ns_device_id');
-
-			//分享成功 答题机会加 1 	
-			contact.onShareDone = function() {
-				this.updateAnswerChance(this.uid, this.$question.activity_id, 1)
-			}
-			// alert(this.uid + '--' + this.token + '--' + this.ns_device_id);
 		}
 	},
+
 	methods: {
 		loginApp() {
 			contact.requireLogin();
@@ -268,7 +252,7 @@ export default {
 			});
 		}
 	}
-}
+};
 </script>
 
 <style>
@@ -347,7 +331,7 @@ a {
 }
 
 .index-bg {
-	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/index-bg.png) no-repeat;
+	background: url(https://aloss.hotforest.cn/basketball-v2/index-bg.png) no-repeat;
 	width: 100%;
 	height: 100%;
 	background-size: 100% 100%;
@@ -365,7 +349,7 @@ a {
 	float: left;
 	width: 214rpx;
 	height: 104rpx;
-	background: url('https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/index-top-l.png') no-repeat;
+	background: url('https://aloss.hotforest.cn/basketball-v2/index-top-l.png') no-repeat;
 	background-size: 100% 100%;
 	background-position: left;
 	margin-left: 20rpx;
@@ -376,7 +360,7 @@ a {
 	float: right;
 	width: 193rpx;
 	height: 108rpx;
-	background: url('https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/index-top-r.png') no-repeat;
+	background: url('https://aloss.hotforest.cn/basketball-v2/index-top-r.png') no-repeat;
 	background-size: 100% 100%;
 	background-position: right;
 	cursor: pointer;
@@ -393,7 +377,7 @@ a {
 .index-d-bg {
 	width: 490rpx;
 	height: 156rpx;
-	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/index-button.png) no-repeat;
+	background: url(https://aloss.hotforest.cn/basketball-v2/index-button.png) no-repeat;
 	text-align: center;
 	margin: 0 auto;
 	line-height: 156rpx;
@@ -408,12 +392,9 @@ a {
 	-webkit-text-stroke: 1rpx rgba(16, 16, 16, 0.8);
 	text-stroke: 1rpx rgba(16, 16, 16, 0.8);
 }
-@font-face {
-	font-family: 'hywawazhuanj';
-	src: url('~@/static/HYWaWaZhuanJ.ttf');
-}
+
 @font-face {
 	font-family: 'wawaw5';
-	src: url('~@/static/huakangwawaW5.ttf');
+	src: url(https://aloss.hotforest.cn/basketball-v2/huakangwawaW5.ttf);
 }
 </style>

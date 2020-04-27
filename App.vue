@@ -1,4 +1,7 @@
 <script>
+	import http from '@/utils/http.js';
+	import base from '@/utils/base.js';
+	
     export default {
         onLaunch: function() {
             console.log('App Launch');
@@ -28,26 +31,38 @@
                 }
             })
             // #endif
+			
 			if (typeof contact !== 'undefined') {
-				//  表示在app中打开 登陆完成之后的回调
-				contact.onLoginDone = function(uid, token) {
-					uni.removeStorageSync('uid');
-					uni.removeStorageSync('token');
-					uni.setStorageSync('uid', uid);
-					uni.setStorageSync('token', token);
+				
+				//分享成功 答题机会加 1
+				contact.onShareDone =  function() {
+					
+					// alert(uni.getStorageSync('uid'))
+					let data = {
+						uid: uni.getStorageSync('uid'),
+						activity_id: uni.getStorageSync('activity_id'),
+						type: 1
+					} 
+					
+					http.post(base.sq + '/activity/api.UsersAnswerChance/update', data)
+						.then(res => {
+							console.log(res);
+							if (res.status == 200) {
+								
+								// alert(res.data.data.updateRow)
+							} else {
+								return alert('server error');
+							}
+						})
+						.catch(error => {})
+						.finally(() => {});
+					
 				}
 				
-				let uid = uni.getStorageSync('uid')
-				//分享成功 答题机会加 1
-				contact.onShareDone = function() {
-					this.updateAnswerChance(uid, this.$question.activity_id, 1)
-				}
 			}
 
         },
         onShow: function() {
-		
-			
             console.log('App Show')	
         },
         onHide: function() {
