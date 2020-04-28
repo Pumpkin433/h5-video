@@ -8,8 +8,13 @@
 			<span>{{ score }}</span>
 			积分
 		</view>
-		<view class="flex-item flex-item-V  res-2">
+		<view class="flex-item flex-item-V  res-2" v-if="max_score !== null">
 			历史最高分 {{ max_score }} 分
+			<br />
+			获得称号
+		</view>
+		<view class="flex-item flex-item-V  res-2" v-if="max_score == null">
+			历史最高分 0 分
 			<br />
 			获得称号
 		</view>
@@ -67,10 +72,14 @@ export default {
 		};
 	},
 	onLoad(option) {
+		
 		this.score = option.s;
 		this.user_type = uni.getStorageSync('user_type');
+		
 		this.uid = uni.getStorageSync('uid');
+		this.token = uni.getStorageSync('token');
 		this.ns_device_id = uni.getStorageSync('ns_device_id');
+		
 		//获取用户最高分
 		this.getUserMaxScore(this.uid, this.$question.activity_id);
 
@@ -92,12 +101,10 @@ export default {
 		}else if(this.score == 100){
 			this.honor = 'NBA英雄'
 		}
-		
+		console.log(this.user_type)
 		// app 用户 第一种情况
 		if (this.user_type == 1) {
-			this.uid = uni.getStorageSync('uid');
-			this.token = uni.getStorageSync('token');
-			this.ns_device_id = uni.getStorageSync('ns_device_id');
+			
 			
 			let data = {
 				uid: this.uid,
@@ -110,9 +117,8 @@ export default {
 					if (res.status == 200) {
 						// console.log(res.data.data.count);
 						let count = res.data.data.count;
-						// 如果用户没有添加到数据库
-						// alert(count)
 						
+						// 检查用户是否在数据库中
 						if (count <= 0) {
 							
 							let req_url = base.bd + '/v3/user/info';
@@ -129,12 +135,28 @@ export default {
 									if (res.data.Status == 1) {
 										let nickname = res.data.Data.nickname;
 										let mobile = res.data.Data.phone;
+										console.log(res)
+										if(mobile == ''){
+											this.isModalMsg = true;
+											this.user_type = 3 // 3代表来自app 但是未绑定手机号
+											uni.removeStorageSync('user_type')
+											uni.setStorageSync('user_type',3)
+										}else{
+											this.addUser(this.uid, nickname,mobile,
+											 this.$question.activity_id, 
+											 this.score, this.ns_device_id, 1);
+										}
 										// alert(this.uid+'--'+res.data.Data.nickname+'--'+ res.data.Data.phone)
-										this.addUser(this.uid, nickname,mobile,
-										 this.$question.activity_id, 
-										 this.score, this.ns_device_id, 1);
+										
 									} else {
-										return alert(res.data.ErrorMsg);
+										// return alert(res.data.ErrorMsg);
+										return uni.showToast({
+										    title: res.data.ErrorMsg,
+											icon:'none',
+											mask:true,
+										    duration: 2000
+										});
+										
 									}
 								} else {
 									return alert('server error');
@@ -176,9 +198,21 @@ export default {
 					console.log(res);
 					if (res.status == 200) {
 						if (res.data.Status === 1) {
-							alert('验证码 发送成功');
+							// alert('验证码 发送成功');
+							uni.showToast({
+							    title: '验证码 发送成功',
+								mask:true,
+							    duration: 2000
+							});
 						} else {
-							alert('验证码 发送失败');
+							// alert('验证码 发送失败');
+						
+							uni.showToast({
+							    title: '验证码发送失败',
+								icon:'none',
+								mask:true,
+							    duration: 2000
+							});
 						}
 					} else {
 						alert('server error');
@@ -190,21 +224,39 @@ export default {
 		// 登陆 用此登陆 外部用户判断status =1   但是会同步注册and存入全民体育用户数据库
 		otpLogin() {
 			if (this.nickname == '') {
-				return alert('请输入昵称');
+				// return alert('请输入昵称');
+				return uni.showToast({
+				    title: '请输入昵称',
+					icon:'none',
+					mask:true,
+				    duration: 2000
+				});
 			}
 			if (this.mobile == '') {
-				return alert('请输入手机号');
+				return uni.showToast({
+				    title: '请输入昵称',
+					icon:'none',
+					mask:true,
+				    duration: 2000
+				});
+				// return alert('请输入手机号');
 			}
 
 			if (this.qrcode == '') {
-				return alert('请输入验证码');
+			
+				return uni.showToast({
+				    title: '请输入验证码',
+					icon:'none',
+					mask:true,
+				    duration: 2000
+				});
 			}
-			//检查手机号是否存在 针对外部用户
+			//检查手机号是否存在 针对外部用户  user_type 2代表外部用户  3代表来自app 但是未绑定手机号
 			if (this.mobile != '') {
 				let data = {
 					mobile: this.mobile,
 					activity_id: this.$question.activity_id,
-					user_type: 2
+					user_type: this.user_type
 				}
 				
 				http.post(base.sq + '/activity/api.users/checkMobileExits', data)
@@ -215,7 +267,13 @@ export default {
 								//手机已经注册
 								let answer_chance = res.data.data.answer_chance;
 								if (answer_chance <= 0) {
-									return alert('该手机答题机会已经用完');
+									return uni.showToast({
+									    title: '此手机号无答题机会',
+										icon:'none',
+										mask:true,
+									    duration: 2000
+									});
+									
 								} else {
 									uni.removeStorageSync('uid');
 									uni.setStorageSync('uid', res.data.data.uid);
@@ -250,13 +308,14 @@ export default {
 												activity_id: this.$question.activity_id,
 												score: this.score,
 												ns_device_id: this.ns_device_id,
-												user_type: 2
+												user_type: this.user_type
 											};
 											http.post(base.sq + '/activity/api.users/add', data)
 												.then(res => {
 													console.log(res);
 													if (res.status == 200) {
-														location.reload()
+														this.isModalMsg = false
+														// location.reload()
 													} else {
 														return alert('server error');
 													}
@@ -264,7 +323,13 @@ export default {
 												.catch(error => {})
 												.finally(() => {});
 											}else{
-												alert('验证码错误')
+											
+												return uni.showToast({
+												    title: '验证码错误',
+													icon:'none',
+													mask:true,
+												    duration: 2000
+												});
 											}
 										} else {
 											return alert('server error');
@@ -284,7 +349,7 @@ export default {
 
 		answerAgain(answer_type) {
 		
-			if(this.user_type == 2){
+			if(this.user_type == 2 || this.user_type == 3){
 				let data = {
 					uid: this.uid,
 					activity_id:this.$question.activity_id
@@ -396,7 +461,7 @@ export default {
 	width: 270rpx;
 	height: 286rpx;
 	margin: 0 auto;
-	margin-top: 40rpx;
+	margin-top: 80rpx;
 	
 }
 .res-jb img{
@@ -428,7 +493,7 @@ export default {
 	width: 192rpx;
 	height: 189rpx;
 	margin: 0 auto;
-	margin-top: 42rpx;
+	margin-top: 62rpx;
 }
 .res-qrcode img{
 	width: 100%;
@@ -438,7 +503,7 @@ export default {
 	width: 417rpx;
 	height: 82rpx;
 	margin: 0 auto;
-	margin-top: 45rpx;
+	margin-top: 80rpx;
 	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/res-button.png) no-repeat center;
 	background-size: 100% 100%;
 
@@ -463,6 +528,7 @@ export default {
 	width: 330rpx;
 	height: 100rpx;
 	margin: 0 auto;
+	margin-top: 40rpx;
 
 	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/result-again.png) no-repeat center;
 	background-size: 100% 100%;
@@ -481,7 +547,7 @@ export default {
 	width: 100%;
 	height: 100%;
 	position: fixed;
-	z-index: 10000000;
+	z-index: 100;
 	top: 0;
 	left: 0;
 }
@@ -499,7 +565,7 @@ export default {
 	margin: auto;
 
 	position: fixed;
-	z-index: 100000000;
+	z-index: 120;
 }
 
 .modal-msg-bg h3 {

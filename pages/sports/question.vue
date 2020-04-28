@@ -20,24 +20,26 @@
 			<view class="time-right-icon">
 				<img src="https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/question-jy.gif" alt="" /></view>
 		</view>
-		<view class="flex-item flex-item-V question-title">
+		<view class="flex-item flex-item-V question-title" v-if="question">
 			<p>{{ question.q_title }}</p>
 		</view>
 
-		<view class="flex-item flex-item-V question-img">
+		<view class="flex-item flex-item-V question-img" v-if="question">
 			<img :src="question.q_image" alt="" />
 		</view>
-		<view class="flex-item flex-item-V question-option">
+		<view class="flex-item flex-item-V question-option" v-if="question">
 			<ul>
 				<li v-if="hasClickOption === true" v-for="(option, k) in question_options"
 				 :key="k"
-				 :class="option.type == 2 ? 'question-right' : 'question-wrong'">
+				 :class="[option.type == 2 && sIndex == k ? 'question-right' : '',
+				 option.type == 1 && sIndex == k ? 'question-wrong' : '' ]"
+				 >
 					<span>{{ option.option }}</span>
 				</li>
 
 				<li v-if="hasClickOption === false" v-for="(option, k) in question_options"
 				 :key="k"
-				 @click="selectOption(option.type)">
+				 @click="selectOption(option.type,k)">
 					<span>{{ option.option }}</span>
 				</li>
 			</ul>
@@ -75,7 +77,8 @@ export default {
 	
 			hasClickOption: false, //是否点击了答案,
 			uidStatus: false,
-			question_options: []
+			question_options: [],
+			sIndex:0,
 		}
 	},
 	onLoad(option) {
@@ -94,8 +97,11 @@ export default {
 
 			this.total_question = this.questionList.length;
 			this.question = this.questionList[this.q_key];
+			console.log(this.question)
+			if(this.question){
+				this.question_options = randomOption([this.question.option_a, this.question.option_b, this.question.option_c, this.question.correct], 4);
+			}
 
-			this.question_options = randomOption([this.question.option_a, this.question.option_b, this.question.option_c, this.question.correct], 4);
 			// 问题回答完毕
 			if (option.k === option.t) {
 				this.reset = !this.reset;
@@ -126,7 +132,9 @@ export default {
 		
 		
 		// 选择答案
-		selectOption(type) {
+		selectOption(type,k) {
+			console.log(k)
+			this.sIndex = k
 			this.q_key++;
 			if (type === 2) {
 				this.total_score++;

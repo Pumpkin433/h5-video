@@ -416,7 +416,7 @@ export default {
 }
 .rule-rule-c {
 	margin-top: 40rpx;
-	font-size: 20rpx;
+	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(32, 32, 32, 1);
@@ -450,7 +450,7 @@ export default {
 .rule-prize-c-r {
 	float: left;
 	width: 60%;
-	font-size: 20rpx;
+	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(32, 32, 32, 1);
@@ -464,7 +464,7 @@ export default {
 }
 .back-text{
 	float: left;
-	font-size:16rpx;
+	font-size:18rpx;
 	font-family:Lantinghei SC;
 	font-weight:600;
 	color:rgba(32,32,32,1);
@@ -472,8 +472,8 @@ export default {
 }
 .back-img{
 	float: left;
-	width: 33rpx;
-	height: 29rpx;
+	width: 53rpx;
+	height: 49rpx;
 	margin-left: 10rpx;
 }
 .back-img img{

@@ -18,45 +18,18 @@
 		<view class="msg-modal" v-show="msg_modal_share === true" @click="msg_modal_close"></view>
 		<view class="msg-modal-bg" v-show="msg_modal_share === true">
 			<view class="modal-msg-t">
-				<h3>
+				<view class="modal-msg-t-1">骚年 !</view>
+				<view class="modal-msg-t-2">
 					您今天答题的机会
 					<br />
-					已经用完了
-				</h3>
-			</view>
-			<view class="modal-msg-d">
-				<view class="modal-msg-d-l">
-					<p>
-						长按保存二维码
-						<br />
-						下载全民体育APP 参与活动
-					</p>
+					已经用完啦!
 				</view>
-				<view class="modal-msg-d-r"><img src="http://aloss.hotforest.cn/h5-basketball/m-share-qrcode.png" alt="" /></view>
-			</view>
-		</view>
-		<!-- 信息提示弹框结束 -->
-
-		<!-- 打开app 弹框 -->
-		<view class="msg-modal" v-show="msg_modal_app_share === true" @click="msg_modal_app"></view>
-		<view class="msg-modal-bg" v-show="msg_modal_app_share === true">
-			<view class="modal-msg-t">
-				<h3>
-					打开全民体育App
+				<view class="modal-msg-t-3">
+					下载全民体育app
 					<br />
-					参与答题
-				</h3>
-				<!-- <h5>分享可以免费获取一次答题机会</h5> -->
-			</view>
-			<view class="modal-msg-d">
-				<view class="modal-msg-d-l">
-					<p>
-						长按识别二维码
-						<br />
-						下载全民体育APP 参与活动
-					</p>
+					获得更多答题机会！
 				</view>
-				<view class="modal-msg-d-r"><img src="http://aloss.hotforest.cn/h5-basketball/m-share-qrcode.png" alt="" /></view>
+				<view class="modal-msg-t-4"><img src="https://aloss.hotforest.cn/basketball-v2/modal-end-qrcode.png" alt="" /></view>
 			</view>
 		</view>
 		<!-- 信息提示弹框结束 -->
@@ -92,8 +65,6 @@ export default {
 		};
 	},
 	onLoad(option) {
-		uni.setStorageSync('activity_id', this.$question.activity_id);
-
 		let uid = uni.getStorageSync('uid');
 		let ns_device_id = uni.getStorageSync('ns_device_id');
 
@@ -121,8 +92,14 @@ export default {
 		} else {
 			//通过app打开
 			this.contactExists = true;
-			this.user_type = 1; //1  app 用户
-			uni.setStorageSync('user_type', 1);
+			let hasUserType = uni.getStorageSync('user_type');
+			console.log(hasUserType);
+			if (hasUserType) {
+				uni.setStorageSync('user_type', hasUserType);
+			} else {
+				this.user_type = 1; //1  app 用户
+				uni.setStorageSync('user_type', 1);
+			}
 
 			//  表示在app中打开 登陆完成之后的回调
 			contact.onLoginDone = function(uid, token) {
@@ -130,20 +107,19 @@ export default {
 				uni.removeStorageSync('token');
 				uni.setStorageSync('uid', uid);
 				uni.setStorageSync('token', token);
-				// console.log(uid + '-' + token);
-				uni.setStorageSync('login_app_status', true)
-					
+				uni.setStorageSync('login_app_status', true);
+
 				uni.reLaunch({
-					url:'/pages/sports/mid'
-				})
-			}
-		
-			console.log(uni.getStorageSync('login_app_status'))
+					url: '/pages/sports/mid?ns_device_id='+uni.getStorageSync('ns_device_id')
+				});
+			};
+
+			console.log(uni.getStorageSync('login_app_status'));
 			if (option.uid === 'null' || option.uid === '' || option.uid === undefined || option.uid === null) {
-				
+				uni.setStorageSync('ns_device_id', option.ns_device_id);
+
 				let hasLogin = uni.getStorageSync('login_app_status');
-				console.log(hasLogin + '9090')
-				
+
 				if (hasLogin == true) {
 					this.login_app_status = true;
 				} else {
@@ -158,11 +134,15 @@ export default {
 				uni.setStorageSync('ns_device_id', option.ns_device_id);
 				this.login_app_status = true;
 			}
-
-			this.uid = uni.getStorageSync('uid');
-			this.token = uni.getStorageSync('token');
-			this.ns_device_id = uni.getStorageSync('ns_device_id');
 		}
+		
+		this.uid = uni.getStorageSync('uid');
+		this.token = uni.getStorageSync('token');
+		this.ns_device_id = uni.getStorageSync('ns_device_id');
+		console.log(this.uid);
+		console.log(this.token);
+		console.log(this.ns_device_id);
+		
 	},
 
 	methods: {
@@ -206,10 +186,6 @@ export default {
 					if (res.status == 200) {
 						this.$question.setQusetionList(res.data.data);
 						this.updateAnswerChance(this.uid, activity_id, 2);
-						uni.redirectTo({
-							url: '/pages/sports/question',
-							success() {}
-						});
 					} else {
 						return alert('server error');
 					}
@@ -227,6 +203,10 @@ export default {
 				.then(res => {
 					console.log(res);
 					if (res.status == 200) {
+						uni.redirectTo({
+							url: '/pages/sports/question',
+							success() {}
+						});
 						// alert(res.data.data.updateRow)
 					} else {
 						return alert('server error');
@@ -264,14 +244,19 @@ a {
 }
 
 .msg-modal-bg {
-	background: url(http://aloss.hotforest.cn/h5-basketball/question-end-bg.png) no-repeat;
+	background: url(https://aloss.hotforest.cn/basketball-v2/modal-end-bg.png) no-repeat;
 	background-size: 100% 100%;
-	width: 80%;
-	height: 756.47rpx;
-	top: 20%;
-	left: 10%;
+	/* width: 80%; */
+	width: 516rpx;
+	height: 653rpx;
+	/* height: 756.47rpx; */
 	position: fixed;
 	z-index: 100000000;
+	margin: auto;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
 }
 
 .msg-modal {
@@ -287,52 +272,42 @@ a {
 }
 .modal-msg-t {
 	text-align: center;
-	height: 50%;
-	padding: 20% 10% 0% 10%;
-}
-.modal-msg-t h3 {
-	color: white;
-	width: 100%;
-	margin: 0 auto;
-	font-size: 51.76rpx;
-}
-.modal-msg-t h5 {
-	color: #333333;
-	font-size: 29.41rpx;
-	margin-top: 30px;
-}
-.modal-msg-d {
-	height: 30%;
-}
-.modal-msg-d-l {
-	padding-left: 10%;
-	padding-top: 10%;
-	width: 50%;
-	float: left;
-}
-.modal-msg-d-l p {
-	font-size: 25.88rpx;
-	font-family: Lantinghei SC;
-	font-weight: 600;
-	color: rgba(51, 51, 51, 1);
-}
-.modal-msg-d-r {
-	width: 30%;
-	margin-left: 10%;
-	padding-top: 5%;
-	float: left;
-}
-.modal-msg-d-r img {
-	width: 138.82rpx;
 	height: 100%;
-}
-.msg-modal span {
-	font-size: 24rpx;
-	font-family: Lantinghei SC;
-	font-weight: 600;
-	color: white;
+	padding: 5% 5% 0% 5%;
 }
 
+.modal-msg-t-1 {
+	font-size: 48rpx;
+	font-family: wawaw5;
+	font-weight: bold;
+	color: rgba(41, 41, 41, 1);
+}
+.modal-msg-t-2 {
+	font-size: 44rpx;
+	font-family: wawaw5;
+	font-weight: bold;
+	color: rgba(229, 63, 42, 1);
+	-webkit-text-stroke: 1rpx rgba(0, 0, 0, 0.5);
+}
+
+.modal-msg-t-3 {
+	width: 320rpx;
+	height: 142rpx;
+	margin: 0 auto;
+	background: url(https://aloss.hotforest.cn/basketball-v2/modal-end-line.png) no-repeat center;
+	background-size: 100% 100%;
+	font-size: 34rpx;
+	font-family: wawaw5;
+	font-weight: bold;
+	color: rgba(51, 51, 51, 1);
+}
+.modal-msg-t-4 {
+	margin-top: 22rpx;
+}
+.modal-msg-t-4 img {
+	width: 192rpx;
+	height: 189rpx;
+}
 .index-bg {
 	background: url(https://aloss.hotforest.cn/basketball-v2/index-bg.png) no-repeat;
 	width: 100%;

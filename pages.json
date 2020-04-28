@@ -5,7 +5,7 @@
 		{
 			"path":"pages/sports/sports",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -20,7 +20,7 @@
 		{
 			"path":"pages/sports/result",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -35,7 +35,7 @@
 		{
 			"path":"pages/sports/mid",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -50,7 +50,7 @@
 	{
 		"path":"pages/sports/info",
 		"style":{
-			"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+			"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
 			// "navigationStyle":"custom",
 			"h5": {
 				"titleNView": {
@@ -66,7 +66,7 @@
 		{
 			"path":"pages/sports/question",
 			"style":{
-				"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
 				// "navigationStyle":"custom",
 				"h5": {
 					"titleNView": {
@@ -1226,7 +1226,7 @@
 		"navigationStyle":"custom",
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "NBA谁更懂球-别说我没告诉你,答案都在文章里",
+		"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
 		"navigationBarBackgroundColor": "#00000",
 		"backgroundColor": "#F8F8F8",
 		"backgroundColorTop": "#000000",
