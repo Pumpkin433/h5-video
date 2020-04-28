@@ -376,7 +376,7 @@ export default {
 			
 			if(this.user_type == 1){
 				uni.reLaunch({
-					url: '/'
+					url: '/?uid='+this.uid
 				});
 			}
 			
@@ -417,7 +417,7 @@ export default {
 					if (res.status == 200) {
 						if(answer_type == 1){
 							uni.reLaunch({
-								url: '/'
+								url: '/?uid='+this.uid
 							});
 						}
 						

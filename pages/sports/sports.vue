@@ -27,7 +27,7 @@
 				<view class="modal-msg-t-3">
 					下载全民体育app
 					<br />
-					获得更多答题机会！
+					分享活动 答题机会+1！
 				</view>
 				<view class="modal-msg-t-4"><img src="https://aloss.hotforest.cn/basketball-v2/modal-end-qrcode.png" alt="" /></view>
 			</view>
@@ -93,7 +93,7 @@ export default {
 			//通过app打开
 			this.contactExists = true;
 			let hasUserType = uni.getStorageSync('user_type');
-			console.log(hasUserType);
+			console.log(hasUserType+'--hasUserType');
 			if (hasUserType) {
 				uni.setStorageSync('user_type', hasUserType);
 			} else {
@@ -114,7 +114,7 @@ export default {
 				});
 			};
 
-			console.log(uni.getStorageSync('login_app_status'));
+			console.log(uni.getStorageSync('login_app_status')+'--storageLogin_app_status');
 			if (option.uid === 'null' || option.uid === '' || option.uid === undefined || option.uid === null) {
 				uni.setStorageSync('ns_device_id', option.ns_device_id);
 
@@ -133,6 +133,7 @@ export default {
 				uni.setStorageSync('token', option.token);
 				uni.setStorageSync('ns_device_id', option.ns_device_id);
 				this.login_app_status = true;
+				console.log('3a--'+this.login_app_status)
 			}
 		}
 		
@@ -141,7 +142,8 @@ export default {
 		this.ns_device_id = uni.getStorageSync('ns_device_id');
 		console.log(this.uid);
 		console.log(this.token);
-		console.log(this.ns_device_id);
+		console.log(this.ns_device_id+'--ns_device_id');
+		console.log(this.login_app_status+'--login_app_status')
 		
 	},
 
@@ -291,7 +293,7 @@ a {
 }
 
 .modal-msg-t-3 {
-	width: 320rpx;
+	width: 420rpx;
 	height: 142rpx;
 	margin: 0 auto;
 	background: url(https://aloss.hotforest.cn/basketball-v2/modal-end-line.png) no-repeat center;
