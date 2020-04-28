@@ -123,7 +123,7 @@ export default {
 							};
 							http.get(req_url, { headers:headers }).then(res => {
 								console.log(res);
-								alert(res.data.Status)
+								// alert(res.data.Status)
 								
 								if (res.status == 200) {
 									if (res.data.Status == 1) {
@@ -239,9 +239,9 @@ export default {
 								
 								http.post(req_url, data, { headers: header })
 									.then(res => {
-										console.log(res);
+										// console.log(res);
 										if (res.status == 200) {
-											// if(res.data.Status == 1){
+											if(res.data.Status == 1){
 											// 添加用户 外部用户 user_type 2
 											let data = {
 												uid: this.uid,
@@ -263,9 +263,9 @@ export default {
 												})
 												.catch(error => {})
 												.finally(() => {});
-											// }else{
-											// 	alert('验证码错误')
-											// }
+											}else{
+												alert('验证码错误')
+											}
 										} else {
 											return alert('server error');
 										}
@@ -331,7 +331,7 @@ export default {
 				.then(res => {
 					// console.log(res);
 					if (res.status == 200) {
-						alert(res.data.data)
+						// alert(res.data.data)
 						// location.reload()
 					} else {
 						return alert('server error');
