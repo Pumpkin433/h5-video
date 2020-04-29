@@ -44,6 +44,9 @@
 				<view class="modal-msg-qrcode-label">验证码</view>
 				<view class="modal-msg-qrcode-input"><input type="number" v-model="qrcode" /></view>
 			</view>
+			<view class="modal-msg-alert-text">
+				请填写个人信息，否则分数不进入排行榜！！！
+			</view>
 			<view class="modal-msg-button" @click="otpLogin"><span>确认信息</span></view>
 		</view>
 		<!-- end -->
@@ -556,7 +559,7 @@ export default {
 	background: url(https://h5-activity.oss-cn-shanghai.aliyuncs.com/basketball-v2/msg-modal-bg.png) no-repeat;
 	background-size: 100% 100%;
 	width: 516rpx;
-	height: 546rpx;
+	height: 576rpx;
 
 	top: 0;
 	left: 0;
@@ -582,6 +585,13 @@ export default {
 	margin: 0 auto;
 	margin-top: 20rpx;
 }
+.modal-msg-alert-text{
+	text-align: center;
+	font-family: wawaw5;
+	font-size: 22rpx;
+	font-weight: 400;
+	color: rgba(61, 117, 210, 1);
+}
 .modal-msg-name-label {
 	float: left;
 	width: 19%;
@@ -592,6 +602,7 @@ export default {
 	float: left;
 	width: 79%;
 	border-bottom: 1px solid #000000;
+	text-indent: 14rpx;
 }
 
 .modal-msg-mobile {
@@ -609,6 +620,7 @@ export default {
 	float: left;
 	width: 79%;
 	border-bottom: 1px solid #000000;
+	text-indent: 14rpx;
 }
 
 .modal-msg-mobile-button {
@@ -637,6 +649,7 @@ export default {
 	float: left;
 	width: 79%;
 	border-bottom: 1px solid #000000;
+	text-indent: 14rpx;
 }
 
 .modal-msg-button {

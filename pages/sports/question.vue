@@ -1,7 +1,7 @@
 <template>
 	<view class="uni-flex uni-column question-bg">
 		<view class="flex-item flex-item-V time-position ">
-			<view class="time-text">时间</view>
+			<!-- <view class="time-text">时间</view> -->
 			<view class="time-interval">
 				<uni-countdown
 					:show-day="false"
@@ -218,6 +218,7 @@ export default {
 	color: rgba(255, 255, 255, 1);
 }
 .time-interval {
+	margin-top: 40rpx;
 	width: 100%;
 }
 .time-right-icon {
@@ -822,5 +823,9 @@ export default {
 	font-family: MF LingHei (Noncommercial);
 	font-weight: bold;
 	color: rgba(255, 255, 255, 1);
+}
+@font-face {
+	font-family: 'wawaw5';
+	src: url(https://aloss.hotforest.cn/basketball-v2/huakangwawaW5.ttf);
 }
 </style>

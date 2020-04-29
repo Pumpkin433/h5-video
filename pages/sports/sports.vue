@@ -114,7 +114,6 @@ export default {
 				});
 			};
 
-			console.log(uni.getStorageSync('login_app_status')+'--storageLogin_app_status');
 			if (option.uid === 'null' || option.uid === '' || option.uid === undefined || option.uid === null) {
 				uni.setStorageSync('ns_device_id', option.ns_device_id);
 

@@ -107,14 +107,10 @@
         "template" : "template.h5.html",
         "router" : {
             "mode" : "history",
-            "base" : "/foot/"
+            "base" : "/basket/"
         },
         "sdkConfigs" : {
-            "maps" : {
-                "qqmap" : {
-                    "key" : ""
-                }
-            }
+            "maps" : {}
         },
         "async" : {
             "timeout" : 20000
@@ -130,7 +126,7 @@
                     "secure" : false
                 }
             },
-            "https" : false
+            "https" : true
         },
         "publicPath" : "/",
         "optimization" : {
@@ -138,6 +134,6 @@
                 "enable" : true
             }
         },
-        "domain" : "foot.hotforest.cn"
+        "domain" : "basket.hotforest.cn"
     }
 }
