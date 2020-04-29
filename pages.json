@@ -119,10 +119,11 @@
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
-		"navigationBarBackgroundColor": "#00000",
+		"navigationBarBackgroundColor": "#000000",
 		"backgroundColor": "#F8F8F8",
 		"backgroundColorTop": "#000000",
 		"backgroundColorBottom": "#F4F5F6"
 	},
-	"tabBar": {}
+	"sitemapLocation":"sitemap.json"
+	
 }

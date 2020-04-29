@@ -1,0 +1,30 @@
+{
+  "pages": [
+    "pages/sports/sports",
+    "pages/sports/result",
+    "pages/sports/mid",
+    "pages/sports/info",
+    "pages/sports/question"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationStyle": "custom",
+    "pageOrientation": "portrait",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "挑战NBA经典——答案都在图片里",
+    "navigationBarBackgroundColor": "#000000",
+    "backgroundColor": "#F8F8F8",
+    "backgroundColorTop": "#000000",
+    "backgroundColorBottom": "#F4F5F6"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "演示定位能力"
+    }
+  },
+  "usingComponents": {
+    "page-head": "/components/page-head",
+    "page-foot": "/components/page-foot",
+    "u-link": "/components/uLink"
+  }
+}
