@@ -205,6 +205,9 @@ export default {
 	background-size: 100% 100%;
 }
 .info-top {
+	position: fixed;
+	z-index: 1000;
+	top: 0;
 	height: 130rpx;
 }
 .info-top-l {
@@ -251,7 +254,9 @@ export default {
 	background-size: 100% 100%;
 }
 .info-c {
+	margin-top: 140rpx;
 	height: 100%;
+	overflow: hidden;
 }
 .rank-3-t {
 	width: 80%;
@@ -401,6 +406,7 @@ export default {
 	padding-top: 10%;
 	height: 90%;
 	margin: 0 auto;
+	margin-top: 140rpx;
 }
 .rule-rule-t {
 	width: 165rpx;
