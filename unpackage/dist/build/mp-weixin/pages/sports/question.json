@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "挑战NBA经典——答案都在图片里",
-  "usingComponents": {
-    "uni-countdown": "/components/linnian-CountDown/uni-countdown"
-  }
-}

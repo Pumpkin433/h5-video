@@ -107,7 +107,7 @@
         "template" : "template.h5.html",
         "router" : {
             "mode" : "history",
-            "base" : "/basket/"
+            "base" : "/sign/"
         },
         "sdkConfigs" : {
             "maps" : {}
@@ -115,7 +115,7 @@
         "async" : {
             "timeout" : 20000
         },
-        "title" : "挑战NBA经典——答案都在图片里",
+        "title" : "全民签到赢百万大奖",
         "devServer" : {
             "port" : 80,
             "disableHostCheck" : true,
@@ -126,7 +126,7 @@
                     "secure" : false
                 }
             },
-            "https" : false
+            "https" : true
         },
         "publicPath" : "/",
         "optimization" : {
@@ -134,6 +134,6 @@
                 "enable" : true
             }
         },
-        "domain" : "basket.hotforest.cn"
+        "domain" : "sign.hotforest.cn"
     }
 }
