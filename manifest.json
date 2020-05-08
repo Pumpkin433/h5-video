@@ -126,7 +126,7 @@
                     "secure" : false
                 }
             },
-            "https" : true
+            "https" : false
         },
         "publicPath" : "/",
         "optimization" : {

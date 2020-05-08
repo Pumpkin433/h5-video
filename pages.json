@@ -9,6 +9,12 @@
 			}
 		},
 		{
+			"path":"pages/index/record",
+			"style":{
+				"navigationBarTitleText": "全民签到 抢百万红包"
+			}
+		},
+		{
 			"path": "pages/sports/sports",
 			"style": {
 				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
