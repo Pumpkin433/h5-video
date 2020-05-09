@@ -1,5 +1,6 @@
 <template>
-	<scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-Y" @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
+	<scroll-view :scroll-top="scrollTop" 
+	scroll-y="true" class="scroll-Y record-bg" @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
 		<view id="record-top" class="scroll-view-item ">
 			<view class="uni-flex uni-row record-top">
 				<view class="flex-item record-top-back" @click="recordBack()">
@@ -171,7 +172,7 @@ export default {
 	margin: 0 auto;
 }
 .record-c-top-l {
-	font-size: 20rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -181,7 +182,7 @@ export default {
 	text-indent: 40rpx;
 }
 .record-c-top-r {
-	font-size: 20rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -197,7 +198,7 @@ export default {
 	border-bottom: 1rpx solid rgba(222, 219, 219, 1);
 }
 .record-c-item-1 {
-	font-size: 18rpx;
+	font-size: 22rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -206,7 +207,7 @@ export default {
 	width: 40%;
 }
 .record-c-item-2 {
-	font-size: 18rpx;
+	font-size: 22rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -215,7 +216,7 @@ export default {
 }
 .record-c-item-3 {
 	width: 20%;
-	font-size: 18rpx;
+	font-size: 22rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(67, 147, 255, 1);
@@ -229,12 +230,12 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 80rpx;
-	background-color: #FFFFFF;
+	background-color: #f9f6ed;
 	
 }
 #record-c{
 	padding-top: 100rpx;
-	background-color: #FFFFFF;
+	/* background-color: #FFFFFF; */
 }
 
 .record-top{	
@@ -257,10 +258,16 @@ export default {
 	width: 100%;
 	height: 80rpx;
 	line-height: 80rpx;
-	font-size:30rpx;
+	font-size:32rpx;
 	font-family:Lantinghei SC;
 	font-weight:600;
 	color:rgba(51,51,51,1);
 	text-align: center;
+}
+.record-bg{
+	background: url(https://aloss.hotforest.cn/sign/record-bg.png) no-repeat center;
+	background-size: 100% 100%;
+	width: 100%;
+	height: 100%;
 }
 </style>

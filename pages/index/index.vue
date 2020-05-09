@@ -266,8 +266,8 @@ export default {
 }
 
 .index-info-1 {
-	width: 60%;
-	font-size: 22rpx;
+	width: 65%;
+	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -279,8 +279,8 @@ export default {
 	font-size: 30rpx;
 }
 .index-info-2 {
-	width: 20%;
-	font-size: 22rpx;
+	width: 15%;
+	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
