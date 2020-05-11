@@ -8,9 +8,25 @@
 						<span>3</span>
 						篇文章 30积分
 					</view>
-					<view class="flex-item index-info-2">3/3</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null"><button @click="getSignScore()">领取积分</button></view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-2">{{newsReadNum}}/3</view>
+					<view class="flex-item index-info-3" 
+					v-if="uid != '' && uid !== null">
+						<button
+						 v-if="newsReadStatus === 0"
+						@click="getSignScore()" >做任务</button>
+						<button
+						 v-if="newsReadStatus === 1"
+						class="index-info-3-button-ok" 
+						@click="getSignScore()" >领取积分</button>
+						
+						<button
+						 v-if="newsReadStatus == 2"
+						class="index-info-3-button-score">已领取</button>
+						
+					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
+						<button @click="loginApp()">领取积分</button>
+					</view>
 				</view>
 				<view class="uni-flex uni-row index-info-item">
 					<view class="flex-item index-info-1">
@@ -18,9 +34,25 @@
 						<span>3</span>
 						篇讨论帖 30积分
 					</view>
-					<view class="flex-item index-info-2">3/3</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null"><button @click="getSignScore()">领取积分</button></view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-2">{{forumReadNum}}/3</view>
+					<view class="flex-item index-info-3"
+					v-if="uid != '' && uid !== null">
+						<button
+						 v-if="forumReadStatus === 0"
+						@click="getSignScore()" >做任务</button>
+						<button
+						 v-if="forumReadStatus === 1"
+						class="index-info-3-button-ok" 
+						@click="getSignScore()" >领取积分</button>
+						
+						<button
+						 v-if="forumReadStatus == 2"
+						class="index-info-3-button-score">已领取</button>
+						
+					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
+						<button @click="loginApp()">领取积分</button>
+					</view>
 				</view>
 
 				<view class="uni-flex uni-row index-info-item">
@@ -29,9 +61,25 @@
 						<span>3</span>
 						次 30积分
 					</view>
-					<view class="flex-item index-info-2">3/3</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null"><button @click="getSignScore()">领取积分</button></view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-2">{{replyNum}}/3</view>
+					<view class="flex-item index-info-3"
+					v-if="uid != '' && uid !== null">
+						<button
+						 v-if="replyStatus === 0"
+						@click="getSignScore()" >做任务</button>
+						<button
+						 v-if="replyStatus === 1"
+						class="index-info-3-button-ok" 
+						@click="getSignScore()" >领取积分</button>
+						
+						<button
+						 v-if="replyStatus == 2"
+						class="index-info-3-button-score">已领取</button>
+						
+					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
+						<button @click="loginApp()">领取积分</button>
+					</view>
 				</view>
 
 				<view class="uni-flex uni-row index-info-item">
@@ -40,9 +88,25 @@
 						<span>1</span>
 						篇文章/讨论帖 10积分
 					</view>
-					<view class="flex-item index-info-2">0/1</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null"><button @click="getSignScore()">领取积分</button></view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-2">{{shareNum}}/1</view>
+					<view class="flex-item index-info-3"
+					v-if="uid != '' && uid !== null">
+						<button
+						 v-if="shareStatus === 0"
+						@click="getSignScore()" >做任务</button>
+						<button
+						 v-if="shareStatus === 1"
+						class="index-info-3-button-ok" 
+						@click="getSignScore()" >领取积分</button>
+						
+						<button
+						 v-if="shareStatus == 2"
+						class="index-info-3-button-score">已领取</button>
+						
+					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
+						<button @click="loginApp()">领取积分</button>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -118,7 +182,16 @@ export default {
 			token: null,
 			ns_device_id: null,
 			activity_id: 3,
-			prizeList: []
+			prizeList: [],
+			newsReadStatus: 0, // 每日阅读文章 1
+			newsReadNum:0,
+			forumReadStatus:0, // 每日阅读讨论帖 2
+			forumReadNum:0,
+			replyStatus:0, // 留言3次状态 3
+			replyNum:0,
+			shareStatus:0, // 分享一次状态 4
+			shareNum:0,
+			
 		};
 	},
 	onLoad(option) {
@@ -155,12 +228,18 @@ export default {
 		}
 
 		// this.uid = uni.getStorageSync('uid');
-		this.uid = 10;
+		this.uid = 468974;
 		this.token = uni.getStorageSync('token');
 		this.ns_device_id = uni.getStorageSync('ns_device_id');
 
 		// 获取用户的行为日志
-		this.getUserLogs('news', 'read', 'v3', this.uid, this.start_at, this.end_at);
+		this.getUserLogs('news', 'read', 'v3', this.uid, this.start_at, this.end_at, 1);
+		this.getUserLogs('forum', 'read', 'v3', this.uid, this.start_at, this.end_at, 2);
+		this.getUserLogs('reply', 'read', 'v3', this.uid, this.start_at, this.end_at, 3);
+		
+		this.getUserLogs('forum', 'share', 'v3', this.uid, this.start_at, this.end_at, 4);
+		this.getUserLogs('news', 'share', 'v3', this.uid, this.start_at, this.end_at, 5);
+
 		// 获取奖品列表
 		this.getPrizeList(this.activity_id);
 	},
@@ -178,7 +257,7 @@ export default {
 		closeExchangeModal() {
 			this.exchangeModal = false;
 		},
-		closeAppMsgModal(){
+		closeAppMsgModal() {
 			this.appMsgModal = false;
 		},
 		turnRecord() {
@@ -188,8 +267,9 @@ export default {
 		},
 		getSignScore() {
 			console.log('1231');
+			this.newsReadStatus = 2
 		},
-		getUserLogs(service, behavior, version, uid, start_at, end_at) {
+		getUserLogs(service, behavior, version, uid, start_at, end_at, type) {
 			let params = {
 				service: service,
 				behavior: behavior
@@ -199,6 +279,73 @@ export default {
 
 			http.get(req_url, { params: params }).then(res => {
 				console.log(res);
+				if (res.status == 200) {
+					if (res.data.Status == 1) {
+						//阅读新闻
+						if (type == 1) {
+							let news_data = res.data.Data.list;
+							if (news_data.length < 3) {
+								this.newsReadStatus = 0; //未满 做任务
+								this.newsReadNum = news_data.length;
+							}
+							if (news_data.length >= 3) {
+								this.newsReadStatus = 1; // 已满待领取 会闪烁
+								this.newsReadNum = 3;
+							}
+							
+						}
+						//阅读帖子
+						if(type == 2){
+							let forum_data = res.data.Data.list;
+							if (forum_data.length < 3) {
+								this.forumReadStatus = 0; //未满 做任务
+								this.forumReadNum = forum_data.length;
+							}
+							if (forum_data.length >= 3) {
+								this.forumReadStatus = 1; // 已满待领取 会闪烁
+								this.forumReadNum = 3;
+							}
+						}
+						// 留言3次
+						if(type == 3){
+							let reply_data = res.data.Data.list;
+							if (reply_data.length < 3) {
+								this.replyStatus = 0; //未满 做任务
+								this.replyNum = reply_data.length;
+							}
+							if (reply_data.length >= 3) {
+								this.replyStatus = 1; // 已满待领取 会闪烁
+								this.replyNum = 3;
+							}
+						}
+						// 分享
+						if(type == 4){
+							let share_data = res.data.Data.list;
+							if (share_data.length < 1) {
+								this.shareStatus = 0; //未满 做任务
+								this.shareNum = share_data.length;
+							}
+							if (share_data.length == 1) {
+								this.shareStatus = 1; // 已满待领取 会闪烁
+								this.shareNum = 1;
+							}
+						}
+						if(type == 5){
+							let share_data = res.data.Data.list;
+							if (share_data.length < 1) {
+								this.shareStatus = 0; //未满 做任务
+								this.shareNum = share_data.length;
+							}
+							if (share_data.length == 1) {
+								this.shareStatus = 1; // 已满待领取 会闪烁
+								this.shareNum = 1;
+							}
+						}
+						
+					}
+				} else {
+					alert('server error');
+				}
 			});
 		},
 		getPrizeList(activity_id) {
@@ -293,18 +440,28 @@ export default {
 	align-items: center;
 }
 .index-info-3 button {
-	width: 98rpx;
-	height: 39rpx;
+	width: 110rpx;
+	height: 40rpx;
 	outline: none;
 	border: 1rpx solid transparent;
 	background: url(https://aloss.hotforest.cn/sign/button.png) no-repeat center;
 	background-size: 100% 100%;
-	font-size: 18rpx;
+	font-size: 14rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
-	line-height: 39rpx;
+	line-height: 40rpx;
+	padding: 0;
 }
+.index-info-3-button-ok{
+	background: url(https://aloss.hotforest.cn/sign/button.gif) no-repeat center !important;
+	background-size: 100% 100% !important;
+}
+.index-info-3-button-score{
+	background:rgba(187,187,187,1) !important;
+	/* border-radius:5px; */
+}
+
 
 .index-my-score {
 	margin-top: 35rpx;
