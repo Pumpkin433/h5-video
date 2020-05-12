@@ -8,25 +8,14 @@
 						<span>3</span>
 						篇文章 30积分
 					</view>
-					<view class="flex-item index-info-2">{{newsReadNum}}/3</view>
-					<view class="flex-item index-info-3" 
-					v-if="uid != '' && uid !== null">
-						<button
-						 v-if="newsReadStatus === 0"
-						@click="getSignScore()" >做任务</button>
-						<button
-						 v-if="newsReadStatus === 1"
-						class="index-info-3-button-ok" 
-						@click="getSignScore()" >领取积分</button>
-						
-						<button
-						 v-if="newsReadStatus == 2"
-						class="index-info-3-button-score">已领取</button>
-						
+					<view class="flex-item index-info-2">{{ newsReadNum }}/3</view>
+					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
+						<button v-if="newsReadStatus === 0" @click="doTask(1)">做任务</button>
+						<button v-if="newsReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(1)">领取积分</button>
+
+						<button v-if="newsReadStatus === 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
-						<button @click="loginApp()">领取积分</button>
-					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
 				</view>
 				<view class="uni-flex uni-row index-info-item">
 					<view class="flex-item index-info-1">
@@ -34,25 +23,14 @@
 						<span>3</span>
 						篇讨论帖 30积分
 					</view>
-					<view class="flex-item index-info-2">{{forumReadNum}}/3</view>
-					<view class="flex-item index-info-3"
-					v-if="uid != '' && uid !== null">
-						<button
-						 v-if="forumReadStatus === 0"
-						@click="getSignScore()" >做任务</button>
-						<button
-						 v-if="forumReadStatus === 1"
-						class="index-info-3-button-ok" 
-						@click="getSignScore()" >领取积分</button>
-						
-						<button
-						 v-if="forumReadStatus == 2"
-						class="index-info-3-button-score">已领取</button>
-						
+					<view class="flex-item index-info-2">{{ forumReadNum }}/3</view>
+					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
+						<button v-show="forumReadStatus === 0" @click="doTask(2)">做任务</button>
+						<button v-show="forumReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(2)">领取积分</button>
+
+						<button v-show="forumReadStatus === 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
-						<button @click="loginApp()">领取积分</button>
-					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
 				</view>
 
 				<view class="uni-flex uni-row index-info-item">
@@ -61,25 +39,14 @@
 						<span>3</span>
 						次 30积分
 					</view>
-					<view class="flex-item index-info-2">{{replyNum}}/3</view>
-					<view class="flex-item index-info-3"
-					v-if="uid != '' && uid !== null">
-						<button
-						 v-if="replyStatus === 0"
-						@click="getSignScore()" >做任务</button>
-						<button
-						 v-if="replyStatus === 1"
-						class="index-info-3-button-ok" 
-						@click="getSignScore()" >领取积分</button>
-						
-						<button
-						 v-if="replyStatus == 2"
-						class="index-info-3-button-score">已领取</button>
-						
+					<view class="flex-item index-info-2">{{ replyNum }}/3</view>
+					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
+						<button v-if="replyStatus === 0" @click="doTask(3)">做任务</button>
+						<button v-if="replyStatus === 1" class="index-info-3-button-ok" @click="getSignScore(3)">领取积分</button>
+
+						<button v-if="replyStatus == 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
-						<button @click="loginApp()">领取积分</button>
-					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
 				</view>
 
 				<view class="uni-flex uni-row index-info-item">
@@ -88,31 +55,20 @@
 						<span>1</span>
 						篇文章/讨论帖 10积分
 					</view>
-					<view class="flex-item index-info-2">{{shareNum}}/1</view>
-					<view class="flex-item index-info-3"
-					v-if="uid != '' && uid !== null">
-						<button
-						 v-if="shareStatus === 0"
-						@click="getSignScore()" >做任务</button>
-						<button
-						 v-if="shareStatus === 1"
-						class="index-info-3-button-ok" 
-						@click="getSignScore()" >领取积分</button>
-						
-						<button
-						 v-if="shareStatus == 2"
-						class="index-info-3-button-score">已领取</button>
-						
+					<view class="flex-item index-info-2">{{ shareNum }}/1</view>
+					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
+						<button v-if="shareStatus === 0" @click="doTask(4)">做任务</button>
+						<button v-if="shareStatus === 1" class="index-info-3-button-ok" @click="getSignScore(4)">领取积分</button>
+
+						<button v-if="shareStatus == 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null">
-						<button @click="loginApp()">领取积分</button>
-					</view>
+					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
 				</view>
 			</view>
 		</view>
 
 		<view class="uni-flex uni-row index-my-score">
-			<view class="flex-item index-my-score-l">我的积分：999,999,999分</view>
+			<view class="flex-item index-my-score-l">我的积分：{{ signScore }} 分</view>
 			<view class="flex-item index-my-score-r" @tap="turnRecord">兑换记录</view>
 		</view>
 
@@ -184,14 +140,14 @@ export default {
 			activity_id: 3,
 			prizeList: [],
 			newsReadStatus: 0, // 每日阅读文章 1
-			newsReadNum:0,
-			forumReadStatus:0, // 每日阅读讨论帖 2
-			forumReadNum:0,
-			replyStatus:0, // 留言3次状态 3
-			replyNum:0,
-			shareStatus:0, // 分享一次状态 4
-			shareNum:0,
-			
+			newsReadNum: 0,
+			forumReadStatus: 0, // 每日阅读讨论帖 2
+			forumReadNum: 0,
+			replyStatus: 0, // 留言3次状态 3
+			replyNum: 0,
+			shareStatus: 0, // 分享一次状态 4
+			shareNum: 0,
+			signScore: 0
 		};
 	},
 	onLoad(option) {
@@ -236,12 +192,72 @@ export default {
 		this.getUserLogs('news', 'read', 'v3', this.uid, this.start_at, this.end_at, 1);
 		this.getUserLogs('forum', 'read', 'v3', this.uid, this.start_at, this.end_at, 2);
 		this.getUserLogs('reply', 'read', 'v3', this.uid, this.start_at, this.end_at, 3);
-		
 		this.getUserLogs('forum', 'share', 'v3', this.uid, this.start_at, this.end_at, 4);
 		this.getUserLogs('news', 'share', 'v3', this.uid, this.start_at, this.end_at, 5);
 
 		// 获取奖品列表
 		this.getPrizeList(this.activity_id);
+
+		//获取阅读状态
+		this.newsReadStatus = uni.getStorageSync('newsReadStatus');
+		this.forumReadStatus = uni.getStorageSync('forumReadStatus');
+		this.replyStatus = uni.getStorageSync('replyStatus');
+		this.shareStatus = uni.getStorageSync('shareStatus');
+		console.log(this.forumReadStatus);
+
+		// 加载页面首先获取用户信息 如果用户没有注册则帮忙注册一下
+		let data = {
+			uid: this.uid,
+			activity_id: this.$question.activity_id
+		};
+		http.post(base.sq + '/activity/api.users/checkUidStatus', data)
+			.then(res => {
+				console.log(res);
+				if (res.status == 200) {
+					// console.log(res.data.data.count);
+					let count = res.data.data.count;
+
+					// 检查用户是否在数据库中
+					if (count <= 0) {
+						let req_url = base.bd + '/v3/user/info';
+						let headers = {
+							ns_device_id: this.ns_device_id,
+							uid: this.uid,
+							token: this.token
+						};
+						http.get(req_url, { headers: headers }).then(res => {
+							console.log(res);
+							// alert(res.data.Status)
+
+							if (res.status == 200) {
+								if (res.data.Status == 1) {
+									let nickname = res.data.Data.nickname;
+									let mobile = res.data.Data.phone;
+									console.log(res);
+									this.addUser(this.uid, nickname, mobile, this.$question.activity_id, 0, this.ns_device_id, 1);
+								} else {
+									// return alert(res.data.ErrorMsg);
+									return uni.showToast({
+										title: res.data.ErrorMsg,
+										icon: 'none',
+										mask: true,
+										duration: 2000
+									});
+								}
+							} else {
+								return alert('server error');
+							}
+						});
+					} else {
+						// 获取用户信息
+						this.getUserInfo(this.uid, this.$question.activity_id);
+					}
+				} else {
+					return alert('server error');
+				}
+			})
+			.catch(error => {})
+			.finally(() => {});
 	},
 	methods: {
 		loginApp() {
@@ -265,9 +281,81 @@ export default {
 				url: '/pages/index/record'
 			});
 		},
-		getSignScore() {
-			console.log('1231');
-			this.newsReadStatus = 2
+		doTask(type) {},
+		addUser(uid, name, mobile, activity_id, sign_score, ns_device_id, user_type) {
+			let data = {
+				uid: uid,
+				name: name,
+				mobile: mobile,
+				activity_id: activity_id,
+				sign_score: sign_score,
+				ns_device_id: ns_device_id,
+				user_type: user_type
+			};
+
+			http.post(base.sq + '/activity/api.Users/add', data)
+				.then(res => {
+					if (res.status == 200) {
+						console.log(res);
+						// alert(res.data.data)
+						// location.reload()
+					} else {
+						return alert('server error');
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+		},
+		getUserInfo(uid, activity_id) {
+			let data = {
+				uid: uid,
+				activity_id: activity_id
+			};
+			let req_url = base.sq + '/activity/api.users/getUserInfo';
+			http.post(req_url, data).then(res => {
+				console.log(res);
+				if (res.status == 200) {
+					let data = res.data.data;
+					this.signScore = data.sign_score;
+				} else {
+					alert('server error');
+				}
+			});
+		},
+		getSignScore(type) {
+			if (type === 1) {
+				// console.log('1231');
+				this.newsReadStatus = 2;
+				uni.removeStorageSync('newsReadStatus');
+				uni.setStorageSync('newsReadStatus', 2);
+				let sign_type = 1;
+				let sign_score = 30;
+				this.updateSignScore(this.$question.activity_id, this.uid, sign_score, sign_type);
+			}
+			if (type === 2) {
+				this.forumReadStatus = 2;
+				uni.removeStorageSync('forumReadStatus');
+				uni.setStorageSync('forumReadStatus', 2);
+				let sign_type = 2;
+				let sign_score = 30;
+				this.updateSignScore(this.$question.activity_id, this.uid, sign_score, sign_type);
+			}
+			if (type === 3) {
+				this.replyStatus = 2;
+				uni.removeStorageSync('replyStatus');
+				uni.setStorageSync('replyStatus', 2);
+				let sign_type = 3;
+				let sign_score = 30;
+				this.updateSignScore(this.$question.activity_id, this.uid, sign_score, sign_type);
+			}
+			if (type === 4) {
+				this.shareStatus = 2;
+				uni.removeStorageSync('shareStatus');
+				uni.setStorageSync('shareStatus', 2);
+				let sign_type = 4;
+				let sign_score = 10;
+				this.updateSignScore(this.$question.activity_id, this.uid, sign_score, sign_type);
+			}
 		},
 		getUserLogs(service, behavior, version, uid, start_at, end_at, type) {
 			let params = {
@@ -278,73 +366,138 @@ export default {
 			let req_url = base.bd + '/' + version + '/' + uid + '/' + start_at + '/' + end_at + '/logs';
 
 			http.get(req_url, { params: params }).then(res => {
-				console.log(res);
+				// console.log(res);
 				if (res.status == 200) {
 					if (res.data.Status == 1) {
 						//阅读新闻
 						if (type == 1) {
 							let news_data = res.data.Data.list;
 							if (news_data.length < 3) {
-								this.newsReadStatus = 0; //未满 做任务
+								//0;未满 做任务
 								this.newsReadNum = news_data.length;
-							}
-							if (news_data.length >= 3) {
-								this.newsReadStatus = 1; // 已满待领取 会闪烁
+								this.newsReadStatus = 0;
+								uni.setStorageSync('newsReadStatus', 0);
+							} else {
+								//1; 已满待领取 会闪烁
 								this.newsReadNum = 3;
+
+								let a = uni.getStorageSync('newsReadStatus');
+								if (a !== undefined && a !== null && a === 2) {
+									this.newsReadStatus = 2;
+									uni.setStorageSync('newsReadStatus', 2);
+								} else {
+									this.newsReadStatus = 1;
+									uni.setStorageSync('newsReadStatus', 1);
+								}
 							}
-							
 						}
 						//阅读帖子
-						if(type == 2){
+						if (type == 2) {
 							let forum_data = res.data.Data.list;
 							if (forum_data.length < 3) {
-								this.forumReadStatus = 0; //未满 做任务
+								//0;未满 做任务
 								this.forumReadNum = forum_data.length;
-							}
-							if (forum_data.length >= 3) {
-								this.forumReadStatus = 1; // 已满待领取 会闪烁
+								this.forumReadStatus = 0;
+								uni.setStorageSync('forumReadStatus', 0);
+							} else {
+								//1; 已满待领取 会闪烁
 								this.forumReadNum = 3;
+
+								let a = uni.getStorageSync('forumReadStatus');
+								if (a !== undefined && a !== null && a === 2) {
+									this.forumReadStatus = 2;
+									uni.setStorageSync('forumReadStatus', 2);
+								} else {
+									this.forumReadStatus = 1;
+									uni.setStorageSync('forumReadStatus', 1);
+								}
 							}
 						}
 						// 留言3次
-						if(type == 3){
+						if (type == 3) {
 							let reply_data = res.data.Data.list;
 							if (reply_data.length < 3) {
-								this.replyStatus = 0; //未满 做任务
+								//0; 未满 做任务
 								this.replyNum = reply_data.length;
-							}
-							if (reply_data.length >= 3) {
-								this.replyStatus = 1; // 已满待领取 会闪烁
+								this.replyStatus = 0;
+								uni.setStorageSync('replyStatus', 0);
+							} else {
+								//1; 已满待领取 会闪烁
 								this.replyNum = 3;
+
+								let a = uni.getStorageSync('replyStatus');
+								if (a !== undefined && a !== null && a === 2) {
+									this.replyStatus = 2;
+									uni.setStorageSync('replyStatus', 2);
+								} else {
+									this.replyStatus = 1;
+									uni.setStorageSync('replyStatus', 1);
+								}
 							}
 						}
 						// 分享
-						if(type == 4){
+						if (type == 4) {
 							let share_data = res.data.Data.list;
 							if (share_data.length < 1) {
-								this.shareStatus = 0; //未满 做任务
+								//0;未满 做任务
 								this.shareNum = share_data.length;
-							}
-							if (share_data.length == 1) {
-								this.shareStatus = 1; // 已满待领取 会闪烁
+								this.shareStatus = 0;
+								uni.setStorageSync('shareStatus', 0);
+							} else {
+								//1 已满待领取 会闪烁
 								this.shareNum = 1;
+
+								let a = uni.getStorageSync('shareStatus');
+								if (a !== undefined && a !== null && a === 2) {
+									this.shareStatus = 2;
+									uni.setStorageSync('shareStatus', 2);
+								} else {
+									this.shareStatus = 1;
+									uni.setStorageSync('shareStatus', 1);
+								}
 							}
 						}
-						if(type == 5){
+						if (type == 5) {
 							let share_data = res.data.Data.list;
 							if (share_data.length < 1) {
-								this.shareStatus = 0; //未满 做任务
+								//0;未满 做任务
 								this.shareNum = share_data.length;
-							}
-							if (share_data.length == 1) {
-								this.shareStatus = 1; // 已满待领取 会闪烁
+								this.shareStatus = 0;
+								uni.setStorageSync('shareStatus', 0);
+							} else {
+								//1  已满待领取 会闪烁
 								this.shareNum = 1;
+
+								let a = uni.getStorageSync('shareStatus');
+								if (a !== undefined && a !== null && a === 2) {
+									this.shareStatus = 2;
+									uni.setStorageSync('shareStatus', 2);
+								} else {
+									this.shareStatus = 1;
+									uni.setStorageSync('shareStatus', 1);
+								}
 							}
 						}
-						
 					}
 				} else {
 					alert('server error');
+				}
+			});
+		},
+		updateSignScore(activity_id, uid, sign_score, sign_type) {
+			let data = {
+				activity_id: activity_id,
+				uid: uid,
+				sign_score: sign_score,
+				sign_type: sign_type
+			};
+			let req_url = base.sq + '/activity/api.users/updateSignScore';
+			http.post(req_url, data).then(res => {
+				console.log(res)
+				if(res.status == 200){
+					this.$router.go(0)
+				}else{
+					alert('server error')
 				}
 			});
 		},
@@ -453,15 +606,14 @@ export default {
 	line-height: 40rpx;
 	padding: 0;
 }
-.index-info-3-button-ok{
+.index-info-3-button-ok {
 	background: url(https://aloss.hotforest.cn/sign/button.gif) no-repeat center !important;
 	background-size: 100% 100% !important;
 }
-.index-info-3-button-score{
-	background:rgba(187,187,187,1) !important;
+.index-info-3-button-score {
+	background: rgba(187, 187, 187, 1) !important;
 	/* border-radius:5px; */
 }
-
 
 .index-my-score {
 	margin-top: 35rpx;
