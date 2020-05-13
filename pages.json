@@ -15,74 +15,9 @@
 			}
 		},
 		{
-			"path": "pages/sports/sports",
-			"style": {
-				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
-				// "navigationStyle":"custom",
-				"h5": {
-					"titleNView": {
-						"buttons": [{
-							"type": "share"
-						}]
-					}
-				}
-			}
-		},
-		{
-			"path": "pages/sports/result",
-			"style": {
-				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
-				// "navigationStyle":"custom",
-				"h5": {
-					"titleNView": {
-						"buttons": [{
-							"type": "share"
-						}]
-					}
-				}
-			}
-		},
-		{
-			"path": "pages/sports/mid",
-			"style": {
-				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
-				// "navigationStyle":"custom",
-				"h5": {
-					"titleNView": {
-						"buttons": [{
-							"type": "share"
-						}]
-					}
-				}
-			}
-		},
-		{
-			"path": "pages/sports/info",
-			"style": {
-				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
-				// "navigationStyle":"custom",
-				"h5": {
-					"titleNView": {
-						"buttons": [{
-							"type": "share"
-						}]
-					}
-				}
-			}
-		},
-
-		{
-			"path": "pages/sports/question",
-			"style": {
-				"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
-				// "navigationStyle":"custom",
-				"h5": {
-					"titleNView": {
-						"buttons": [{
-							"type": "share"
-						}]
-					}
-				}
+			"path":"pages/index/mid",
+			"style":{
+				"navigationBarTitleText": "全民签到 抢百万红包"
 			}
 		},
 		{

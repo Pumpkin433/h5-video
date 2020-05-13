@@ -80,7 +80,7 @@
 				<view class="score-store-item-2">{{ prize.name }}</view>
 				<view class="score-store-item-3">
 					<view class="score-store-item-3-l">{{ prize.exchange_score }}积分</view>
-					<view class="score-store-item-3-r" @click="exchange()">我要兑换</view>
+					<view class="score-store-item-3-r" @click="exchange(prize.id)">我要兑换</view>
 				</view>
 			</view>
 		</view>
@@ -94,19 +94,27 @@
 				<view><img src="https://aloss.hotforest.cn/sign/wxcode.png" alt="wxcode" /></view>
 				<view class="index-profile-4-text">
 					微信号:NationalSports
-					<span @click="copy">复制号码</span>
+					<span @click="copy('NationalSports')">复制号码</span>
 				</view>
 			</view>
 		</view>
 
 		<!-- 兑换弹出框 -->
 		<view class="uni-flex uni-column exchange-modal" v-show="exchangeModal" @click="closeExchangeModal"></view>
-		<view class="uni-flex uni-column exchange-modal-bg" v-show="exchangeModal">
+		<view class="uni-flex uni-column exchange-modal-bg" v-show="exchangeModalSuccess">
 			<view class="flex-item flex-item-V exchange-modal-1">兑换成功</view>
 			<view class="flex-item flex-item-V exchange-modal-2">你已经成功兑换</view>
-			<view class="flex-item flex-item-V exchange-modal-3">苹果 iphone 11</view>
-			<view class="flex-item flex-item-V exchange-modal-4">你的兑换码： xjiejghek301</view>
-			<view class="flex-item flex-item-V exchange-modal-5"><button>复制兑换码</button></view>
+			<view class="flex-item flex-item-V exchange-modal-3">{{prizeName}}</view>
+			<view class="flex-item flex-item-V exchange-modal-4">你的兑换码： {{exchangeCode}}</view>
+			<view class="flex-item flex-item-V exchange-modal-5">
+				<button @click="copyExchangeCode(exchangeCode)">复制兑换码</button>
+			</view>
+		</view>
+		<view class="uni-flex uni-column exchange-modal-bg" v-show="exchangeModalFail">
+			<view class="flex-item flex-item-V exchange-modal-1">兑换失败</view>
+			<view class="flex-item flex-item-V exchange-modal-3 exchange-fail-3">{{exchangeModalMsg}}</view>
+			<view class="flex-item flex-item-V exchange-modal-4 exchange-fail-4">请选择其他产品兑换</view>
+			<view class="flex-item flex-item-V exchange-modal-5 exchange-fail-5"><button @click="closeExchangeModal">确定</button></view>
 		</view>
 
 		<!-- open in our app modal dialog -->
@@ -147,7 +155,14 @@ export default {
 			replyNum: 0,
 			shareStatus: 0, // 分享一次状态 4
 			shareNum: 0,
-			signScore: 0
+			signScore: 0,
+			
+			prizeName:null,
+			exchangeCode:null,
+			exchangeModalSuccess:false,
+			exchangeModalFail:false,
+			exchangeModalMsg:null,
+			
 		};
 	},
 	onLoad(option) {
@@ -267,11 +282,50 @@ export default {
 		downloadApp() {
 			window.location.href = 'https://www.171tiyu.com/download';
 		},
-		exchange() {
-			this.exchangeModal = true;
+		//我要兑换  
+		exchange(prize_id) {
+			let data = {
+				prize_id:prize_id,
+				uid:this.uid,
+				activity_id:this.activity_id
+			}
+			let req_url = base.sq + '/activity/api.users/exchangePrize'
+			http.post(req_url,data)
+			.then(
+			res=>{
+				console.log(res)
+				if(res.status == 200){
+					if(res.data.code == '-1'){
+						this.exchangeModalMsg = '您的积分不足'
+						this.exchangeModalFail = true;
+						this.exchangeModal = true;
+					}
+					if(res.data.code == '-2'){
+						this.exchangeModalMsg = '奖品兑换完毕'
+						this.exchangeModalFail = 2;
+						this.exchangeModal = true;
+					}
+					if(res.data.code == '-3'){
+						this.exchangeModalMsg = '奖品兑换失败'
+						this.exchangeModalFail = 2;
+						this.exchangeModal = true;
+					}
+					if(res.data.code == 0){
+						this.exchangeModalSuccess = true;
+						this.exchangeModal = true;
+						this.exchangeCode = res.data.data.exchange_code;
+						this.prizeName = res.data.data.prize_name;
+					}
+					
+				}else{
+					alert('server error')
+				}
+			})
 		},
 		closeExchangeModal() {
 			this.exchangeModal = false;
+			this.exchangeModalSuccess = false;
+			this.exchangeModalFail = false;
 		},
 		closeAppMsgModal() {
 			this.appMsgModal = false;
@@ -317,6 +371,28 @@ export default {
 				if (res.status == 200) {
 					let data = res.data.data;
 					this.signScore = data.sign_score;
+
+					let signStatus = data.sign_status;
+					if (signStatus.hasNewsRead) {
+						this.newsReadStatus = 2;
+						uni.removeStorageSync('newsReadStatus');
+						uni.setStorageSync('newsReadStatus', 2);
+					}
+					if (signStatus.hasForumRead) {
+						this.forumReadStatus = 2;
+						uni.removeStorageSync('forumReadStatus');
+						uni.setStorageSync('forumReadStatus', 2);
+					}
+					if (signStatus.hasReply) {
+						this.replyStatus = 2;
+						uni.removeStorageSync('replyStatus');
+						uni.setStorageSync('replyStatus', 2);
+					}
+					if (signStatus.hasShare) {
+						this.shareStatus = 2;
+						uni.removeStorageSync('shareStatus');
+						uni.setStorageSync('shareStatus', 2);
+					}
 				} else {
 					alert('server error');
 				}
@@ -493,11 +569,11 @@ export default {
 			};
 			let req_url = base.sq + '/activity/api.users/updateSignScore';
 			http.post(req_url, data).then(res => {
-				console.log(res)
-				if(res.status == 200){
-					this.$router.go(0)
-				}else{
-					alert('server error')
+				console.log(res);
+				if (res.status == 200) {
+					this.$router.go(0);
+				} else {
+					alert('server error');
 				}
 			});
 		},
@@ -518,8 +594,24 @@ export default {
 			});
 		},
 		// 触发方法
-		copy() {
-			let content = 'NationalSports'; // 复制内容，必须字符串，数字需要转换为字符串
+		copyExchangeCode(exchangeCode) {
+			console.log(exchangeCode)
+			let content = exchangeCode; // 复制内容，必须字符串，数字需要转换为字符串
+			const result = h5Copy(content);
+			if (result === false) {
+				uni.showToast({
+					title: '不支持'
+				});
+			} else {
+				uni.showToast({
+					title: '复制成功',
+					icon: 'none'
+				});
+			}
+		},
+		copy(text) {
+			
+			let content = text; // 复制内容，必须字符串，数字需要转换为字符串
 			const result = h5Copy(content);
 			if (result === false) {
 				uni.showToast({
@@ -779,7 +871,7 @@ export default {
 
 .exchange-modal {
 	position: fixed;
-	z-index: 1000;
+	z-index: 100;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -792,7 +884,7 @@ export default {
 	width: 601rpx;
 	height: 490rpx;
 	position: fixed;
-	z-index: 1100;
+	z-index: 110;
 	top: 0;
 	left: 0;
 	bottom: 0;
@@ -852,7 +944,7 @@ export default {
 
 .app-msg-modal {
 	position: fixed;
-	z-index: 1000;
+	z-index: 100;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -865,7 +957,7 @@ export default {
 	width: 601rpx;
 	height: 490rpx;
 	position: fixed;
-	z-index: 1100;
+	z-index: 110;
 	top: 0;
 	left: 0;
 	bottom: 0;
@@ -908,5 +1000,14 @@ export default {
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 	margin-top: 84rpx;
+}
+.exchange-fail-3{
+	margin-top: 80rpx;
+}
+.exchange-fail-4{
+	margin-top: 20rpx;
+}
+.exchange-fail-5{
+	margin-top: 40rpx;
 }
 </style>

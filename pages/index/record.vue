@@ -1,6 +1,7 @@
 <template>
 	<scroll-view :scroll-top="scrollTop" 
-	scroll-y="true" class="scroll-Y record-bg" @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
+	scroll-y="true" class="scroll-Y record-bg" 
+	@scroll="scroll">
 		<view id="record-top" class="scroll-view-item ">
 			<view class="uni-flex uni-row record-top">
 				<view class="flex-item record-top-back" @click="recordBack()">
@@ -14,90 +15,10 @@
 				<view class="flex-item record-c-top-l">兑换奖品</view>
 				<view class="flex-item record-c-top-r">兑换码</view>
 			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
-			</view>
-			<view class="uni-flex uni-row record-c-item">
-				<view class="flex-item record-c-item-1">苹果iphone手机</view>
-				<view class="flex-item record-c-item-2">xjjieujfid</view>
-				<view class="flex-item record-c-item-3">复制</view>
+			<view class="uni-flex uni-row record-c-item" v-for="(record,k) in exchangeRecords" :key="k">
+				<view class="flex-item record-c-item-1">{{record.prize_name}}</view>
+				<view class="flex-item record-c-item-2">{{record.exchange_code}}</view>
+				<view class="flex-item record-c-item-3" @click="copyCode(record.exchange_code)">复制</view>
 			</view>
 		</view>
 	</scroll-view>
@@ -106,6 +27,8 @@
 <script>
 // 引入文件
 import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy/junyi-h5-copy.js';
+import http from '@/utils/http.js';
+import base from '@/utils/base.js';
 
 export default {
 	name: 'index',
@@ -114,14 +37,36 @@ export default {
 			scrollTop: 0,
 			old: {
 				scrollTop: 0
-			}
+			},
+			exchangeRecords:[],
 		};
 	},
-	onLoad(option) {},
+	onLoad(option) {
+		// this.uid = uni.getStorageSync('uid');
+		this.uid = 468974;
+		this.getUserExchangeRecord(this.$question.activity_id,this.uid);
+	},
 	methods: {
+		getUserExchangeRecord(activity_id, uid) {
+			let data = {
+				activity_id: activity_id,
+				uid: uid
+			};
+			let req_url = base.sq + '/activity/api.Users/getUserExchangeRecord';
+			http.post(req_url, data).then(res => {
+				console.log(res)
+				if (res.status == 200) {
+					if(res.data.code == 0){
+						this.exchangeRecords = res.data.data;
+					}
+				} else {
+					alert('serror error ');
+				}
+			});
+		},
 		// 触发方法
-		copy() {
-			let content = 'NationalSports'; // 复制内容，必须字符串，数字需要转换为字符串
+		copyCode(exchangeCode) {
+			let content = exchangeCode; // 复制内容，必须字符串，数字需要转换为字符串
 			const result = h5Copy(content);
 			if (result === false) {
 				uni.showToast({
@@ -177,7 +122,7 @@ export default {
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
 	line-height: 60rpx;
-	width: 40%;
+	width: 50%;
 	text-align: left;
 	text-indent: 40rpx;
 }
@@ -187,7 +132,7 @@ export default {
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
 	line-height: 60rpx;
-	width: 60%;
+	width: 50%;
 	text-align: left;
 }
 
@@ -204,7 +149,7 @@ export default {
 	color: rgba(51, 51, 51, 1);
 	line-height: 90rpx;
 	text-indent: 40rpx;
-	width: 40%;
+	width: 44%;
 }
 .record-c-item-2 {
 	font-size: 22rpx;
@@ -215,7 +160,7 @@ export default {
 	width: 40%;
 }
 .record-c-item-3 {
-	width: 20%;
+	width: 16%;
 	font-size: 22rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
