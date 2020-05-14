@@ -42,8 +42,8 @@ export default {
 		};
 	},
 	onLoad(option) {
-		// this.uid = uni.getStorageSync('uid');
-		this.uid = 468974;
+		this.uid = uni.getStorageSync('uid');
+		// this.uid = 468974;
 		this.getUserExchangeRecord(this.$question.activity_id,this.uid);
 	},
 	methods: {

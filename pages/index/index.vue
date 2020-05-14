@@ -9,13 +9,13 @@
 						篇文章 30积分
 					</view>
 					<view class="flex-item index-info-2">{{ newsReadNum }}/3</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
-						<button v-if="newsReadStatus === 0" @click="doTask(1)">做任务</button>
+					<view class="flex-item index-info-3" v-if="loginAppStatus">
+						<button v-if="newsReadStatus === 0" @click="doTask(1)">未完成</button>
 						<button v-if="newsReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(1)">领取积分</button>
 
 						<button v-if="newsReadStatus === 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-3" v-if="loginAppStatus === false"><button @click="loginApp()">领取积分</button></view>
 				</view>
 				<view class="uni-flex uni-row index-info-item">
 					<view class="flex-item index-info-1">
@@ -24,13 +24,13 @@
 						篇讨论帖 30积分
 					</view>
 					<view class="flex-item index-info-2">{{ forumReadNum }}/3</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
-						<button v-show="forumReadStatus === 0" @click="doTask(2)">做任务</button>
+					<view class="flex-item index-info-3" v-if="loginAppStatus">
+						<button v-show="forumReadStatus === 0" @click="doTask(2)">未完成</button>
 						<button v-show="forumReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(2)">领取积分</button>
 
 						<button v-show="forumReadStatus === 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
 				</view>
 
 				<view class="uni-flex uni-row index-info-item">
@@ -40,13 +40,13 @@
 						次 30积分
 					</view>
 					<view class="flex-item index-info-2">{{ replyNum }}/3</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
-						<button v-if="replyStatus === 0" @click="doTask(3)">做任务</button>
+					<view class="flex-item index-info-3" v-if="loginAppStatus">
+						<button v-if="replyStatus === 0" @click="doTask(3)">未完成</button>
 						<button v-if="replyStatus === 1" class="index-info-3-button-ok" @click="getSignScore(3)">领取积分</button>
 
 						<button v-if="replyStatus == 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
 				</view>
 
 				<view class="uni-flex uni-row index-info-item">
@@ -56,13 +56,13 @@
 						篇文章/讨论帖 10积分
 					</view>
 					<view class="flex-item index-info-2">{{ shareNum }}/1</view>
-					<view class="flex-item index-info-3" v-if="uid != '' && uid !== null">
-						<button v-if="shareStatus === 0" @click="doTask(4)">做任务</button>
+					<view class="flex-item index-info-3" v-if="loginAppStatus">
+						<button v-if="shareStatus === 0" @click="doTask(4)">未完成</button>
 						<button v-if="shareStatus === 1" class="index-info-3-button-ok" @click="getSignScore(4)">领取积分</button>
 
 						<button v-if="shareStatus == 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="uid == '' || uid == null"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
 				</view>
 			</view>
 		</view>
@@ -138,6 +138,8 @@ export default {
 	name: 'index',
 	data() {
 		return {
+			loginAppStatus:false,
+			
 			exchangeModal: false,
 			appMsgModal: false,
 			start_at: 0,
@@ -166,8 +168,8 @@ export default {
 		};
 	},
 	onLoad(option) {
-		// let nowTimestamp = Date.parse(new Date()) / 1000
-		let nowTimestamp = 1598659832;
+		let nowTimestamp = Date.parse(new Date()) / 1000
+		// let nowTimestamp = 1598659832;
 		this.start_at = startTime(nowTimestamp);
 		this.end_at = nowTimestamp;
 
@@ -179,37 +181,55 @@ export default {
 			this.appMsgModal = true;
 			// this.appMsgModal = false;
 		} else {
-			if (option.uid !== '' && option.uid !== null && option.uid !== undefined) {
+			if (option.uid !== '' && option.uid !== 'null' && option.uid !== undefined) {
 				uni.setStorageSync('uid', option.uid);
 				uni.setStorageSync('token', option.token);
 				uni.setStorageSync('ns_device_id', option.ns_device_id);
+				this.loginAppStatus = true;
+			}else{
+				this.loginAppStatus = false;
+				// open this url in app env
+				contact.onLoginDone = function(uid, token) {
+					uni.removeStorageSync('uid');
+					uni.removeStorageSync('token');
+					uni.setStorageSync('uid', uid);
+					uni.setStorageSync('token', token);
+					uni.setStorageSync('loginAppStatus',true);
+					
+					let ns_device_id = uni.getStorageSync('ns_device_id');
+					uni.reLaunch({
+						url: '/pages/index/mid?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
+					});
+				}
+				
 			}
-			// open this url in app env
-			contact.onLoginDone = function(uid, token) {
-				uni.removeStorageSync('uid');
-				uni.removeStorageSync('token');
-				uni.setStorageSync('uid', uid);
-				uni.setStorageSync('token', token);
-
-				let ns_device_id = uni.getStorageSync('ns_device_id');
-				uni.reLaunch({
-					url: '/pages/index/mid?uid=' + uid + '&token=' + token + '&ns_device_id' + ns_device_id
-				});
-			};
+		
 		}
-
-		// this.uid = uni.getStorageSync('uid');
-		this.uid = 468974;
+		
+		console.log('loginAppStatus----'+this.loginAppStatus)
+		
+		this.uid = uni.getStorageSync('uid');
+		// this.uid = 468974;
 		this.token = uni.getStorageSync('token');
 		this.ns_device_id = uni.getStorageSync('ns_device_id');
-
-		// 获取用户的行为日志
-		this.getUserLogs('news', 'read', 'v3', this.uid, this.start_at, this.end_at, 1);
-		this.getUserLogs('forum', 'read', 'v3', this.uid, this.start_at, this.end_at, 2);
-		this.getUserLogs('reply', 'read', 'v3', this.uid, this.start_at, this.end_at, 3);
-		this.getUserLogs('forum', 'share', 'v3', this.uid, this.start_at, this.end_at, 4);
-		this.getUserLogs('news', 'share', 'v3', this.uid, this.start_at, this.end_at, 5);
-
+		
+		if(this.uid !== '' && this.uid !== 'null' && this.uid !== undefined){
+			
+			//加载用户信息
+			this.loadUserInfo();
+			
+			// 获取用户的行为日志
+			this.getUserLogs('news', 'read', 'v3', this.uid, this.start_at, this.end_at, 1);
+			this.getUserLogs('forum', 'read', 'v3', this.uid, this.start_at, this.end_at, 2);
+			
+			this.getUserLogs('news', 'reply', 'v3', this.uid, this.start_at, this.end_at, 3);
+			this.getUserLogs('forum', 'reply', 'v3', this.uid, this.start_at, this.end_at, 3);
+			
+			this.getUserLogs('forum', 'share', 'v3', this.uid, this.start_at, this.end_at, 4);
+			this.getUserLogs('news', 'share', 'v3', this.uid, this.start_at, this.end_at, 4);
+			
+		}
+		
 		// 获取奖品列表
 		this.getPrizeList(this.activity_id);
 
@@ -218,61 +238,9 @@ export default {
 		this.forumReadStatus = uni.getStorageSync('forumReadStatus');
 		this.replyStatus = uni.getStorageSync('replyStatus');
 		this.shareStatus = uni.getStorageSync('shareStatus');
-		console.log(this.forumReadStatus);
-
-		// 加载页面首先获取用户信息 如果用户没有注册则帮忙注册一下
-		let data = {
-			uid: this.uid,
-			activity_id: this.$question.activity_id
-		};
-		http.post(base.sq + '/activity/api.users/checkUidStatus', data)
-			.then(res => {
-				console.log(res);
-				if (res.status == 200) {
-					// console.log(res.data.data.count);
-					let count = res.data.data.count;
-
-					// 检查用户是否在数据库中
-					if (count <= 0) {
-						let req_url = base.bd + '/v3/user/info';
-						let headers = {
-							ns_device_id: this.ns_device_id,
-							uid: this.uid,
-							token: this.token
-						};
-						http.get(req_url, { headers: headers }).then(res => {
-							console.log(res);
-							// alert(res.data.Status)
-
-							if (res.status == 200) {
-								if (res.data.Status == 1) {
-									let nickname = res.data.Data.nickname;
-									let mobile = res.data.Data.phone;
-									console.log(res);
-									this.addUser(this.uid, nickname, mobile, this.$question.activity_id, 0, this.ns_device_id, 1);
-								} else {
-									// return alert(res.data.ErrorMsg);
-									return uni.showToast({
-										title: res.data.ErrorMsg,
-										icon: 'none',
-										mask: true,
-										duration: 2000
-									});
-								}
-							} else {
-								return alert('server error');
-							}
-						});
-					} else {
-						// 获取用户信息
-						this.getUserInfo(this.uid, this.$question.activity_id);
-					}
-				} else {
-					return alert('server error');
-				}
-			})
-			.catch(error => {})
-			.finally(() => {});
+		
+		console.log('forumReadStatus----'+this.forumReadStatus);
+	    console.log('uid----'+this.uid);
 	},
 	methods: {
 		loginApp() {
@@ -281,6 +249,61 @@ export default {
 		},
 		downloadApp() {
 			window.location.href = 'https://www.171tiyu.com/download';
+		},
+		loadUserInfo(){
+			// 加载页面首先获取用户信息 如果用户没有注册则帮忙注册一下
+			let data = {
+				uid: this.uid,
+				activity_id: this.$question.activity_id
+			};
+			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
+				.then(res => {
+					console.log(res);
+					if (res.status == 200) {
+						// console.log(res.data.data.count);
+						let count = res.data.data.count;
+			
+						// 检查用户是否在数据库中
+						if (count <= 0) {
+							let req_url = base.bd + '/v3/user/info';
+							let headers = {
+								ns_device_id: this.ns_device_id,
+								uid: this.uid,
+								token: this.token
+							};
+							http.get(req_url, { headers: headers }).then(res => {
+								console.log(res);
+								// alert(res.data.Status)
+			
+								if (res.status == 200) {
+									if (res.data.Status == 1) {
+										let nickname = res.data.Data.nickname;
+										let mobile = res.data.Data.phone;
+										console.log(res);
+										this.addUser(this.uid, nickname, mobile, this.$question.activity_id, 0, this.ns_device_id, 1);
+									} else {
+										// return alert(res.data.ErrorMsg);
+										// return uni.showToast({
+										// 	title: res.data.ErrorMsg,
+										// 	icon: 'none',
+										// 	mask: true,
+										// 	duration: 2000
+										// });
+									}
+								} else {
+									return alert('server error');
+								}
+							});
+						} else {
+							// 获取用户信息
+							this.getUserInfo(this.uid, this.$question.activity_id);
+						}
+					} else {
+						return alert('server error');
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		//我要兑换  
 		exchange(prize_id) {
@@ -442,7 +465,7 @@ export default {
 			let req_url = base.bd + '/' + version + '/' + uid + '/' + start_at + '/' + end_at + '/logs';
 
 			http.get(req_url, { params: params }).then(res => {
-				// console.log(res);
+				console.log(res);
 				if (res.status == 200) {
 					if (res.data.Status == 1) {
 						//阅读新闻
@@ -492,9 +515,10 @@ export default {
 						// 留言3次
 						if (type == 3) {
 							let reply_data = res.data.Data.list;
-							if (reply_data.length < 3) {
+							this.replyNum += reply_data.length;
+							
+							if (this.replyNum < 3) {
 								//0; 未满 做任务
-								this.replyNum = reply_data.length;
 								this.replyStatus = 0;
 								uni.setStorageSync('replyStatus', 0);
 							} else {
@@ -514,9 +538,10 @@ export default {
 						// 分享
 						if (type == 4) {
 							let share_data = res.data.Data.list;
-							if (share_data.length < 1) {
+							this.shareNum += share_data.length;
+							
+							if (this.shareNum < 1) {
 								//0;未满 做任务
-								this.shareNum = share_data.length;
 								this.shareStatus = 0;
 								uni.setStorageSync('shareStatus', 0);
 							} else {
@@ -533,27 +558,7 @@ export default {
 								}
 							}
 						}
-						if (type == 5) {
-							let share_data = res.data.Data.list;
-							if (share_data.length < 1) {
-								//0;未满 做任务
-								this.shareNum = share_data.length;
-								this.shareStatus = 0;
-								uni.setStorageSync('shareStatus', 0);
-							} else {
-								//1  已满待领取 会闪烁
-								this.shareNum = 1;
-
-								let a = uni.getStorageSync('shareStatus');
-								if (a !== undefined && a !== null && a === 2) {
-									this.shareStatus = 2;
-									uni.setStorageSync('shareStatus', 2);
-								} else {
-									this.shareStatus = 1;
-									uni.setStorageSync('shareStatus', 1);
-								}
-							}
-						}
+						
 					}
 				} else {
 					alert('server error');
@@ -571,7 +576,8 @@ export default {
 			http.post(req_url, data).then(res => {
 				console.log(res);
 				if (res.status == 200) {
-					this.$router.go(0);
+					this.getUserInfo(uid, activity_id);
+					
 				} else {
 					alert('server error');
 				}
