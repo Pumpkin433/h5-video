@@ -10,10 +10,10 @@
 					</view>
 					<view class="flex-item index-info-2">{{ newsReadNum }}/3</view>
 					<view class="flex-item index-info-3" v-if="loginAppStatus">
-						<button v-if="newsReadStatus === 0" @click="doTask(1)">未完成</button>
-						<button v-if="newsReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(1)">领取积分</button>
+						<button type="default" v-if="newsReadStatus === 0" @click="doTask(1)">未完成</button>
+						<button type="default" v-if="newsReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(1)">领取积分</button>
 
-						<button v-if="newsReadStatus === 2" class="index-info-3-button-score">已领取</button>
+						<button type="default" v-if="newsReadStatus === 2" class="index-info-3-button-score">已领取</button>
 					</view>
 					<view class="flex-item index-info-3" v-if="loginAppStatus === false"><button @click="loginApp()">领取积分</button></view>
 				</view>
@@ -25,10 +25,10 @@
 					</view>
 					<view class="flex-item index-info-2">{{ forumReadNum }}/3</view>
 					<view class="flex-item index-info-3" v-if="loginAppStatus">
-						<button v-show="forumReadStatus === 0" @click="doTask(2)">未完成</button>
-						<button v-show="forumReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(2)">领取积分</button>
+						<button type="default" v-show="forumReadStatus === 0" @click="doTask(2)">未完成</button>
+						<button type="default" v-show="forumReadStatus === 1" class="index-info-3-button-ok" @click="getSignScore(2)">领取积分</button>
 
-						<button v-show="forumReadStatus === 2" class="index-info-3-button-score">已领取</button>
+						<button type="default" v-show="forumReadStatus === 2" class="index-info-3-button-score">已领取</button>
 					</view>
 					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
 				</view>
@@ -41,15 +41,15 @@
 					</view>
 					<view class="flex-item index-info-2">{{ replyNum }}/3</view>
 					<view class="flex-item index-info-3" v-if="loginAppStatus">
-						<button v-if="replyStatus === 0" @click="doTask(3)">未完成</button>
-						<button v-if="replyStatus === 1" class="index-info-3-button-ok" @click="getSignScore(3)">领取积分</button>
+						<button type="default" v-if="replyStatus === 0" @click="doTask(3)">未完成</button>
+						<button type="default" v-if="replyStatus === 1" class="index-info-3-button-ok" @click="getSignScore(3)">领取积分</button>
 
-						<button v-if="replyStatus == 2" class="index-info-3-button-score">已领取</button>
+						<button type="default" v-if="replyStatus == 2" class="index-info-3-button-score">已领取</button>
 					</view>
 					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
 				</view>
 
-				<view class="uni-flex uni-row index-info-item">
+			<!-- 	<view class="uni-flex uni-row index-info-item">
 					<view class="flex-item index-info-1">
 						分享
 						<span>1</span>
@@ -63,7 +63,7 @@
 						<button v-if="shareStatus == 2" class="index-info-3-button-score">已领取</button>
 					</view>
 					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
-				</view>
+				</view> -->
 			</view>
 		</view>
 
@@ -324,7 +324,7 @@ export default {
 						this.exchangeModal = true;
 					}
 					if(res.data.code == '-2'){
-						this.exchangeModalMsg = '奖品兑换完毕'
+						this.exchangeModalMsg = '奖品已兑换完了'
 						this.exchangeModalFail = 2;
 						this.exchangeModal = true;
 					}
@@ -400,21 +400,29 @@ export default {
 						this.newsReadStatus = 2;
 						uni.removeStorageSync('newsReadStatus');
 						uni.setStorageSync('newsReadStatus', 2);
+					}else{
+						uni.removeStorageSync('newsReadStatus');
 					}
 					if (signStatus.hasForumRead) {
 						this.forumReadStatus = 2;
 						uni.removeStorageSync('forumReadStatus');
 						uni.setStorageSync('forumReadStatus', 2);
+					}else{
+						uni.removeStorageSync('forumReadStatus');
 					}
 					if (signStatus.hasReply) {
 						this.replyStatus = 2;
 						uni.removeStorageSync('replyStatus');
 						uni.setStorageSync('replyStatus', 2);
+					}else{
+						uni.removeStorageSync('replyStatus');
 					}
 					if (signStatus.hasShare) {
 						this.shareStatus = 2;
 						uni.removeStorageSync('shareStatus');
 						uni.setStorageSync('shareStatus', 2);
+					}else{
+						uni.removeStorageSync('shareStatus');
 					}
 				} else {
 					alert('server error');
@@ -475,6 +483,7 @@ export default {
 								//0;未满 做任务
 								this.newsReadNum = news_data.length;
 								this.newsReadStatus = 0;
+								uni.removeStorageSync('newsReadStatus');
 								uni.setStorageSync('newsReadStatus', 0);
 							} else {
 								//1; 已满待领取 会闪烁
@@ -483,9 +492,11 @@ export default {
 								let a = uni.getStorageSync('newsReadStatus');
 								if (a !== undefined && a !== null && a === 2) {
 									this.newsReadStatus = 2;
+									uni.removeStorageSync('newsReadStatus');
 									uni.setStorageSync('newsReadStatus', 2);
 								} else {
 									this.newsReadStatus = 1;
+									uni.removeStorageSync('newsReadStatus');
 									uni.setStorageSync('newsReadStatus', 1);
 								}
 							}
@@ -497,6 +508,7 @@ export default {
 								//0;未满 做任务
 								this.forumReadNum = forum_data.length;
 								this.forumReadStatus = 0;
+								uni.removeStorageSync('forumReadStatus');
 								uni.setStorageSync('forumReadStatus', 0);
 							} else {
 								//1; 已满待领取 会闪烁
@@ -505,9 +517,11 @@ export default {
 								let a = uni.getStorageSync('forumReadStatus');
 								if (a !== undefined && a !== null && a === 2) {
 									this.forumReadStatus = 2;
+									uni.removeStorageSync('forumReadStatus');
 									uni.setStorageSync('forumReadStatus', 2);
 								} else {
 									this.forumReadStatus = 1;
+									uni.removeStorageSync('forumReadStatus');
 									uni.setStorageSync('forumReadStatus', 1);
 								}
 							}
@@ -520,6 +534,7 @@ export default {
 							if (this.replyNum < 3) {
 								//0; 未满 做任务
 								this.replyStatus = 0;
+								uni.removeStorageSync('replyStatus');
 								uni.setStorageSync('replyStatus', 0);
 							} else {
 								//1; 已满待领取 会闪烁
@@ -528,9 +543,11 @@ export default {
 								let a = uni.getStorageSync('replyStatus');
 								if (a !== undefined && a !== null && a === 2) {
 									this.replyStatus = 2;
+									uni.removeStorageSync('replyStatus');
 									uni.setStorageSync('replyStatus', 2);
 								} else {
 									this.replyStatus = 1;
+									uni.removeStorageSync('replyStatus');
 									uni.setStorageSync('replyStatus', 1);
 								}
 							}
@@ -543,6 +560,7 @@ export default {
 							if (this.shareNum < 1) {
 								//0;未满 做任务
 								this.shareStatus = 0;
+								uni.removeStorageSync('shareStatus');
 								uni.setStorageSync('shareStatus', 0);
 							} else {
 								//1 已满待领取 会闪烁
@@ -551,9 +569,11 @@ export default {
 								let a = uni.getStorageSync('shareStatus');
 								if (a !== undefined && a !== null && a === 2) {
 									this.shareStatus = 2;
+									uni.removeStorageSync('shareStatus');
 									uni.setStorageSync('shareStatus', 2);
 								} else {
 									this.shareStatus = 1;
+									uni.removeStorageSync('shareStatus');
 									uni.setStorageSync('shareStatus', 1);
 								}
 							}
@@ -637,13 +657,13 @@ export default {
 <style>
 .index-bg {
 	background: url(https://aloss.hotforest.cn/sign/index-bg.png) no-repeat center;
-	background-size: 100% 110%;
+	background-size: 100% 100%;
 	width: 100%;
-	height: 2882rpx;
+	height: 3050rpx;
 }
 .index-banner {
-	width: 752rpx;
-	height: 870rpx;
+	width: 750rpx;
+	height: 820rpx;
 	margin: 0 auto;
 	background: url(https://aloss.hotforest.cn/sign/index-banner.png) no-repeat center;
 	background-size: 100% 100%;
@@ -652,20 +672,21 @@ export default {
 
 .index-info {
 	width: 658rpx;
-	height: 456rpx;
+	/* height: 456rpx; */
 	margin: 0 auto;
-	margin-top: 520rpx;
+	margin-top: 500rpx;
 }
 .index-info-item {
 	width: 617rpx;
 	height: 85rpx;
-	margin: 0 auto;
-	border-bottom: 1rpx dashed rgba(253, 110, 105, 1);
+	margin: 10rpx auto;
+	/* margin-top: 10rpx; */
+	border-bottom: 2rpx dashed rgba(253, 110, 105, 1);
 }
 
 .index-info-1 {
-	width: 65%;
-	font-size: 24rpx;
+	width: 70%;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -677,8 +698,8 @@ export default {
 	font-size: 30rpx;
 }
 .index-info-2 {
-	width: 15%;
-	font-size: 24rpx;
+	width: 10%;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -692,25 +713,24 @@ export default {
 }
 .index-info-3 button {
 	width: 110rpx;
-	height: 40rpx;
-	outline: none;
-	border: 1rpx solid transparent;
+	height: 60rpx;
+	/* outline: none; */
+	/* border: 1rpx solid transparent; */
 	background: url(https://aloss.hotforest.cn/sign/button.png) no-repeat center;
-	background-size: 100% 100%;
-	font-size: 14rpx;
+	background-size: 110% 110%;
+	font-size: 18rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
-	line-height: 40rpx;
+	line-height: 60rpx;
 	padding: 0;
+	margin: 0;
 }
 .index-info-3-button-ok {
 	background: url(https://aloss.hotforest.cn/sign/button.gif) no-repeat center !important;
-	background-size: 100% 100% !important;
 }
 .index-info-3-button-score {
 	background: rgba(187, 187, 187, 1) !important;
-	/* border-radius:5px; */
 }
 
 .index-my-score {
@@ -720,7 +740,7 @@ export default {
 	margin-bottom: 35rpx;
 }
 .index-my-score-l {
-	font-size: 22rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -729,7 +749,7 @@ export default {
 	text-align: left;
 }
 .index-my-score-r {
-	font-size: 22rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -740,7 +760,7 @@ export default {
 
 .prize-list {
 	width: 659rpx;
-	height: 1367rpx;
+	height: 1400rpx;
 	margin: 0 auto;
 	background: url(https://aloss.hotforest.cn/sign/prize-list-bg.png) no-repeat center;
 	background-size: 100% 100%;
@@ -748,16 +768,17 @@ export default {
 
 .score-store-txt {
 	text-align: center;
-	font-size: 24rpx;
+	font-size: 26rpx;
+	
 	font-family: Lantinghei SC;
-	font-weight: 600;
+	font-weight: bold;
 	color: rgba(255, 255, 255, 1);
 	position: absolute;
-	left: 330rpx;
+	left: 320rpx;
 }
 .score-store-item {
 	width: 50%;
-	height: 269rpx;
+	height: 280rpx;
 	text-align: center;
 	float: left;
 }
@@ -773,7 +794,7 @@ export default {
 }
 
 .score-store-item-2 {
-	font-size: 20rpx;
+	font-size: 22rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -790,7 +811,7 @@ export default {
 	width: 50%;
 	float: left;
 
-	font-size: 20rpx;
+	font-size: 22rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -800,7 +821,7 @@ export default {
 	width: 50%;
 	float: right;
 
-	font-size: 20rpx;
+	font-size: 22rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -812,9 +833,10 @@ export default {
 
 .index-profile-bg {
 	width: 594rpx;
-	height: 481rpx;
+	height: 600rpx;
 	margin: 0 auto;
 	margin-top: 20rpx;
+	margin-bottom: 20rpx;
 	padding-left: 26rpx;
 	padding-right: 40rpx;
 	background: url(https://aloss.hotforest.cn/sign/index-profile-bg.png) no-repeat center;
@@ -822,33 +844,35 @@ export default {
 }
 .index-profile-text {
 	text-align: center;
-	font-size: 24rpx;
+	font-size: 28rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 	/* line-height:62rpx; */
 }
 .index-profile-1 {
-	font-size: 22rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
-	line-height: 35rpx;
-	margin-top: 33rpx;
+	line-height: 45rpx;
+	margin-top: 40rpx;
 }
 .index-profile-2 {
-	font-size: 22rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
-	line-height: 35rpx;
+	line-height: 45rpx;
+	margin-top: 10rpx;
 }
 .index-profile-3 {
-	font-size: 22rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
-	line-height: 35rpx;
+	line-height: 45rpx;
+	margin-top: 10rpx;
 }
 
 .index-profile-4 {
@@ -856,7 +880,7 @@ export default {
 	text-align: center;
 }
 .index-profile-4-text {
-	font-size: 22rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -868,7 +892,7 @@ export default {
 }
 .index-profile-4 span {
 	margin-left: 30rpx;
-	font-size: 22rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(67, 147, 255, 1);
@@ -888,7 +912,7 @@ export default {
 }
 .exchange-modal-bg {
 	width: 601rpx;
-	height: 490rpx;
+	height: 520rpx;
 	position: fixed;
 	z-index: 110;
 	top: 0;
@@ -900,7 +924,7 @@ export default {
 	background-size: 100% 100%;
 }
 .exchange-modal-1 {
-	font-size: 30rpx;
+	font-size: 34rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
@@ -908,7 +932,7 @@ export default {
 	margin-top: 50rpx;
 }
 .exchange-modal-2 {
-	font-size: 20rpx;
+	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -916,7 +940,7 @@ export default {
 	margin-top: 106rpx;
 }
 .exchange-modal-3 {
-	font-size: 30rpx;
+	font-size: 34rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: #fd6e69;
@@ -924,7 +948,7 @@ export default {
 	margin-top: 10rpx;
 }
 .exchange-modal-4 {
-	font-size: 20rpx;
+	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -936,11 +960,12 @@ export default {
 }
 .exchange-modal-5 button {
 	background: url(https://aloss.hotforest.cn/sign/exchange-modal-button.png) no-repeat center;
-	background-size: 100% 100%;
+	background-size: 110% 110%;
 	width: 170rpx;
 	height: 55rpx;
 
-	font-size: 18rpx;
+	font-size: 22rpx;
+	line-height: 55rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
