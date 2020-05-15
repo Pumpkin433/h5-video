@@ -114,22 +114,10 @@ var dateUtils = {
 	}
 }
 
-function startTime(time) {
-	const nowTimeDate = new Date(time)
-	return nowTimeDate.setHours(0, 0, 0, 0)
-}
-
-function endTime(time) {
-	const nowTimeDate = new Date(time)
-	return nowTimeDate.setHours(23, 59, 59, 999)
-}
-
 module.exports = {
 	formatTime: formatTime,
 	formatLocation: formatLocation,
 	dateUtils: dateUtils,
 	randomWord: randomWord,
-	randomOption: randomOption,
-	startTime:startTime,
-	endTime:endTime,
+	randomOption: randomOption
 }

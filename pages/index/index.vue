@@ -30,7 +30,7 @@
 
 						<button type="default" v-show="forumReadStatus === 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-3" v-if="loginAppStatus === false"><button @click="loginApp()">领取积分</button></view>
 				</view>
 
 				<view class="uni-flex uni-row index-info-item">
@@ -46,10 +46,10 @@
 
 						<button type="default" v-if="replyStatus == 2" class="index-info-3-button-score">已领取</button>
 					</view>
-					<view class="flex-item index-info-3" v-if="loginAppStatus===false"><button @click="loginApp()">领取积分</button></view>
+					<view class="flex-item index-info-3" v-if="loginAppStatus === false"><button @click="loginApp()">领取积分</button></view>
 				</view>
 
-			<!-- 	<view class="uni-flex uni-row index-info-item">
+				<!-- 	<view class="uni-flex uni-row index-info-item">
 					<view class="flex-item index-info-1">
 						分享
 						<span>1</span>
@@ -104,15 +104,13 @@
 		<view class="uni-flex uni-column exchange-modal-bg" v-show="exchangeModalSuccess">
 			<view class="flex-item flex-item-V exchange-modal-1">兑换成功</view>
 			<view class="flex-item flex-item-V exchange-modal-2">你已经成功兑换</view>
-			<view class="flex-item flex-item-V exchange-modal-3">{{prizeName}}</view>
-			<view class="flex-item flex-item-V exchange-modal-4">你的兑换码： {{exchangeCode}}</view>
-			<view class="flex-item flex-item-V exchange-modal-5">
-				<button @click="copyExchangeCode(exchangeCode)">复制兑换码</button>
-			</view>
+			<view class="flex-item flex-item-V exchange-modal-3">{{ prizeName }}</view>
+			<view class="flex-item flex-item-V exchange-modal-4">你的兑换码： {{ exchangeCode }}</view>
+			<view class="flex-item flex-item-V exchange-modal-5"><button @click="copyExchangeCode(exchangeCode)">复制兑换码</button></view>
 		</view>
 		<view class="uni-flex uni-column exchange-modal-bg" v-show="exchangeModalFail">
 			<view class="flex-item flex-item-V exchange-modal-1">兑换失败</view>
-			<view class="flex-item flex-item-V exchange-modal-3 exchange-fail-3">{{exchangeModalMsg}}</view>
+			<view class="flex-item flex-item-V exchange-modal-3 exchange-fail-3">{{ exchangeModalMsg }}</view>
 			<view class="flex-item flex-item-V exchange-modal-4 exchange-fail-4">请选择其他产品兑换</view>
 			<view class="flex-item flex-item-V exchange-modal-5 exchange-fail-5"><button @click="closeExchangeModal">确定</button></view>
 		</view>
@@ -130,7 +128,6 @@
 <script>
 // 引入文件
 import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy/junyi-h5-copy.js';
-import { startTime } from '@/common/util.js';
 import http from '@/utils/http.js';
 import base from '@/utils/base.js';
 
@@ -138,8 +135,8 @@ export default {
 	name: 'index',
 	data() {
 		return {
-			loginAppStatus:false,
-			
+			loginAppStatus: false,
+
 			exchangeModal: false,
 			appMsgModal: false,
 			start_at: 0,
@@ -158,24 +155,22 @@ export default {
 			shareStatus: 0, // 分享一次状态 4
 			shareNum: 0,
 			signScore: 0,
-			
-			prizeName:null,
-			exchangeCode:null,
-			exchangeModalSuccess:false,
-			exchangeModalFail:false,
-			exchangeModalMsg:null,
-			
+
+			prizeName: null,
+			exchangeCode: null,
+			exchangeModalSuccess: false,
+			exchangeModalFail: false,
+			exchangeModalMsg: null
 		};
 	},
 	onLoad(option) {
-		let nowTimestamp = Date.parse(new Date()) / 1000
+		
 		// let nowTimestamp = 1598659832;
-		this.start_at = startTime(nowTimestamp);
-		this.end_at = nowTimestamp;
-
-		console.log(nowTimestamp);
-		console.log(startTime(nowTimestamp));
-
+		this.start_at = new Date(new Date().setHours(0, 0, 0, 0)) / 1000; //每天0点时间戳
+		this.end_at = Date.parse(new Date()) / 1000; //当前时间戳
+		console.log(this.start_at)
+		console.log(this.end_at)
+	
 		// open this url outof app env
 		if (typeof contact === 'undefined') {
 			this.appMsgModal = true;
@@ -186,7 +181,7 @@ export default {
 				uni.setStorageSync('token', option.token);
 				uni.setStorageSync('ns_device_id', option.ns_device_id);
 				this.loginAppStatus = true;
-			}else{
+			} else {
 				this.loginAppStatus = false;
 				// open this url in app env
 				contact.onLoginDone = function(uid, token) {
@@ -194,42 +189,38 @@ export default {
 					uni.removeStorageSync('token');
 					uni.setStorageSync('uid', uid);
 					uni.setStorageSync('token', token);
-					uni.setStorageSync('loginAppStatus',true);
-					
+					uni.setStorageSync('loginAppStatus', true);
+
 					let ns_device_id = uni.getStorageSync('ns_device_id');
 					uni.reLaunch({
 						url: '/pages/index/mid?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
 					});
-				}
-				
+				};
 			}
-		
 		}
-		
-		console.log('loginAppStatus----'+this.loginAppStatus)
-		
+
+		console.log('loginAppStatus----' + this.loginAppStatus);
+
 		this.uid = uni.getStorageSync('uid');
 		// this.uid = 468974;
 		this.token = uni.getStorageSync('token');
 		this.ns_device_id = uni.getStorageSync('ns_device_id');
-		
-		if(this.uid !== '' && this.uid !== 'null' && this.uid !== undefined){
-			
+
+		if (this.uid !== '' && this.uid !== 'null' && this.uid !== undefined) {
 			//加载用户信息
 			this.loadUserInfo();
-			
+
 			// 获取用户的行为日志
 			this.getUserLogs('news', 'read', 'v3', this.uid, this.start_at, this.end_at, 1);
 			this.getUserLogs('forum', 'read', 'v3', this.uid, this.start_at, this.end_at, 2);
-			
+
 			this.getUserLogs('news', 'reply', 'v3', this.uid, this.start_at, this.end_at, 3);
 			this.getUserLogs('forum', 'reply', 'v3', this.uid, this.start_at, this.end_at, 3);
-			
+
 			this.getUserLogs('forum', 'share', 'v3', this.uid, this.start_at, this.end_at, 4);
 			this.getUserLogs('news', 'share', 'v3', this.uid, this.start_at, this.end_at, 4);
-			
 		}
-		
+
 		// 获取奖品列表
 		this.getPrizeList(this.activity_id);
 
@@ -238,9 +229,9 @@ export default {
 		this.forumReadStatus = uni.getStorageSync('forumReadStatus');
 		this.replyStatus = uni.getStorageSync('replyStatus');
 		this.shareStatus = uni.getStorageSync('shareStatus');
-		
-		console.log('forumReadStatus----'+this.forumReadStatus);
-	    console.log('uid----'+this.uid);
+
+		console.log('forumReadStatus----' + this.forumReadStatus);
+		console.log('uid----' + this.uid);
 	},
 	methods: {
 		loginApp() {
@@ -250,7 +241,7 @@ export default {
 		downloadApp() {
 			window.location.href = 'https://www.171tiyu.com/download';
 		},
-		loadUserInfo(){
+		loadUserInfo() {
 			// 加载页面首先获取用户信息 如果用户没有注册则帮忙注册一下
 			let data = {
 				uid: this.uid,
@@ -262,7 +253,7 @@ export default {
 					if (res.status == 200) {
 						// console.log(res.data.data.count);
 						let count = res.data.data.count;
-			
+
 						// 检查用户是否在数据库中
 						if (count <= 0) {
 							let req_url = base.bd + '/v3/user/info';
@@ -274,7 +265,7 @@ export default {
 							http.get(req_url, { headers: headers }).then(res => {
 								console.log(res);
 								// alert(res.data.Status)
-			
+
 								if (res.status == 200) {
 									if (res.data.Status == 1) {
 										let nickname = res.data.Data.nickname;
@@ -305,45 +296,42 @@ export default {
 				.catch(error => {})
 				.finally(() => {});
 		},
-		//我要兑换  
+		//我要兑换
 		exchange(prize_id) {
 			let data = {
-				prize_id:prize_id,
-				uid:this.uid,
-				activity_id:this.activity_id
-			}
-			let req_url = base.sq + '/activity/api.users/exchangePrize'
-			http.post(req_url,data)
-			.then(
-			res=>{
-				console.log(res)
-				if(res.status == 200){
-					if(res.data.code == '-1'){
-						this.exchangeModalMsg = '您的积分不足'
+				prize_id: prize_id,
+				uid: this.uid,
+				activity_id: this.activity_id
+			};
+			let req_url = base.sq + '/activity/api.users/exchangePrize';
+			http.post(req_url, data).then(res => {
+				console.log(res);
+				if (res.status == 200) {
+					if (res.data.code == '-1') {
+						this.exchangeModalMsg = '您的积分不足';
 						this.exchangeModalFail = true;
 						this.exchangeModal = true;
 					}
-					if(res.data.code == '-2'){
-						this.exchangeModalMsg = '奖品已兑换完了'
+					if (res.data.code == '-2') {
+						this.exchangeModalMsg = '奖品已兑换完了';
 						this.exchangeModalFail = 2;
 						this.exchangeModal = true;
 					}
-					if(res.data.code == '-3'){
-						this.exchangeModalMsg = '奖品兑换失败'
+					if (res.data.code == '-3') {
+						this.exchangeModalMsg = '奖品兑换失败';
 						this.exchangeModalFail = 2;
 						this.exchangeModal = true;
 					}
-					if(res.data.code == 0){
+					if (res.data.code == 0) {
 						this.exchangeModalSuccess = true;
 						this.exchangeModal = true;
 						this.exchangeCode = res.data.data.exchange_code;
 						this.prizeName = res.data.data.prize_name;
 					}
-					
-				}else{
-					alert('server error')
+				} else {
+					alert('server error');
 				}
-			})
+			});
 		},
 		closeExchangeModal() {
 			this.exchangeModal = false;
@@ -400,28 +388,28 @@ export default {
 						this.newsReadStatus = 2;
 						uni.removeStorageSync('newsReadStatus');
 						uni.setStorageSync('newsReadStatus', 2);
-					}else{
+					} else {
 						uni.removeStorageSync('newsReadStatus');
 					}
 					if (signStatus.hasForumRead) {
 						this.forumReadStatus = 2;
 						uni.removeStorageSync('forumReadStatus');
 						uni.setStorageSync('forumReadStatus', 2);
-					}else{
+					} else {
 						uni.removeStorageSync('forumReadStatus');
 					}
 					if (signStatus.hasReply) {
 						this.replyStatus = 2;
 						uni.removeStorageSync('replyStatus');
 						uni.setStorageSync('replyStatus', 2);
-					}else{
+					} else {
 						uni.removeStorageSync('replyStatus');
 					}
 					if (signStatus.hasShare) {
 						this.shareStatus = 2;
 						uni.removeStorageSync('shareStatus');
 						uni.setStorageSync('shareStatus', 2);
-					}else{
+					} else {
 						uni.removeStorageSync('shareStatus');
 					}
 				} else {
@@ -530,7 +518,7 @@ export default {
 						if (type == 3) {
 							let reply_data = res.data.Data.list;
 							this.replyNum += reply_data.length;
-							
+
 							if (this.replyNum < 3) {
 								//0; 未满 做任务
 								this.replyStatus = 0;
@@ -556,7 +544,7 @@ export default {
 						if (type == 4) {
 							let share_data = res.data.Data.list;
 							this.shareNum += share_data.length;
-							
+
 							if (this.shareNum < 1) {
 								//0;未满 做任务
 								this.shareStatus = 0;
@@ -578,7 +566,6 @@ export default {
 								}
 							}
 						}
-						
 					}
 				} else {
 					alert('server error');
@@ -597,7 +584,6 @@ export default {
 				console.log(res);
 				if (res.status == 200) {
 					this.getUserInfo(uid, activity_id);
-					
 				} else {
 					alert('server error');
 				}
@@ -621,7 +607,7 @@ export default {
 		},
 		// 触发方法
 		copyExchangeCode(exchangeCode) {
-			console.log(exchangeCode)
+			console.log(exchangeCode);
 			let content = exchangeCode; // 复制内容，必须字符串，数字需要转换为字符串
 			const result = h5Copy(content);
 			if (result === false) {
@@ -636,7 +622,6 @@ export default {
 			}
 		},
 		copy(text) {
-			
 			let content = text; // 复制内容，必须字符串，数字需要转换为字符串
 			const result = h5Copy(content);
 			if (result === false) {
@@ -769,7 +754,7 @@ export default {
 .score-store-txt {
 	text-align: center;
 	font-size: 26rpx;
-	
+
 	font-family: Lantinghei SC;
 	font-weight: bold;
 	color: rgba(255, 255, 255, 1);
@@ -1032,13 +1017,13 @@ export default {
 	color: rgba(255, 255, 255, 1);
 	margin-top: 84rpx;
 }
-.exchange-fail-3{
+.exchange-fail-3 {
 	margin-top: 80rpx;
 }
-.exchange-fail-4{
+.exchange-fail-4 {
 	margin-top: 20rpx;
 }
-.exchange-fail-5{
+.exchange-fail-5 {
 	margin-top: 40rpx;
 }
 </style>
