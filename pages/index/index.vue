@@ -87,7 +87,7 @@
 
 		<view class="uni-flex uni-column index-profile-bg">
 			<view class="flex-item flex-item-V index-profile-text">活动规则</view>
-			<view class="flex-item flex-item-V index-profile-1">1，活动时间：5月20日~9月20日</view>
+			<view class="flex-item flex-item-V index-profile-1">1，活动时间：5月21日~9月21日</view>
 			<view class="flex-item flex-item-V index-profile-2">2，用户可以通过完成任务获取每日积分，积分可以在积分商城内兑换商品，</view>
 			<view class="flex-item flex-item-V index-profile-3">3，需要兑换奖品的用户，请添加下方客服微信，奖品将由客服为您发放； 奖品兑换时间：每月1号~10号</view>
 			<view class="flex-item flex-item-V index-profile-4">
