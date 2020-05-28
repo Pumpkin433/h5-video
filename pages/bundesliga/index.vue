@@ -31,29 +31,24 @@
 						<view class="flex-item question-5">客队</view>
 					</view>
 
-					<view class="flex-item flex-item-V ">
-						<radio-group @change="radioChange" :data-id="team.id">
-							<label class="uni-list-cell uni-list-cell-pd" v-for="(item, index) in items" :key="item.value">
-								<!-- <view class="option-name-2 uni-radio-input uni-radio-input-checked">{{ item.name }}</view> -->
-								<view class="option-name-1">
-									<radio
-										class="option-radio"
-										:name="item.name"
-										:value="item.value"
-										:checked="index === current && team.id === radio_id"
-										:class="index == current && team.id == radio_id ? 'option-active' : ''"
-										style=""
-									/>
-									<view :class="index == current && team.id == radio_id ? 'option-active' : ''" class="option-radio-text">{{ item.name }} {{ index }} {{ current }}{{ team.id }}{{ radio_id }}</view>
-								</view>
-							</label>
-						</radio-group>
+					<view>
+						<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 1)">
+							主队胜
+						</view>
+						<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 3)">
+							平
+						</view>
+						<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 2 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 2)">
+							客队胜
+						</view>
 					</view>
 				</view>
 			</scroll-view>
 		</view>
 
-		<view class="flex-item flex-item-V question-button"><button @click="addUserQuizLog(selectList)" type="default">确认选择</button></view>
+		<view class="flex-item flex-item-V question-button">
+			<button @click="addUserQuizLog(selectList)" type="default">确认选择</button>
+		</view>
 
 		<view class="rule-modal" v-show="ruleModal" @click="closeRuleModal()"></view>
 		<view class="rule-modal-bg" v-show="ruleModal">
@@ -74,17 +69,40 @@
 		<view class="logs-modal" v-show="logsModal" @click="closeLogsModal()"></view>
 		<view class="logs-modal-bg" v-show="logsModal">
 			<view class="flex-item  logs-title">竞猜记录</view>
-			<view class="flex-item  logs-content">
-				1.竞猜将于比赛开始前关闭竞猜通道
-				<br />
-				2.系统将随机抽取10位答对竞猜的用户，
-				<br />
-				3.下期活动开始时，将公布获奖用户名单
-				<br />
-				4.获奖用户，请添加全民体育官方微信
-				<br />
-				（NationSports）领取相应奖励
+			<view class="uni-row uni-flex logs-1 ">
+				<view class="flex-item logs-1-1">时间</view>
+				<view class="flex-item logs-1-2">赛事</view>
+				<view class="flex-item logs-1-3">我的竞猜</view>
+				<view class="flex-item logs-1-4">结果</view>
 			</view>
+			<view class="flex-item logs-2">第一轮</view>
+			<scroll-view :scroll-top="scrollTop" 
+			scroll-y="true" 
+			@scrolltoupper="upper" 
+			@scrolltolower="lower" 
+			@scroll="scroll">
+				<view class="scroll-view-item logs-3" v-for="(log, i) in userQuizLogs" :key="i">
+					<view class="uni-row uni-flex ">
+						<view class="flex-item logs-3-font logs-3-1">{{log.detail.competition_time}}</view>
+						<view class="flex-item logs-3-font logs-3-2">
+						{{log.detail.home_team_name}} <br>
+						{{log.detail.guest_team_name}}
+						</view>
+						<view class="flex-item logs-3-font logs-3-3">
+							<text v-if="log.result == 1">{{log.detail.home_team_name}}</text>
+							<text v-if="log.result == 2">{{log.detail.guest_team_name}}</text>
+							<text v-if="log.result == 3">平</text>
+							<!-- {{log.result}} -->
+						</view>
+						<view class="flex-item logs-3-font logs-3-4">
+							<!-- {{log.r_status}} -->
+							<text v-if="log.r_status == -1">未开</text>
+							<text v-if="log.r_status == 1">胜</text>
+							<text v-if="log.r_status == 0">负</text>
+						</view>
+					</view>
+				</view>
+			</scroll-view>
 		</view>
 	</view>
 </template>
@@ -101,33 +119,217 @@ export default {
 			},
 			teamList: [],
 			selectList: [],
-			items: [
-				{
-					value: '1',
-					name: '主队赢',
-					checked: 'false'
-				},
-				{
-					value: '3',
-					name: '平',
-					checked: 'false'
-				},
-				{
-					value: '2',
-					name: '客队赢',
-					checked: 'false'
-				}
-			],
-			current: 0,
-			radio_id: 0,
 			ruleModal: false,
-			logsModal: false
+			logsModal: false,
+			teamId: 0,
+			userQuizLogs:[],
+			loginAppStatus: false,
+			uid: null,
+			token: null,
+			ns_device_id: null,
+			activity_id: 4,
+			
 		};
 	},
 	onLoad(option) {
-		this.getTeamList();
+		
+		// open this url outof app env
+		if (typeof contact === 'undefined') {
+			this.appMsgModal = true;
+			// this.appMsgModal = false;
+		} else {
+			if (option.uid !== '' && option.uid !== 'null' && option.uid !== undefined) {
+				uni.setStorageSync('uid', option.uid);
+				uni.setStorageSync('token', option.token);
+				uni.setStorageSync('ns_device_id', option.ns_device_id);
+				this.loginAppStatus = true;
+			} else {
+				this.loginAppStatus = false;
+				// open this url in app env
+				contact.onLoginDone = function(uid, token) {
+					uni.removeStorageSync('uid');
+					uni.removeStorageSync('token');
+					uni.setStorageSync('uid', uid);
+					uni.setStorageSync('token', token);
+					uni.setStorageSync('loginAppStatus', true);
+		
+					let ns_device_id = uni.getStorageSync('ns_device_id');
+					uni.reLaunch({
+						url: '/pages/index/mid?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
+					});
+				};
+			}
+			//
+			this.getTeamList();
+		}
+		
+		if (this.uid !== '' && this.uid !== 'null' && this.uid !== undefined) {
+			//加载用户信息
+			this.loadUserInfo();
+		}
+		
+		this.uid = uni.getStorageSync('uid');
+		// this.uid = 468974;
+		this.token = uni.getStorageSync('token');
+		this.ns_device_id = uni.getStorageSync('ns_device_id');
+		
 	},
 	methods: {
+		loginApp() {
+			contact.requireLogin();
+			console.log('relogin');
+		},
+		loadUserInfo() {
+			// 加载页面首先获取用户信息 如果用户没有注册则帮忙注册一下
+			let data = {
+				uid: this.uid,
+				activity_id: this.$question.activity_id
+			};
+			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
+				.then(res => {
+					console.log(res);
+					if (res.status == 200) {
+						// console.log(res.data.data.count);
+						let count = res.data.data.count;
+		
+						// 检查用户是否在数据库中
+						if (count <= 0) {
+							let req_url = base.bd + '/v3/user/info';
+							let headers = {
+								ns_device_id: this.ns_device_id,
+								uid: this.uid,
+								token: this.token
+							};
+							http.get(req_url, { headers: headers }).then(res => {
+								console.log(res);
+								// alert(res.data.Status)
+		
+								if (res.status == 200) {
+									if (res.data.Status == 1) {
+										let nickname = res.data.Data.nickname;
+										let mobile = res.data.Data.phone;
+										console.log(res);
+										this.addUser(this.uid, nickname, mobile, this.$question.activity_id, 0, this.ns_device_id, 1);
+									} else {
+										// return alert(res.data.ErrorMsg);
+										// return uni.showToast({
+										// 	title: res.data.ErrorMsg,
+										// 	icon: 'none',
+										// 	mask: true,
+										// 	duration: 2000
+										// });
+									}
+								} else {
+									return alert('server error');
+								}
+							});
+						} else {
+							// 获取用户信息
+							this.getUserInfo(this.uid, this.$question.activity_id);
+						}
+					} else {
+						return alert('server error');
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+		},
+		addUser(uid, name, mobile, activity_id, sign_score, ns_device_id, user_type) {
+			let data = {
+				uid: uid,
+				name: name,
+				mobile: mobile,
+				activity_id: activity_id,
+				sign_score: sign_score,
+				ns_device_id: ns_device_id,
+				user_type: user_type
+			};
+		
+			http.post(base.sq + '/activity/api.Users/add', data)
+				.then(res => {
+					if (res.status == 200) {
+						console.log(res);
+						// alert(res.data.data)
+						// location.reload()
+					} else {
+						return alert('server error');
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+		},
+		getUserInfo(uid, activity_id) {
+			let data = {
+				uid: uid,
+				activity_id: activity_id
+			};
+			let req_url = base.sq + '/activity/api.users/getUserInfo';
+			http.post(req_url, data).then(res => {
+				console.log(res);
+				if (res.status == 200) {
+					let data = res.data.data;
+					
+				} else {
+					alert('server error');
+				}
+			});
+		},
+		getUserQuizLogs(){
+			uni.request({
+				url: base.sq + '/activity/api.quiz/getUserQuizLogs',
+				data: {
+					uid: 1,
+					activity_id: 5,
+				},
+				method: 'POST',
+				success: res => {
+					console.log(res);
+					if (res.statusCode === 200) {
+						if (res.data.code === 0) {
+							this.userQuizLogs = res.data.data;
+							console.log(this.userQuizLogs);
+						}else{
+							alert(res.data.info);
+						}
+					} else {
+						alert('server error');
+					}
+				}
+			});
+		},
+		sOption(teamId, result) {
+			let that = this;
+			that.teamId = teamId;
+
+			var key = 'team_' + teamId;
+			var teamList = this.teamList;
+			var a = teamId + '_' + result;
+
+			teamList.forEach(item => {
+				if (item.id === teamId) {
+					item.checkValue = a;
+				}
+			});
+			// todos  two days
+			this.$forceUpdate((this.teamList = teamList));
+			// this.teamList = teamList;
+			
+			var selectList = this.selectList;
+			var optionObject = {
+				team_id: teamId,
+				result: result
+			};
+			
+			for (var i = 0; i < selectList.length; i++) {
+				var team_id = selectList[i]['team_id'];
+				if (team_id == teamId) {
+					selectList.splice(i, 1);
+				}
+			}
+			selectList.push(optionObject);
+			this.selectList = selectList;
+		
+		},
 		closeRuleModal() {
 			this.ruleModal = false;
 		},
@@ -139,33 +341,7 @@ export default {
 		},
 		changeLogsModal() {
 			this.logsModal = true;
-		},
-		radioChange: function(evt) {
-			let index = evt.currentTarget.dataset.id;
-			this.radio_id = index;
-
-			for (let i = 0; i < this.items.length; i++) {
-				if (this.items[i].value === evt.target.value) {
-					this.current = i;
-					break;
-				}
-			}
-
-			var optionObject = {
-				quiz_id: index,
-				option: evt.target.value
-			};
-			var selectList = this.selectList;
-			for (var i = 0; i < selectList.length; i++) {
-				// console.log(selectList[i]);
-				var quiz_id = selectList[i]['quiz_id'];
-				if (quiz_id == index) {
-					selectList.splice(i, 1);
-				}
-			}
-			selectList.push(optionObject);
-			console.log(selectList);
-			this.selectList = selectList;
+			this.getUserQuizLogs();
 		},
 		addUserQuizLog: function(logs) {
 			uni.request({
@@ -180,6 +356,9 @@ export default {
 					console.log(res);
 					if (res.statusCode === 200) {
 						if (res.data.code === 0) {
+							alert('添加成功');
+						}else{
+							alert(res.data.info);
 						}
 					} else {
 						alert('server error');
@@ -378,23 +557,10 @@ export default {
 	font-weight: 600;
 	color: rgba(50, 141, 255, 1);
 }
-/deep/ .uni-radio-input {
-	width: 500rpx;
-	border-radius: 50rpx;
-}
-.option-radio-text{
-	position: absolute;
-	top: 30rpx;
-	left: 200rpx;
-}
 
-.option-radio {
-	width: 500rpx;
-	border-radius: 50rpx;
-}
 .option-active {
 	background-color: #007aff;
-	color: white;
+	color: #ffffff !important;
 }
 
 .option-item {
@@ -519,5 +685,59 @@ export default {
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
+}
+
+.logs-1{
+	padding:20rpx 20rpx 10rpx 20rpx;
+	border-bottom: 1px solid #39B8BF;
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	
+}
+.logs-1-1{
+	width: 35%;
+}
+.logs-1-2{
+	width: 20%;
+}
+.logs-1-3{
+	width: 25%;
+}
+.logs-1-4{
+	width: 20%;
+}
+.logs-2{
+	padding:20rpx 20rpx 10rpx 20rpx;
+	font-size:18rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	border-bottom: 1px dashed  #39B8BF;
+}
+
+.logs-3{
+	padding:20rpx 20rpx 10rpx 20rpx;
+	border-bottom: 1px solid #39B8BF;
+}
+.logs-3-font{
+	font-size:18rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+}
+.logs-3-1{
+	width: 35%;
+}
+.logs-3-2{
+	width: 20%;
+}
+.logs-3-3{
+	width: 25%;
+	text-align: center;
+}
+.logs-3-4{
+	width: 20%;
 }
 </style>

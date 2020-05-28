@@ -107,7 +107,7 @@
         "template" : "template.h5.html",
         "router" : {
             "mode" : "history",
-            "base" : "/sign/"
+            "base" : "/bunliga/"
         },
         "sdkConfigs" : {
             "maps" : {}
@@ -115,7 +115,7 @@
         "async" : {
             "timeout" : 20000
         },
-        "title" : "全民签到赢百万大奖",
+        "title" : "德甲竞猜",
         "devServer" : {
             "port" : 80,
             "disableHostCheck" : true,
@@ -134,6 +134,6 @@
                 "enable" : true
             }
         },
-        "domain" : "sign.hotforest.cn"
+        "domain" : "bunliga.hotforest.cn"
     }
 }

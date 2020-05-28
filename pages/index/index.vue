@@ -164,7 +164,7 @@ export default {
 		};
 	},
 	onLoad(option) {
-		
+		console.log(this.$store.state.hasLogin)
 		// let nowTimestamp = 1598659832;
 		this.start_at = new Date(new Date().setHours(0, 0, 0, 0)) / 1000; //每天0点时间戳
 		this.end_at = Date.parse(new Date()) / 1000; //当前时间戳
