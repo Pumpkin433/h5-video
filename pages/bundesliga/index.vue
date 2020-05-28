@@ -15,7 +15,7 @@
 						<view class="flex-item question-1">主队</view>
 						<view class="flex-item question-2">
 							<img :src="team.home_team_icon" alt="img" />
-							<!-- {{team.home_team_name}} -->
+							{{ team.home_team_name }}
 						</view>
 						<view class="flex-item question-3">
 							VS
@@ -34,9 +34,17 @@
 					<view class="flex-item flex-item-V ">
 						<radio-group @change="radioChange" :data-id="team.id">
 							<label class="uni-list-cell uni-list-cell-pd" v-for="(item, index) in items" :key="item.value">
-								<view class="option-name-2 uni-radio-input uni-radio-input-checked">{{ item.name }}</view>
+								<!-- <view class="option-name-2 uni-radio-input uni-radio-input-checked">{{ item.name }}</view> -->
 								<view class="option-name-1">
-									<radio class="option-radio" :name="item.name" :value="item.value" :checked="index === current && team.id === radio_id" />
+									<radio
+										class="option-radio"
+										:name="item.name"
+										:value="item.value"
+										:checked="index === current && team.id === radio_id"
+										:class="index == current && team.id == radio_id ? 'option-active' : ''"
+										style=""
+									/>
+									<view :class="index == current && team.id == radio_id ? 'option-active' : ''" class="option-radio-text">{{ item.name }} {{ index }} {{ current }}{{ team.id }}{{ radio_id }}</view>
 								</view>
 							</label>
 						</radio-group>
@@ -46,33 +54,38 @@
 		</view>
 
 		<view class="flex-item flex-item-V question-button"><button @click="addUserQuizLog(selectList)" type="default">确认选择</button></view>
-		
+
 		<view class="rule-modal" v-show="ruleModal" @click="closeRuleModal()"></view>
 		<view class="rule-modal-bg" v-show="ruleModal">
 			<view class="flex-item  rule-title">游戏规则</view>
-			<view class="flex-item rule-content" >
-				1.竞猜将于比赛开始前关闭竞猜通道 <br>
-				2.系统将随机抽取10位答对竞猜的用户，<br>
-				3.下期活动开始时，将公布获奖用户名单<br>
-				4.获奖用户，请添加全民体育官方微信<br>
+			<view class="flex-item rule-content">
+				1.竞猜将于比赛开始前关闭竞猜通道
+				<br />
+				2.系统将随机抽取10位答对竞猜的用户，
+				<br />
+				3.下期活动开始时，将公布获奖用户名单
+				<br />
+				4.获奖用户，请添加全民体育官方微信
+				<br />
 				（NationSports）领取相应奖励
-				                            
 			</view>
 		</view>
-		
+
 		<view class="logs-modal" v-show="logsModal" @click="closeLogsModal()"></view>
 		<view class="logs-modal-bg" v-show="logsModal">
 			<view class="flex-item  logs-title">竞猜记录</view>
-			<view class="flex-item  logs-content" >
-				1.竞猜将于比赛开始前关闭竞猜通道 <br>
-				2.系统将随机抽取10位答对竞猜的用户，<br>
-				3.下期活动开始时，将公布获奖用户名单<br>
-				4.获奖用户，请添加全民体育官方微信<br>
+			<view class="flex-item  logs-content">
+				1.竞猜将于比赛开始前关闭竞猜通道
+				<br />
+				2.系统将随机抽取10位答对竞猜的用户，
+				<br />
+				3.下期活动开始时，将公布获奖用户名单
+				<br />
+				4.获奖用户，请添加全民体育官方微信
+				<br />
 				（NationSports）领取相应奖励
-				                            
 			</view>
 		</view>
-		
 	</view>
 </template>
 
@@ -105,26 +118,26 @@ export default {
 					checked: 'false'
 				}
 			],
-			current: -1,
-			radio_id: -1,
-			ruleModal:false,
-			logsModal:false,
+			current: 0,
+			radio_id: 0,
+			ruleModal: false,
+			logsModal: false
 		};
 	},
 	onLoad(option) {
 		this.getTeamList();
 	},
 	methods: {
-		closeRuleModal(){
+		closeRuleModal() {
 			this.ruleModal = false;
 		},
-		changeRuleModal(){
+		changeRuleModal() {
 			this.ruleModal = true;
 		},
-		closeLogsModal(){
+		closeLogsModal() {
 			this.logsModal = false;
 		},
-		changeLogsModal(){
+		changeLogsModal() {
 			this.logsModal = true;
 		},
 		radioChange: function(evt) {
@@ -153,22 +166,20 @@ export default {
 			selectList.push(optionObject);
 			console.log(selectList);
 			this.selectList = selectList;
-			
 		},
 		addUserQuizLog: function(logs) {
 			uni.request({
 				url: base.sq + '/activity/api.quiz/addUserQuizLog',
-				data:{
-					uid:1,
-					activity_id:5,
-					logs:JSON.stringify(logs)
+				data: {
+					uid: 1,
+					activity_id: 5,
+					logs: JSON.stringify(logs)
 				},
-				method:'POST',
+				method: 'POST',
 				success: res => {
-					console.log(res)
+					console.log(res);
 					if (res.statusCode === 200) {
 						if (res.data.code === 0) {
-							
 						}
 					} else {
 						alert('server error');
@@ -360,14 +371,6 @@ export default {
 	color: rgba(50, 141, 255, 1);
 }
 .option-name-1 {
-	text-align: right;
-	width: 100%;
-	font-size: 30rpx;
-	font-family: Lantinghei SC;
-	font-weight: 600;
-	color: rgba(50, 141, 255, 1);
-}
-.option-name-2 {
 	text-align: center;
 	width: 100%;
 	font-size: 30rpx;
@@ -375,6 +378,25 @@ export default {
 	font-weight: 600;
 	color: rgba(50, 141, 255, 1);
 }
+/deep/ .uni-radio-input {
+	width: 500rpx;
+	border-radius: 50rpx;
+}
+.option-radio-text{
+	position: absolute;
+	top: 30rpx;
+	left: 200rpx;
+}
+
+.option-radio {
+	width: 500rpx;
+	border-radius: 50rpx;
+}
+.option-active {
+	background-color: #007aff;
+	color: white;
+}
+
 .option-item {
 	width: 600rpx;
 
@@ -389,10 +411,6 @@ export default {
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(50, 141, 255, 1);
-}
-.option-active {
-	background-color: #007aff;
-	color: white;
 }
 
 .question-button {
@@ -429,9 +447,9 @@ export default {
 	left: 0;
 	bottom: 0;
 	right: 0;
-	background-color: rgba(0,0,0,0.6);
+	background-color: rgba(0, 0, 0, 0.6);
 }
-.rule-modal-bg{
+.rule-modal-bg {
 	position: fixed;
 	z-index: 110;
 	top: 0;
@@ -443,26 +461,24 @@ export default {
 	height: 452rpx;
 	background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center;
 	background-size: 100% 100%;
-	
 }
-.rule-title{
-	font-size:30rpx;
-	font-family:MF LingHei (Noncommercial);
-	font-weight:400;
-	color:rgba(255,255,255,1);
-	line-height:35rpx;
+.rule-title {
+	font-size: 30rpx;
+	font-family: MF LingHei (Noncommercial);
+	font-weight: 400;
+	color: rgba(255, 255, 255, 1);
+	line-height: 35rpx;
 	padding-top: 31rpx;
 	padding-left: 34rpx;
 }
-.rule-content{
+.rule-content {
 	padding-left: 34rpx;
 	padding-top: 80rpx;
-	font-size:24rpx;
-	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(255,255,255,1);
+	font-size: 24rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
 }
-
 
 .logs-modal {
 	position: fixed;
@@ -471,9 +487,9 @@ export default {
 	left: 0;
 	bottom: 0;
 	right: 0;
-	background-color: rgba(0,0,0,0.6);
+	background-color: rgba(0, 0, 0, 0.6);
 }
-.logs-modal-bg{
+.logs-modal-bg {
 	position: fixed;
 	z-index: 110;
 	top: 0;
@@ -486,23 +502,22 @@ export default {
 	/* height: 452rpx; */
 	background: url(https://aloss.hotforest.cn/bundesliga/modal-2.png) no-repeat center;
 	background-size: 100% 100%;
-	
 }
-.logs-title{
-	font-size:30rpx;
-	font-family:MF LingHei (Noncommercial);
-	font-weight:400;
-	color:rgba(255,255,255,1);
-	line-height:35rpx;
+.logs-title {
+	font-size: 30rpx;
+	font-family: MF LingHei (Noncommercial);
+	font-weight: 400;
+	color: rgba(255, 255, 255, 1);
+	line-height: 35rpx;
 	padding-top: 31rpx;
 	padding-left: 34rpx;
 }
-.logs-content{
+.logs-content {
 	padding-left: 34rpx;
 	padding-top: 80rpx;
-	font-size:24rpx;
-	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(255,255,255,1);
+	font-size: 24rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
 }
 </style>
