@@ -2,7 +2,11 @@
 	<view class="uni-flex uni-column index-bg">
 		<view class="uni-flex uni-row index-top">
 			<view class="flex-item index-top-l"><view class="left-icon" @click="changeRuleModal()">游戏规则</view></view>
-			<view class="flex-item index-top-r"><view class="right-icon" @click="changeLogsModal()">竞猜记录</view></view>
+			<view class="flex-item index-top-r">
+				<view class="right-icon" v-if="loginAppStatus" @click="changeLogsModal()">竞猜记录</view>
+				<view class="right-icon" v-if="!loginAppStatus" @click="loginApp">竞猜记录</view>
+				<!-- <view class="right-icon" v-if="!loginAppStatus" @click="changeLogsModal">竞猜记录</view> -->
+			</view>
 		</view>
 
 		<view class="question-bg">
@@ -18,11 +22,9 @@
 							{{ team.home_team_name }}
 						</view>
 						<view class="flex-item question-3">
-							VS
-							<br />
-							<span>{{ team.competition_time }}</span>
-							<br />
-							<span>{{ team.home_team_score }} : {{ team.guest_team_score }}</span>
+							<view class="question-3-vs">VS</view>
+							<view><span>{{ team.competition_time }}</span></view>
+							<view><span>{{ team.home_team_score }} - {{ team.guest_team_score }}</span></view>
 						</view>
 						<view class="flex-item question-4">
 							<img :src="team.guest_team_icon" alt="img" />
@@ -47,7 +49,8 @@
 		</view>
 
 		<view class="flex-item flex-item-V question-button">
-			<button @click="addUserQuizLog(selectList)" type="default">确认选择</button>
+			<button v-if="loginAppStatus" :class="quizStatus==true ? 'info-button-quiz-active' : ''" @click="addUserQuizLog(selectList)" type="default">确认选择</button>
+			<button v-if="!loginAppStatus" @click="loginApp" type="default">确认选择</button>
 		</view>
 
 		<view class="rule-modal" v-show="ruleModal" @click="closeRuleModal()"></view>
@@ -77,7 +80,8 @@
 			</view>
 			<view class="flex-item logs-2">第一轮</view>
 			<scroll-view :scroll-top="scrollTop" 
-			scroll-y="true" 
+			scroll-y="true"
+			 class="logs-scroll-Y"
 			@scrolltoupper="upper" 
 			@scrolltolower="lower" 
 			@scroll="scroll">
@@ -104,11 +108,24 @@
 				</view>
 			</scroll-view>
 		</view>
+		
+		<view class="info-modal" v-show="infoModal" @click="closeInfoModal()"></view>
+		<view class="info-modal-bg" v-show="infoModal">
+			<view class="flex-item  info-title">信息登记</view>
+			<view class="flex-item info-content">
+				<input type="text" v-model="name" placeholder="请输入姓名"> <br>
+				<input type="number" v-model="mobile" placeholder="请输入手机号"> 
+			</view>
+			<view  class="info-button">
+				<button  type="default" @click="updateUserInfo()">确定</button>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
 import base from '@/utils/base.js';
+import http from '@/utils/http.js';
 
 export default {
 	data() {
@@ -121,6 +138,8 @@ export default {
 			selectList: [],
 			ruleModal: false,
 			logsModal: false,
+			infoModal:false,
+			appMsgModal:false,
 			teamId: 0,
 			userQuizLogs:[],
 			loginAppStatus: false,
@@ -128,158 +147,225 @@ export default {
 			token: null,
 			ns_device_id: null,
 			activity_id: 4,
+			name:'',
+			mobile:'',
+			quizStatus:false,
+			
 			
 		};
 	},
 	onLoad(option) {
 		
-		// open this url outof app env
 		if (typeof contact === 'undefined') {
-			this.appMsgModal = true;
-			// this.appMsgModal = false;
+			uni.showToast({
+				title:'请下载全民体育APP参与活动',
+				icon:'none'
+			})
+			// this.appMsgModal = true
+			// this.uid = 469247;
+			// this.activity_id = 5;
 		} else {
 			if (option.uid !== '' && option.uid !== 'null' && option.uid !== undefined) {
 				uni.setStorageSync('uid', option.uid);
 				uni.setStorageSync('token', option.token);
 				uni.setStorageSync('ns_device_id', option.ns_device_id);
 				this.loginAppStatus = true;
+				
+				this.uid = uni.getStorageSync('uid');
+				this.token = uni.getStorageSync('token');
+				this.ns_device_id = uni.getStorageSync('ns_device_id');
+				this.checkQuizStatus(this.uid,this.$question.activity_id);
+
 			} else {
 				this.loginAppStatus = false;
 				// open this url in app env
 				contact.onLoginDone = function(uid, token) {
-					uni.removeStorageSync('uid');
-					uni.removeStorageSync('token');
-					uni.setStorageSync('uid', uid);
-					uni.setStorageSync('token', token);
 					uni.setStorageSync('loginAppStatus', true);
-		
 					let ns_device_id = uni.getStorageSync('ns_device_id');
 					uni.reLaunch({
 						url: '/pages/index/mid?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
 					});
 				};
 			}
-			//
-			this.getTeamList();
-		}
-		
-		if (this.uid !== '' && this.uid !== 'null' && this.uid !== undefined) {
-			//加载用户信息
-			this.loadUserInfo();
-		}
-		
-		this.uid = uni.getStorageSync('uid');
-		// this.uid = 468974;
-		this.token = uni.getStorageSync('token');
-		this.ns_device_id = uni.getStorageSync('ns_device_id');
-		
+		}		
+		this.getTeamList();
+		console.log(this.quizStatus);
 	},
 	methods: {
+		
 		loginApp() {
 			contact.requireLogin();
 			console.log('relogin');
 		},
-		loadUserInfo() {
-			// 加载页面首先获取用户信息 如果用户没有注册则帮忙注册一下
-			let data = {
-				uid: this.uid,
-				activity_id: this.$question.activity_id
-			};
-			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
-				.then(res => {
-					console.log(res);
-					if (res.status == 200) {
-						// console.log(res.data.data.count);
-						let count = res.data.data.count;
-		
-						// 检查用户是否在数据库中
-						if (count <= 0) {
-							let req_url = base.bd + '/v3/user/info';
-							let headers = {
-								ns_device_id: this.ns_device_id,
-								uid: this.uid,
-								token: this.token
-							};
-							http.get(req_url, { headers: headers }).then(res => {
-								console.log(res);
-								// alert(res.data.Status)
-		
-								if (res.status == 200) {
-									if (res.data.Status == 1) {
-										let nickname = res.data.Data.nickname;
-										let mobile = res.data.Data.phone;
-										console.log(res);
-										this.addUser(this.uid, nickname, mobile, this.$question.activity_id, 0, this.ns_device_id, 1);
-									} else {
-										// return alert(res.data.ErrorMsg);
-										// return uni.showToast({
-										// 	title: res.data.ErrorMsg,
-										// 	icon: 'none',
-										// 	mask: true,
-										// 	duration: 2000
-										// });
-									}
-								} else {
-									return alert('server error');
-								}
-							});
-						} else {
-							// 获取用户信息
-							this.getUserInfo(this.uid, this.$question.activity_id);
-						}
-					} else {
-						return alert('server error');
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-		},
-		addUser(uid, name, mobile, activity_id, sign_score, ns_device_id, user_type) {
+		// 手机号为空时
+		updateUserInfo:function(){
+			var that = this;
+			var uid =that.uid;
+			var activity_id = that.$question.activity_id;
+			var ns_device_id = that.ns_device_id;
+			var mobile = that.mobile;
+			var name = that.name;
+			var logs = that.selectList;
+			var user_type = 3;
+			
 			let data = {
 				uid: uid,
 				name: name,
 				mobile: mobile,
 				activity_id: activity_id,
-				sign_score: sign_score,
 				ns_device_id: ns_device_id,
 				user_type: user_type
 			};
-		
+					
 			http.post(base.sq + '/activity/api.Users/add', data)
 				.then(res => {
 					if (res.status == 200) {
 						console.log(res);
-						// alert(res.data.data)
-						// location.reload()
+						//用户信息添加之后 添加用户竞猜日志
+						uni.request({
+							url: base.sq + '/activity/api.quiz/addUserQuizLog',
+							data: {
+								uid: uid,
+								activity_id: activity_id,
+								logs: JSON.stringify(logs)
+							},
+							method: 'POST',
+							success: res => {
+								console.log(res);
+								if (res.statusCode === 200) {
+									if (res.data.code === 0) {
+										//竞猜按钮变灰色
+										this.quizStatus = true;
+										uni.showToast({
+											title:'竞猜成功',
+											icon:"none"
+										})
+									}else{
+										uni.showToast({
+											title:res.data.info,
+											icon:"none"
+										})
+										
+									}
+								} else {
+									uni.showToast({
+										title:'server error',
+										icon:"none"
+									})
+								}
+							}
+						});
 					} else {
-						return alert('server error');
+						uni.showToast({
+							title:'server error',
+							icon:"none"
+						})
 					}
 				})
 				.catch(error => {})
 				.finally(() => {});
+				
+				
+			this.infoModal = false;
+			
 		},
-		getUserInfo(uid, activity_id) {
+		// 手机号非空时
+		addUserInfo:function(name,mobile){
+			var that = this;
+			var uid =that.uid;
+			var activity_id = that.$question.activity_id;
+			var ns_device_id = that.ns_device_id;
+			
+			var logs = that.selectList;
+			var user_type = 1;
+			
 			let data = {
 				uid: uid,
-				activity_id: activity_id
+				name: name,
+				mobile: mobile,
+				activity_id: activity_id,
+				ns_device_id: ns_device_id,
+				user_type: user_type
 			};
-			let req_url = base.sq + '/activity/api.users/getUserInfo';
-			http.post(req_url, data).then(res => {
+					
+			http.post(base.sq + '/activity/api.Users/add', data)
+				.then(res => {
+					if (res.status == 200) {
+						console.log(res);
+						//用户信息添加之后 添加用户竞猜日志
+						uni.request({
+							url: base.sq + '/activity/api.quiz/addUserQuizLog',
+							data: {
+								uid: uid,
+								activity_id: activity_id,
+								logs: JSON.stringify(logs)
+							},
+							method: 'POST',
+							success: res => {
+								console.log(res);
+								if (res.statusCode === 200) {
+									if (res.data.code === 0) {
+										//竞猜按钮变灰色
+										this.quizStatus = true;
+										uni.showToast({
+											title:'竞猜成功',
+											icon:"none"
+										})
+										console.log(this.quizStatus);
+									}else{
+										uni.showToast({
+											title:res.data.info,
+											icon:"none"
+										})
+										
+									}
+								} else {
+									uni.showToast({
+										title:'server error',
+										icon:"none"
+									})
+								}
+							}
+						});
+					} else {
+						uni.showToast({
+							title:'server error',
+							icon:"none"
+						})
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+				
+				
+			this.infoModal = false;
+			
+		},
+		checkQuizStatus:function(uid,activity_id){
+			let data = {
+				uid:uid,
+				activity_id:activity_id
+			}
+			http.post(base.sq + '/activity/api.Quiz/checkUserQuizStatus', data)
+			.then(res=>{
 				console.log(res);
 				if (res.status == 200) {
-					let data = res.data.data;
-					
+					this.quizStatus = res.data.data.status; 
 				} else {
-					alert('server error');
+					uni.showToast({
+						title:'server error',
+						icon:"none"
+					})
 				}
-			});
+			})
 		},
-		getUserQuizLogs(){
+		
+		getUserQuizLogs(uid,activity_id){
 			uni.request({
 				url: base.sq + '/activity/api.quiz/getUserQuizLogs',
 				data: {
-					uid: 1,
-					activity_id: 5,
+					uid: uid,
+					activity_id: activity_id,
 				},
 				method: 'POST',
 				success: res => {
@@ -289,10 +375,16 @@ export default {
 							this.userQuizLogs = res.data.data;
 							console.log(this.userQuizLogs);
 						}else{
-							alert(res.data.info);
+							uni.showToast({
+								title:res.data.info,
+								icon:"none"
+							})
 						}
 					} else {
-						alert('server error');
+						uni.showToast({
+							title:'server error',
+							icon:"none"
+						})
 					}
 				}
 			});
@@ -341,30 +433,72 @@ export default {
 		},
 		changeLogsModal() {
 			this.logsModal = true;
-			this.getUserQuizLogs();
+			this.getUserQuizLogs(this.uid,this.$question.activity_id);
+		},
+		closeInfoModal() {
+			this.infoModal = false;
 		},
 		addUserQuizLog: function(logs) {
-			uni.request({
-				url: base.sq + '/activity/api.quiz/addUserQuizLog',
-				data: {
-					uid: 1,
-					activity_id: 5,
-					logs: JSON.stringify(logs)
-				},
-				method: 'POST',
-				success: res => {
+			var that = this;
+			
+			var uid = that.uid;
+			var activity_id = that.activity_id;
+			var ns_device_id = that.ns_device_id;
+			var token = that.token;
+			
+			let data = {
+				uid: uid,
+				activity_id: activity_id
+			};
+			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
+				.then(res => {
 					console.log(res);
-					if (res.statusCode === 200) {
-						if (res.data.code === 0) {
-							alert('添加成功');
-						}else{
-							alert(res.data.info);
-						}
+					if (res.status == 200) {
+						// console.log(res.data.data.count);
+						let count = res.data.data.count;
+					
+						// 检查用户是否在数据库中
+						if (count <= 0) {
+							let req_url = base.bd + '/v3/user/info';
+							let headers = {
+								ns_device_id: ns_device_id,
+								uid: uid,
+								token:token
+							};
+							http.get(req_url, { headers: headers }).then(res => {
+								console.log(res);
+								if (res.status == 200) {
+									if (res.data.Status == 1) {
+										let nickname = res.data.Data.nickname;
+										let mobile = res.data.Data.phone;
+										console.log(res);
+										if(mobile == ''){
+											this.infoModal = true;
+										}else{
+											this.addUserInfo(nickname,mobile);
+										}
+									
+									} 
+									
+								} else {
+									uni.showToast({
+										title:'server error',
+										icon:"none"
+									})
+								}
+							});
+						} 
+						
+						
 					} else {
-						alert('server error');
+						uni.showToast({
+							title:'server error',
+							icon:"none"
+						})
 					}
-				}
-			});
+				})
+				.catch(error => {})
+				.finally(() => {});
 		},
 		getTeamList: function() {
 			uni.request({
@@ -381,7 +515,10 @@ export default {
 							console.log(list);
 						}
 					} else {
-						alert('server error');
+						uni.showToast({
+							title:'server error',
+							icon:"none"
+						})
 					}
 				}
 			});
@@ -530,24 +667,24 @@ export default {
 }
 .question-4 img {
 	width: 100%;
-	/* width: 148rpx;
-	height: 110rpx; */
 }
 
 .question-3 {
 	text-align: center;
 	width: 30%;
-	font-size: 40rpx;
+}
+.question-3-vs{
+	font-size: 46rpx;
 	font-family: MF LingHei (Noncommercial);
-	font-weight: 400;
+	font-weight: bolder;
 	color: rgba(50, 141, 255, 1);
-	text-shadow: 0px 3px 2px rgba(0, 0, 0, 0.29);
 }
 .question-3 span {
-	font-size: 24rpx;
+	font-size: 28rpx;
 	font-family: MF LingHei (Noncommercial);
-	font-weight: 400;
+	font-weight:bolder;
 	color: rgba(50, 141, 255, 1);
+	
 }
 .option-name-1 {
 	text-align: center;
@@ -559,7 +696,7 @@ export default {
 }
 
 .option-active {
-	background-color: #007aff;
+	background-color: #29A518;
 	color: #ffffff !important;
 }
 
@@ -663,7 +800,8 @@ export default {
 	bottom: 0;
 	right: 0;
 	margin: auto;
-	width: 552rpx;
+	/* width: 552rpx; */
+	width: 80%;
 	height: 80%;
 	/* height: 452rpx; */
 	background: url(https://aloss.hotforest.cn/bundesliga/modal-2.png) no-repeat center;
@@ -672,11 +810,12 @@ export default {
 .logs-title {
 	font-size: 30rpx;
 	font-family: MF LingHei (Noncommercial);
-	font-weight: 400;
 	color: rgba(255, 255, 255, 1);
-	line-height: 35rpx;
-	padding-top: 31rpx;
-	padding-left: 34rpx;
+	line-height: 80rpx;
+	width: 90%;
+	height: 80rpx;
+	text-indent: 30rpx;
+	font-weight: bolder;
 }
 .logs-content {
 	padding-left: 34rpx;
@@ -688,16 +827,18 @@ export default {
 }
 
 .logs-1{
-	padding:20rpx 20rpx 10rpx 20rpx;
+	width: 99%;
+	height: 60rpx;
+	line-height: 60rpx;
 	border-bottom: 1px solid #39B8BF;
 	font-size:24rpx;
 	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(255,255,255,1);
+	color: #FFFFFF;
 	
 }
 .logs-1-1{
 	width: 35%;
+	text-indent: 20rpx;
 }
 .logs-1-2{
 	width: 20%;
@@ -707,9 +848,13 @@ export default {
 }
 .logs-1-4{
 	width: 20%;
+	text-align: center;
 }
 .logs-2{
-	padding:20rpx 20rpx 10rpx 20rpx;
+	width: 99%;
+	height: 50rpx;
+	line-height: 50rpx;
+	text-indent: 20rpx;
 	font-size:18rpx;
 	font-family:Lantinghei SC;
 	font-weight:600;
@@ -739,5 +884,84 @@ export default {
 }
 .logs-3-4{
 	width: 20%;
+	text-align: center;
+}
+
+
+.info-modal {
+	position: fixed;
+	z-index: 100;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.6);
+}
+.info-modal-bg {
+	position: fixed;
+	z-index: 110;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	margin: auto;
+	width: 552rpx;
+	height: 452rpx;
+	background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center;
+	background-size: 100% 100%;
+}
+.info-title {
+	font-size: 30rpx;
+	font-family: MF LingHei (Noncommercial);
+	font-weight: 400;
+	color: rgba(255, 255, 255, 1);
+	line-height: 35rpx;
+	padding-top: 31rpx;
+	padding-left: 34rpx;
+}
+.info-content {
+	width: 90%;
+	padding-left: 34rpx;
+	padding-top: 80rpx;
+	font-size: 24rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+}
+.info-content input{
+	border-bottom: 1rpx solid #39B8BF;
+	
+}
+
+/deep/  .uni-input-placeholder{
+	color: #FFFFFF !important;
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+}
+
+.info-button{
+
+	margin-top: 80rpx;
+}
+.info-button-quiz-active{
+	background: #888888 !important;
+	
+}
+.info-button button{
+	margin: 0 auto;
+	width: 147rpx;
+	height: 50rpx;
+	line-height: 50rpx;
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	text-shadow:0px 1px 0px rgba(130,66,0,0.26);
+	background: url(https://aloss.hotforest.cn/bundesliga/info-button.png) no-repeat center;
+}
+.logs-scroll-Y{
+	width: 99%;
+	height: 70%;
 }
 </style>

@@ -7,24 +7,7 @@
 				"navigationBarTitleText": "德甲竞猜"
 			}
 		},
-		{
-			"path":"pages/index/index",
-			"style":{
-				"navigationBarTitleText": "德甲竞猜"
-			}
-		},
-		{
-			"path":"pages/index/record",
-			"style":{
-				"navigationBarTitleText": "德甲竞猜"
-			}
-		},
-		{
-			"path":"pages/index/mid",
-			"style":{
-				"navigationBarTitleText": "德甲竞猜"
-			}
-		},
+		
 		{
 			"path": "platforms/app-plus/speech/speech",
 			"style": {
