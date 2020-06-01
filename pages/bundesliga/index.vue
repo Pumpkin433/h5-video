@@ -16,7 +16,9 @@
 			<scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-Y " @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
 				<view class="scroll-view-item " v-for="(team, i) in teamList" :key="i">
 					<view class="uni-flex uni-row question-title-3">
-						<view class="flex-item question-1">主队</view>
+						<view class="flex-item question-1">主队 <br>
+							<img v-if="team.quiz_result == 1" src="https://aloss.hotforest.cn/bundesliga/virctory.png" alt="img">
+						</view>
 						<view class="flex-item question-2">
 							<img :src="team.home_team_icon" alt="img" />
 							{{ team.home_team_name }}
@@ -30,17 +32,43 @@
 							<img :src="team.guest_team_icon" alt="img" />
 							{{ team.guest_team_name }}
 						</view>
-						<view class="flex-item question-5">客队</view>
+						<view class="flex-item question-5">客队 <br>
+						<img v-if="team.quiz_result == 2" src="https://aloss.hotforest.cn/bundesliga/virctory.png" alt="img">
+						</view>
 					</view>
 
-					<view>
-						<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 1)">
+					<view v-if="team.quiz_result != 0 ">
+						<view class="flex-item flex-item-V option-item"
+						 :class="[team.quiz_result==1 ? 'option-active-right' : 'option-active-wrong']"
+						>
 							主队胜
 						</view>
-						<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 3)">
+						<view class="flex-item flex-item-V option-item "
+						 :class="[team.quiz_result==3 ? 'option-active-right' : 'option-active-wrong']"
+						>
 							平
 						</view>
-						<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 2 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 2)">
+						<view class="flex-item flex-item-V option-item " 
+						:class="[team.quiz_result==2 ? 'option-active-right' : 'option-active-wrong']" 
+						>
+							客队胜
+						</view>
+					</view>
+					
+					<view v-if="team.quiz_result == 0 ">
+						<view class="flex-item flex-item-V option-item"
+						 :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']"
+						 @click="sOption(team.id, 1)">
+							主队胜
+						</view>
+						<view class="flex-item flex-item-V option-item "
+						 :class="[team.id + '_' + 3 == team.checkValue  ? 'option-active' : '']"
+						 @click="sOption(team.id, 3)">
+							平
+						</view>
+						<view class="flex-item flex-item-V option-item " 
+						:class="[team.id + '_' + 2 == team.checkValue  ? 'option-active' : '']" 
+						@click="sOption(team.id, 2)">
 							客队胜
 						</view>
 					</view>
@@ -49,8 +77,11 @@
 		</view>
 
 		<view class="flex-item flex-item-V question-button">
-			<button v-if="loginAppStatus" :class="quizStatus==true ? 'info-button-quiz-active' : ''" @click="addUserQuizLog(selectList)" type="default">确认选择</button>
-			<button v-if="!loginAppStatus" @click="loginApp" type="default">确认选择</button>
+			<button v-if="loginAppStatus==true" 
+			:class="quizStatus==true ? 'info-button-quiz-active' : ''"
+			@click="addUserQuizLog()" type="default">确认选择</button>
+			<button v-if="loginAppStatus==false" 
+			@click="loginApp" type="default">确认选择</button>
 		</view>
 
 		<view class="rule-modal" v-show="ruleModal" @click="closeRuleModal()"></view>
@@ -149,7 +180,7 @@ export default {
 			activity_id: 4,
 			name:'',
 			mobile:'',
-			quizStatus:false,
+			quizStatus:0,
 			
 			
 		};
@@ -175,7 +206,8 @@ export default {
 				this.token = uni.getStorageSync('token');
 				this.ns_device_id = uni.getStorageSync('ns_device_id');
 				this.checkQuizStatus(this.uid,this.$question.activity_id);
-
+				
+				
 			} else {
 				this.loginAppStatus = false;
 				// open this url in app env
@@ -187,9 +219,9 @@ export default {
 					});
 				};
 			}
-		}		
-		this.getTeamList();
-		console.log(this.quizStatus);
+		}
+			// this.getTeamList()
+		
 	},
 	methods: {
 		
@@ -207,6 +239,20 @@ export default {
 			var name = that.name;
 			var logs = that.selectList;
 			var user_type = 3;
+			if(name.length < 1 || name.length > 5){
+				uni.showToast({
+					title:'名字1-5个字符',
+					icon:"none"
+				})
+				return;
+			}
+			if(mobile.length != 11 ){
+				uni.showToast({
+					title:'请输入11位手机号码',
+					icon:'none'
+				})
+				return;
+			}
 			
 			let data = {
 				uid: uid,
@@ -291,7 +337,7 @@ export default {
 			http.post(base.sq + '/activity/api.Users/add', data)
 				.then(res => {
 					if (res.status == 200) {
-						console.log(res);
+						// console.log(res);
 						//用户信息添加之后 添加用户竞猜日志
 						uni.request({
 							url: base.sq + '/activity/api.quiz/addUserQuizLog',
@@ -311,7 +357,7 @@ export default {
 											title:'竞猜成功',
 											icon:"none"
 										})
-										console.log(this.quizStatus);
+										// console.log(this.quizStatus);
 									}else{
 										uni.showToast({
 											title:res.data.info,
@@ -350,7 +396,15 @@ export default {
 			.then(res=>{
 				console.log(res);
 				if (res.status == 200) {
+				
 					this.quizStatus = res.data.data.status; 
+					
+					if(res.data.data.status==true){
+						this.getUserQuizTeamList(uid,activity_id);
+					}else{
+						this.getTeamList();
+					}
+					
 				} else {
 					uni.showToast({
 						title:'server error',
@@ -369,7 +423,7 @@ export default {
 				},
 				method: 'POST',
 				success: res => {
-					console.log(res);
+					// console.log(res);
 					if (res.statusCode === 200) {
 						if (res.data.code === 0) {
 							this.userQuizLogs = res.data.data;
@@ -438,7 +492,7 @@ export default {
 		closeInfoModal() {
 			this.infoModal = false;
 		},
-		addUserQuizLog: function(logs) {
+		addUserQuizLog: function() {
 			var that = this;
 			
 			var uid = that.uid;
@@ -446,13 +500,24 @@ export default {
 			var ns_device_id = that.ns_device_id;
 			var token = that.token;
 			
+			// 判断题目是否全部答完
+			// var teamLength = that.teamList.length;
+			// var selectLength = that.selectList.length;
+			// if(teamLength>selectLength){
+			// 	uni.showToast({
+			// 		title:'请继续答题',
+			// 		icon:'none'
+			// 	})
+			// 	return;
+			// }
+			
 			let data = {
 				uid: uid,
 				activity_id: activity_id
 			};
 			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
 				.then(res => {
-					console.log(res);
+					// console.log(res);
 					if (res.status == 200) {
 						// console.log(res.data.data.count);
 						let count = res.data.data.count;
@@ -466,7 +531,7 @@ export default {
 								token:token
 							};
 							http.get(req_url, { headers: headers }).then(res => {
-								console.log(res);
+								// console.log(res);
 								if (res.status == 200) {
 									if (res.data.Status == 1) {
 										let nickname = res.data.Data.nickname;
@@ -504,15 +569,38 @@ export default {
 			uni.request({
 				url: base.sq + '/activity/api.quiz/teamList',
 				success: res => {
-					// console.log(res)
+					console.log(res)
 					if (res.statusCode === 200) {
 						if (res.data.code === 0) {
 							var list = res.data.data;
-							list.forEach(item => {
-								item.items = this.items;
-							});
 							this.teamList = list;
-							console.log(list);
+							// console.log(list);
+						}
+					} else {
+						uni.showToast({
+							title:'server error',
+							icon:"none"
+						})
+					}
+				}
+			});
+		},
+		getUserQuizTeamList: function(uid,activity_id) {
+			uni.request({
+				url: base.sq + '/activity/api.quiz/getUserQuizTeamList',
+				data:{
+					uid:uid,
+					activity_id:activity_id
+				},
+				method:'POST',
+				success: res => {
+					console.log(res)
+					if (res.statusCode === 200) {
+						if (res.data.code === 0) {
+							var list = res.data.data;
+							
+							this.teamList = list;
+							// console.log(list);
 						}
 					} else {
 						uni.showToast({
@@ -633,6 +721,10 @@ export default {
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
 }
+.question-1 img{
+	width: 116rpx;
+	height: 113rpx;
+}
 .question-5 {
 	width: 10%;
 	margin-left: 2%;
@@ -640,6 +732,10 @@ export default {
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
+}
+.question-5 img{
+	width: 116rpx;
+	height: 113rpx;
 }
 .question-2 {
 	width: 20%;
@@ -696,9 +792,25 @@ export default {
 }
 
 .option-active {
+	/* background-color: #29A518; */
+	background-color: #007AFF;
+	color: #ffffff !important;
+	border: none !important;
+}
+.option-active-wrong {
+	/* background-color: #29A518; */
+	background-color: #ff4f15;
+	color: #ffffff !important;
+	border: none !important;
+}
+
+.option-active-right {
+	/* background-color: #29A518; */
 	background-color: #29A518;
 	color: #ffffff !important;
+	border: none !important;
 }
+
 
 .option-item {
 	width: 600rpx;
