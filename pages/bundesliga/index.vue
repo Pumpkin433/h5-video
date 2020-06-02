@@ -16,7 +16,8 @@
 			<scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-Y " @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
 				<view class="scroll-view-item " v-for="(team, i) in teamList" :key="i">
 					<view class="uni-flex uni-row question-title-3">
-						<view class="flex-item question-1">主队 <br>
+						<view class="flex-item question-1">
+							<!-- 主队 <br> -->
 							<img v-if="team.quiz_result == 1" src="https://aloss.hotforest.cn/bundesliga/virctory.png" alt="img">
 						</view>
 						<view class="flex-item question-2">
@@ -32,7 +33,8 @@
 							<img :src="team.guest_team_icon" alt="img" />
 							{{ team.guest_team_name }}
 						</view>
-						<view class="flex-item question-5">客队 <br>
+						<view class="flex-item question-5">
+							<!-- 客队 <br> -->
 						<img v-if="team.quiz_result == 2" src="https://aloss.hotforest.cn/bundesliga/virctory.png" alt="img">
 						</view>
 					</view>
@@ -77,8 +79,7 @@
 		</view>
 
 		<view class="flex-item flex-item-V question-button">
-			<button v-if="loginAppStatus==true" 
-			:class="quizStatus==true ? 'info-button-quiz-active' : ''"
+			<button v-if="loginAppStatus==true && quizStatus==false " 
 			@click="addUserQuizLog()" type="default">确认选择</button>
 			<button v-if="loginAppStatus==false" 
 			@click="loginApp" type="default">确认选择</button>
@@ -501,15 +502,15 @@ export default {
 			var token = that.token;
 			
 			// 判断题目是否全部答完
-			// var teamLength = that.teamList.length;
-			// var selectLength = that.selectList.length;
-			// if(teamLength>selectLength){
-			// 	uni.showToast({
-			// 		title:'请继续答题',
-			// 		icon:'none'
-			// 	})
-			// 	return;
-			// }
+			var teamLength = that.teamList.length;
+			var selectLength = that.selectList.length;
+			if(teamLength>selectLength){
+				uni.showToast({
+					title:'请继续答题',
+					icon:'none'
+				})
+				return;
+			}
 			
 			let data = {
 				uid: uid,
