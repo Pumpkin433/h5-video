@@ -7,7 +7,12 @@
 				"navigationBarTitleText": "德甲竞猜"
 			}
 		},
-		
+		{
+			"path":"pages/bundesliga/mid",
+			"style":{
+				"navigationBarTitleText":"德甲竞猜"
+			}
+		},
 		{
 			"path": "platforms/app-plus/speech/speech",
 			"style": {
@@ -54,7 +59,7 @@
 		"navigationStyle": "custom",
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "挑战NBA经典——答案都在图片里",
+		"navigationBarTitleText": "德甲竞猜",
 		"navigationBarBackgroundColor": "#000000",
 		"backgroundColor": "#F8F8F8",
 		"backgroundColorTop": "#000000",

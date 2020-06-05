@@ -18,9 +18,11 @@
 			let uid = uni.getStorageSync('uid');
 			let token = uni.getStorageSync('token');
 			let ns_device_id = uni.getStorageSync('ns_device_id');
-			
+			console.log(uid)
+			console.log(token)
+			console.log(ns_device_id)
 			uni.reLaunch({
-				url:'/?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
+				url:'/pages/bundesliga/index?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
 			})
 		}
 	}

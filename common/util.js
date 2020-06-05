@@ -63,6 +63,15 @@ function randomOption(array, num) {
 	return return_array
 }
 
+//函数调用传参格式为 2018-6-6或者2018.6.6//如：startUnix(2018-6-6) 返回的时间戳格式‘1528300799’
+function startUnix($date) {
+	return (new Date(Date.parse($date.replace(/-/g, "/")))).getTime() / 1000;
+}
+
+function endUnix($date) {
+	return new Date().setTime(Date.parse($date.replace(/-/g, "/")) / 1000 + 24 * 60 * 60 - 1);
+}
+
 function formatLocation(longitude, latitude) {
 	if (typeof longitude === 'string' && typeof latitude === 'string') {
 		longitude = parseFloat(longitude)
@@ -119,5 +128,7 @@ module.exports = {
 	formatLocation: formatLocation,
 	dateUtils: dateUtils,
 	randomWord: randomWord,
-	randomOption: randomOption
+	randomOption: randomOption,
+	startUnix:startUnix,
+	endUnix:endUnix,
 }
