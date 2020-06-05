@@ -62,13 +62,13 @@
 					</view>
 				</view>
 
-				<view class="team-answer" v-if="team.quiz_result != 0 || endAnswer">
+				<view class="team-answer" v-if="team.quiz_result != 0 || endAnswer || quizStatus">
 					<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']">主队胜</view>
 					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']">平</view>
 					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 2 == team.checkValue ? 'option-active' : '']">客队胜</view>
 				</view>
 
-				<view class="team-answer" v-if="team.quiz_result == 0 && !endAnswer">
+				<view class="team-answer" v-if="team.quiz_result == 0 && !endAnswer && !quizStatus">
 					<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 1)">
 						主队胜
 					</view>
@@ -111,7 +111,7 @@
 				<view class="flex-item logs-1-3">我的竞猜</view>
 				<view class="flex-item logs-1-4">结果</view>
 			</view>
-			<view class="flex-item logs-2">第一轮</view>
+			<view class="flex-item logs-2">第30轮</view>
 			<scroll-view :scroll-top="scrollTop" scroll-y="true" class="logs-scroll-Y" @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
 				<view class="scroll-view-item logs-3" v-for="(log, i) in userQuizLogs" :key="i">
 					<view class="uni-row uni-flex ">
@@ -211,7 +211,8 @@ export default {
 		if (typeof contact === 'undefined') {
 			uni.showToast({
 				title: '请下载全民体育APP参与活动',
-				icon: 'none'
+				icon: 'none',
+				mask:true,
 			});
 		} else {
 			if (option.uid !== '' && option.uid !== 'null' && option.uid !== undefined) {
@@ -508,6 +509,7 @@ export default {
 					this.quizStatus = res.data.data.status;
 
 					if (res.data.data.status == true) {
+						this.quizStatus = true;
 						this.getUserQuizTeamList(uid, activity_id);
 					} else {
 						this.getTeamList();
@@ -760,6 +762,12 @@ export default {
 </script>
 
 <style>
+	
+/* /deep/  uni-toast .uni-simple-toast__text{
+		font-size: 36rpx !important;
+		
+}
+ */
 .index-bg {
 	background: url(https://aloss.hotforest.cn/bundesliga/index-bg.png) no-repeat center;
 	background-size: 100% 100%;
@@ -1293,4 +1301,5 @@ export default {
 	width: 99%;
 	height: 70%;
 }
+
 </style>
