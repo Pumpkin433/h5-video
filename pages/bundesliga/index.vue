@@ -11,12 +11,14 @@
 
 		<view class=" uni-column question-bg">
 			<view class="question-bg-title">
-				<view class="flex-item flex-item-V question-title">德甲第 {{ round }} 轮</view>
-				<view class="flex-item flex-item-V question-title-2">本轮竞猜截止时间：6月6日0点</view>
+				<!-- <view class="flex-item flex-item-V question-title">德甲第 {{ round }} 轮</view> -->
+				<!-- <view class="flex-item flex-item-V question-title-2">本轮竞猜截止时间：6月6日0点</view> -->
 			</view>
 
 			<view class="flex-item flex-item-v team-item" v-for="(team, i) in teamList" :key="i">
-				<view class="uni-flex uni-row question-title-3">
+				<view class="flex-item competition-time">德甲 {{ team.competition_time }}</view>
+				<view class="flex-item  join-person-count">参与人数:1000000</view>
+				<view class="uni-flex  question-title-3">
 					<view class="flex-item question-1">
 						<!-- 主队 <br> -->
 						<img v-if="team.quiz_result == 1" src="https://aloss.hotforest.cn/bundesliga/virctory.png" alt="img" />
@@ -28,9 +30,6 @@
 					</view>
 					<view class="flex-item question-3">
 						<view class="question-3-vs">VS</view>
-						<view>
-							<span>{{ team.competition_time }}</span>
-						</view>
 						<view v-if="team.quiz_result == 0">
 							<span>-</span>
 							:
@@ -62,26 +61,34 @@
 					</view>
 				</view>
 
-				<view class="team-answer" v-if="team.quiz_result != 0 || endAnswer || quizStatus">
+				<!-- <view class="team-answer" v-if="team.quiz_result != 0 || endAnswer || quizStatus">
 					<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']">主队胜</view>
 					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']">平</view>
 					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 2 == team.checkValue ? 'option-active' : '']">客队胜</view>
-				</view>
+				</view> -->
 
 				<view class="team-answer" v-if="team.quiz_result == 0 && !endAnswer && !quizStatus">
 					<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 1)">
 						主队胜
+						<br />
+						2.00
 					</view>
-					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 3)">平</view>
+					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 3)">
+						平
+						<br />
+						1.11
+					</view>
 					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 2 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 2)">
 						客队胜
+						<br />
+						1.00
 					</view>
 				</view>
-			</view>
-
-			<view class="flex-item flex-item-V question-button">
-				<button v-if="loginAppStatus == true && quizStatus == false" @click="addUserQuizLog()" type="default">确认选择</button>
-				<button v-if="loginAppStatus == false" @click="loginApp" type="default">确认选择</button>
+				<view class="flex-item flex-item-V question-button">
+					<!-- <button v-if="loginAppStatus == true && quizStatus == false" @click="addUserQuizLog()" type="default">投注</button> -->
+					<button v-if="loginAppStatus == false && quizStatus == false" @click="showQuizModal()" type="default">投注</button>
+					<!-- <button v-if="loginAppStatus == false" @click="loginApp" type="default">投注</button> -->
+				</view>
 			</view>
 		</view>
 
@@ -149,6 +156,26 @@
 			<view class="flex-item flex-item-V info-content-code"><input type="number" v-model="code" placeholder="请输入验证码" /></view>
 			<view class="info-button"><button type="default" @click="updateUserInfo()">确定</button></view>
 		</view>
+
+		<!-- 竞猜底部弹出框 -->
+		<view class="quiz-modal" v-show="quizModal" @click="closeQuizModal()"></view>
+		<view class="quiz-modal-bg" v-show="quizModal">
+			<view class="flex-item quiz-modal-1">我的积分：99,999,999 积分</view>
+			<view class="quiz-modal-2">
+				<view class="quiz-modal-2-1">10积分</view>
+				<view class="quiz-modal-2-2">50积分</view>
+				<view class="quiz-modal-2-3">100积分</view>
+			</view>
+			<view class="quiz-modal-3">
+				<uni-number-box @change="bindChange" :value="10" :min="10" :max="99999999" :step="5"></uni-number-box>
+			</view>
+			<view class="quiz-modal-4"><button>确认投注</button></view>
+			<view class="quiz-modal-5">
+				预计赢取：
+				<span>99,999,999</span>
+				积分
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -157,6 +184,7 @@ import base from '@/utils/base.js';
 import http from '@/utils/http.js';
 import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy/junyi-h5-copy.js';
 import { startUnix, endUnix } from '@/common/util.js';
+import uniNumberBox from '@/components/uni-number-box/uni-number-box.vue';
 
 export default {
 	data() {
@@ -185,9 +213,11 @@ export default {
 			code: '', // 验证码
 			quizStatus: false,
 			round: 30, //德甲竞猜场次
-			endAnswer: false
+			endAnswer: false,
+			quizModal: false
 		};
 	},
+	components: { uniNumberBox },
 	onLoad(option) {
 		var nowTimeStamp = Date.parse(new Date()) / 1000; //当前时间戳
 
@@ -195,11 +225,11 @@ export default {
 		var tYear = myDate.getFullYear();
 		var tMonth = myDate.getMonth() + 1;
 		// 当月一号
-		var month_one = tYear + '-' + tMonth + '-' + '06';
+		var month_one = tYear + '-' + tMonth + '-' + '16';
 		let one_start_at = startUnix(month_one);
-		
-		console.log(one_start_at)
-		console.log(nowTimeStamp)
+
+		console.log(one_start_at);
+		console.log(nowTimeStamp);
 
 		if (nowTimeStamp > one_start_at) {
 			this.endAnswer = true;
@@ -212,7 +242,7 @@ export default {
 			uni.showToast({
 				title: '请下载全民体育APP参与活动',
 				icon: 'none',
-				mask:true,
+				mask: true
 			});
 		} else {
 			if (option.uid !== '' && option.uid !== 'null' && option.uid !== undefined) {
@@ -238,9 +268,18 @@ export default {
 				};
 			}
 		}
-		// this.getTeamList();
+		this.getTeamList();
 	},
 	methods: {
+		bindChange:function(e){
+			console.log(e)
+		},
+		showQuizModal: function() {
+			this.quizModal = true;
+		},
+		closeQuizModal: function() {
+			this.quizModal = false;
+		},
 		loginApp() {
 			contact.requireLogin();
 			// console.log('relogin');
@@ -291,7 +330,7 @@ export default {
 			var name = that.name;
 			var logs = that.selectList;
 
-			if (name.length < 1 || name.length > 20 ) {
+			if (name.length < 1 || name.length > 20) {
 				uni.showToast({
 					title: '请输入1到20个字符长度的名字',
 					icon: 'none'
@@ -365,8 +404,8 @@ export default {
 														uni.showToast({
 															title: '竞猜成功',
 															icon: 'none',
-															success:function(){
-																console.log(123)
+															success: function() {
+																console.log(123);
 																that.quizStatus = true;
 																that.infoModal = false;
 															}
@@ -377,7 +416,7 @@ export default {
 														uni.showToast({
 															title: res.data.info,
 															icon: 'none',
-															success:function(){
+															success: function() {
 																that.quizStatus = true;
 																that.infoModal = false;
 															}
@@ -408,9 +447,7 @@ export default {
 							uni.showToast({
 								title: res.data.ErrMsg,
 								icon: 'none',
-								success:function(){
-									
-								}
+								success: function() {}
 							});
 							return;
 						}
@@ -423,9 +460,9 @@ export default {
 					}
 				}
 			});
-			// this.quizStatus = 
-			console.log(that.infoModal)
-			console.log(that.quizStatus)
+			// this.quizStatus =
+			console.log(that.infoModal);
+			console.log(that.quizStatus);
 		},
 		// 手机号非空时
 		addUserInfo: function(name, mobile) {
@@ -762,12 +799,6 @@ export default {
 </script>
 
 <style>
-	
-/* /deep/  uni-toast .uni-simple-toast__text{
-		font-size: 36rpx !important;
-		
-}
- */
 .index-bg {
 	background: url(https://aloss.hotforest.cn/bundesliga/index-bg.png) no-repeat center;
 	background-size: 100% 100%;
@@ -813,12 +844,8 @@ export default {
 }
 
 .question-bg {
-	/* background: url(https://aloss.hotforest.cn/bundesliga/question-bg.png) no-repeat center; */
 	background-size: 100% 100%;
-	/* width: 708rpx; */
-	/* height: 700rpx; */
 	width: 100%;
-	/* height: 100%; */
 	margin: 0 auto;
 	margin-top: 40%;
 	background-color: rgb(56, 30, 128);
@@ -833,11 +860,39 @@ export default {
 .team-item {
 	background-color: #ffffff;
 	width: 708rpx;
-	margin: 0 auto;
+	/* height: 700rpx; */
+	margin: 30rpx auto;
+	padding-bottom: 10rpx;
 	border-radius: 30rpx;
 }
+.join-person-count {
+	float: right;
+	width: 40%;
+	height: 80rpx;
+	font-size: 30rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(153, 153, 153, 1);
+	line-height: 80rpx;
+	text-align: right;
+	margin-right: 10%;
+}
+.competition-time {
+	float: left;
+	width: 40%;
+	height: 80rpx;
+	font-size: 30rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(153, 153, 153, 1);
+	line-height: 80rpx;
+	margin-left: 10%;
+}
 .team-answer {
-	padding-bottom: 30rpx;
+	width: 90%;
+	height: 100rpx;
+	margin: 0 auto;
+	margin-top: 24rpx;
 }
 
 .question-title-p {
@@ -862,9 +917,7 @@ export default {
 }
 
 .question-title-3 {
-	margin-top: 30rpx;
-	padding-bottom: 30rpx;
-	padding-top: 30rpx;
+	width: 100%;
 }
 
 .question-1 {
@@ -877,8 +930,6 @@ export default {
 }
 .question-1 img {
 	width: 100%;
-	/* width: 116rpx;
-	height: 113rpx; */
 }
 .question-5 {
 	width: 10%;
@@ -890,8 +941,6 @@ export default {
 }
 .question-5 img {
 	width: 100%;
-	/* 	width: 116rpx;
-	height: 113rpx; */
 }
 .question-2 {
 	width: 20%;
@@ -905,8 +954,6 @@ export default {
 .question-2 img {
 	max-width: 100%;
 	max-height: 100%;
-	/* width: 148rpx;
-	height: 110rpx; */
 }
 .question-4 {
 	width: 20%;
@@ -924,6 +971,7 @@ export default {
 .question-3 {
 	text-align: center;
 	width: 30%;
+	padding-top: 30rpx;
 }
 .question-3-vs {
 	font-size: 46rpx;
@@ -936,7 +984,6 @@ export default {
 	font-family: MF LingHei (Noncommercial) !important;
 	font-weight: bolder !important;
 	color: rgba(250, 59, 22, 1) !important;
-	/* line-height:79px; */
 }
 .question-3-guest-score {
 	font-size: 32rpx !important;
@@ -961,47 +1008,44 @@ export default {
 }
 
 .option-active {
-	/* background-color: #29A518; */
-	background-color: #007aff;
+	background-color: #fa6c1e;
 	color: #ffffff !important;
 	border: none !important;
 }
 .option-active-wrong {
-	/* background-color: #29A518; */
 	background-color: #ff4f15;
 	color: #ffffff !important;
 	border: none !important;
 }
 
 .option-active-right {
-	/* background-color: #29A518; */
 	background-color: #29a518;
 	color: #ffffff !important;
 	border: none !important;
 }
 
 .option-item {
-	width: 600rpx;
+	float: left;
+	width: 30%;
+	/* height: 100rpx; */
+	margin-left: 2%;
 
-	height: 62rpx;
 	border: 1px solid rgba(0, 160, 233, 1);
 	border-radius: 30rpx;
-	margin: 0 auto;
-	margin-top: 20rpx;
 	text-align: center;
 
 	font-size: 30rpx;
 	font-family: Lantinghei SC;
-	font-weight: 600;
+	font-weight: bolder;
 	color: rgba(50, 141, 255, 1);
 }
 
 .question-button {
-	margin-top: 30rpx;
+	margin-top: 50rpx;
 	margin-bottom: 30rpx;
 }
 .question-button button {
-	background: url(https://aloss.hotforest.cn/bundesliga/button-y.png) no-repeat center;
+	background: url(https://aloss.hotforest.cn/bundesliga/quiz-button.png) no-repeat center;
 	background-size: 100% 100%;
 	width: 365rpx;
 	height: 92rpx;
@@ -1086,10 +1130,8 @@ export default {
 	bottom: 0;
 	right: 0;
 	margin: auto;
-	/* width: 552rpx; */
 	width: 90%;
 	height: 80%;
-	/* height: 452rpx; */
 	background: url(https://aloss.hotforest.cn/bundesliga/modal-2.png) no-repeat center;
 	background-size: 100% 100%;
 }
@@ -1302,4 +1344,121 @@ export default {
 	height: 70%;
 }
 
+.quiz-modal {
+	position: fixed;
+	z-index: 100;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.6);
+}
+.quiz-modal-bg {
+	position: fixed;
+	z-index: 110;
+	width: 100%;
+	height: 500rpx;
+	bottom: 0;
+	background-color: #ffffff;
+	background-size: 100% 100%;
+}
+.quiz-modal-1 {
+	padding: 30rpx 40rpx;
+	font-size: 28rpx;
+	font-family: Lantinghei SC;
+	font-weight: bolder;
+	color: rgba(51, 51, 51, 1);
+}
+.quiz-modal-2 {
+	width: 100%;
+	height: 80rpx;
+	/* padding: 0rpx 40rpx; */
+}
+.quiz-modal-2-1 {
+	float: left;
+	width: 20%;
+	height: 100%;
+	line-height: 80rpx;
+	margin-left: 10%;
+	background: rgba(255, 255, 255, 1);
+	border: 1px solid rgba(0, 160, 233, 1);
+	border-radius: 29rpx;
+	text-align: center;
+
+	font-size: 28rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(51, 51, 51, 1);
+}
+.quiz-modal-2-2 {
+	float: left;
+	width: 20%;
+	height: 100%;
+	line-height: 80rpx;
+	margin-left: 10%;
+	background: rgba(255, 255, 255, 1);
+	border: 1px solid rgba(0, 160, 233, 1);
+	border-radius: 29rpx;
+	text-align: center;
+
+	font-size: 28rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(51, 51, 51, 1);
+}
+.quiz-modal-2-3 {
+	float: left;
+	width: 20%;
+	height: 100%;
+	line-height: 80rpx;
+	margin-left: 10%;
+	background: rgba(255, 255, 255, 1);
+	border: 1px solid rgba(0, 160, 233, 1);
+	border-radius: 29rpx;
+	text-align: center;
+
+	font-size: 28rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(51, 51, 51, 1);
+}
+
+.quiz-modal-3{
+	width: 100%;
+	height: 100rpx;
+}
+.uni-numbox{
+	margin: 0 auto;
+	margin-top: 20rpx;
+}
+.quiz-modal-4{
+	width: 100%;
+}
+.quiz-modal-4 button{
+	background: url(https://aloss.hotforest.cn/bundesliga/quiz-button.png) no-repeat center;
+	background-size: 100% 100%;
+	width: 365rpx;
+	height: 92rpx;
+	
+	font-size: 36rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	
+	text-shadow: 0px 2px 6px rgba(0, 0, 0, 0.75);
+	-webkit-text-stroke: 3px undefined;
+	text-stroke: 3px undefined;
+}
+.quiz-modal-5{
+	width: 100%;
+	text-align: center;
+	font-size:28rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(51,51,51,1);
+	line-height:80rpx;
+}
+.quiz-modal-5 span{
+	color: #FF4242;
+}
 </style>
