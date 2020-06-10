@@ -16,8 +16,8 @@
 			</view>
 
 			<view class="flex-item flex-item-v team-item" v-for="(team, i) in teamList" :key="i">
-				<view class="flex-item competition-time">德甲 {{ team.competition_time }}</view>
-				<view class="flex-item  join-person-count">参与人数:1000000</view>
+				<view class="flex-item competition-time">{{ team.competition_format}}</view>
+				<!-- <view class="flex-item  join-person-count">参与人数:1000000</view> -->
 				<view class="uni-flex  question-title-3">
 					<view class="flex-item question-1">
 						<!-- 主队 <br> -->
@@ -30,64 +30,43 @@
 					</view>
 					<view class="flex-item question-3">
 						<view class="question-3-vs">VS</view>
-						<view v-if="team.quiz_result == 0">
-							<span>-</span>
-							:
-							<span>-</span>
-						</view>
-						<view v-if="team.quiz_result == 1">
-							<span class="question-3-home-score">{{ team.home_team_score }}</span>
-							:
-							<span class="question-3-guest-score">{{ team.guest_team_score }}</span>
-						</view>
-						<view v-if="team.quiz_result == 2">
-							<span class="question-3-guest-score">{{ team.home_team_score }}</span>
-							:
-							<span class="question-3-home-score">{{ team.guest_team_score }}</span>
-						</view>
-						<view v-if="team.quiz_result == 3">
-							<span class="question-3-guest-score">{{ team.home_team_score }}</span>
-							:
-							<span class="question-3-guest-score">{{ team.guest_team_score }}</span>
-						</view>
 					</view>
 					<view class="flex-item question-4">
 						<img :src="team.guest_team_icon" alt="img" />
 						{{ team.guest_team_name }}
 					</view>
 					<view class="flex-item question-5">
-						<!-- 客队 <br> -->
 						<img v-if="team.quiz_result == 2" src="https://aloss.hotforest.cn/bundesliga/virctory.png" alt="img" />
 					</view>
 				</view>
-
-				<!-- <view class="team-answer" v-if="team.quiz_result != 0 || endAnswer || quizStatus">
-					<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']">主队胜</view>
-					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']">平</view>
-					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 2 == team.checkValue ? 'option-active' : '']">客队胜</view>
-				</view> -->
-
-				<view class="team-answer" v-if="team.quiz_result == 0 && !endAnswer && !quizStatus">
-					<view class="flex-item flex-item-V option-item" :class="[team.id + '_' + 1 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 1)">
-						主队胜
+				<view class="team-answer">
+					<view v-for="(option,i) in team.options"
+					:key="i"
+					 class="flex-item flex-item-V option-item" 
+					 :class="[selectOptionId == option.id ? 'option-active' : '']"
+					 @click="sOption(team.id,option.id,option.odds)">
+						{{option.option}}
 						<br />
-						2.00
-					</view>
-					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 3 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 3)">
-						平
-						<br />
-						1.11
-					</view>
-					<view class="flex-item flex-item-V option-item " :class="[team.id + '_' + 2 == team.checkValue ? 'option-active' : '']" @click="sOption(team.id, 2)">
-						客队胜
-						<br />
-						1.00
+						{{option.odds}}
 					</view>
 				</view>
 				<view class="flex-item flex-item-V question-button">
-					<!-- <button v-if="loginAppStatus == true && quizStatus == false" @click="addUserQuizLog()" type="default">投注</button> -->
-					<button v-if="loginAppStatus == false && quizStatus == false" @click="showQuizModal()" type="default">投注</button>
-					<!-- <button v-if="loginAppStatus == false" @click="loginApp" type="default">投注</button> -->
+					<button 
+					v-if="loginAppStatus == true && selectTeamId === team.id " 
+					@click="showQuizModal()" type="default">
+					投注
+					</button>
+					<button
+					v-if="loginAppStatus == true &&  selectTeamId != team.id" 
+					type="default">
+					投注
+					</button>
+					<button
+					v-if="loginAppStatus == false" 
+					@click="loginApp"
+					type="default">
+					投注
+					</button>
 				</view>
 			</view>
 		</view>
@@ -118,27 +97,24 @@
 				<view class="flex-item logs-1-3">我的竞猜</view>
 				<view class="flex-item logs-1-4">结果</view>
 			</view>
-			<view class="flex-item logs-2">第30轮</view>
+			<view class="flex-item logs-2">第31轮</view>
 			<scroll-view :scroll-top="scrollTop" scroll-y="true" class="logs-scroll-Y" @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
-				<view class="scroll-view-item logs-3" v-for="(log, i) in userQuizLogs" :key="i">
+				<view class="scroll-view-item logs-3" v-for="(log, i) in userBetList" :key="i">
 					<view class="uni-row uni-flex ">
-						<view class="flex-item logs-3-font logs-3-1">{{ log.detail.competition_time }}</view>
+						<view class="flex-item logs-3-font logs-3-1">{{ log.competition_at }}</view>
 						<view class="flex-item logs-3-font logs-3-2">
-							{{ log.detail.home_team_name }}
+							{{ log.home_team_name }}
 							<br />
-							{{ log.detail.guest_team_name }}
+							{{ log.guest_team_name }}
 						</view>
 						<view class="flex-item logs-3-font logs-3-3">
-							<text v-if="log.result == 1">{{ log.detail.home_team_name }}</text>
-							<text v-if="log.result == 2">{{ log.detail.guest_team_name }}</text>
-							<text v-if="log.result == 3">平</text>
-							<!-- {{log.result}} -->
+							{{log.option}}
 						</view>
 						<view class="flex-item logs-3-font logs-3-4">
 							<!-- {{log.r_status}} -->
-							<text v-if="log.r_status == -1">未开</text>
-							<text class="logs-victory" v-if="log.r_status == 1">胜</text>
-							<text class="logs-fail" v-if="log.r_status == 0">负</text>
+							<text v-if="log.is_right == 0">未开</text>
+							<text class="logs-victory" v-if="log.is_right == 1">胜</text>
+							<text class="logs-fail" v-if="log.is_right == -1">负</text>
 						</view>
 					</view>
 				</view>
@@ -160,19 +136,21 @@
 		<!-- 竞猜底部弹出框 -->
 		<view class="quiz-modal" v-show="quizModal" @click="closeQuizModal()"></view>
 		<view class="quiz-modal-bg" v-show="quizModal">
-			<view class="flex-item quiz-modal-1">我的积分：99,999,999 积分</view>
+			<view class="flex-item quiz-modal-1">我的积分：{{userPoints}} 积分</view>
 			<view class="quiz-modal-2">
-				<view class="quiz-modal-2-1">10积分</view>
-				<view class="quiz-modal-2-2">50积分</view>
-				<view class="quiz-modal-2-3">100积分</view>
+				<view class="quiz-modal-2-1" :class="betPoints==10 ? 'option-active' : '' " @click="changeBetPoints(10)">10积分</view>
+				<view class="quiz-modal-2-2" :class="betPoints==50 ? 'option-active' : '' " @click="changeBetPoints(50)">50积分</view>
+				<view class="quiz-modal-2-3" :class="betPoints==100 ? 'option-active' : '' " @click="changeBetPoints(100)">100积分</view>
 			</view>
 			<view class="quiz-modal-3">
-				<uni-number-box @change="bindChange" :value="10" :min="10" :max="99999999" :step="5"></uni-number-box>
+				<uni-number-box @change="bindChange" :value="betPoints" :min="10" :max="100" :step="10"></uni-number-box>
 			</view>
-			<view class="quiz-modal-4"><button>确认投注</button></view>
+			<view class="quiz-modal-4">
+				<button @click="bet()">确认投注</button>
+			</view>
 			<view class="quiz-modal-5">
 				预计赢取：
-				<span>99,999,999</span>
+				<span>{{expectEarnPoints}}</span>
 				积分
 			</view>
 		</view>
@@ -198,7 +176,6 @@ export default {
 			ruleModal: false,
 			logsModal: false,
 			infoModal: false,
-			// infoModal: true,
 			appMsgModal: false,
 			teamId: 0,
 			userQuizLogs: [],
@@ -214,7 +191,14 @@ export default {
 			quizStatus: false,
 			round: 30, //德甲竞猜场次
 			endAnswer: false,
-			quizModal: false
+			quizModal: false,
+			betPoints:10, // 投注积分 默认是10
+			selectOptionId:0, // 选择的选项id 
+			selectTeamId:0, //正在操作的竞猜teamid
+			selectOdds:0, // 选择的选项的赔率
+			userPoints:0, //用户积分
+			expectEarnPoints:0, // 预计赢取积分
+			userBetList:[], // 用户下注记录
 		};
 	},
 	components: { uniNumberBox },
@@ -227,24 +211,17 @@ export default {
 		// 当月一号
 		var month_one = tYear + '-' + tMonth + '-' + '16';
 		let one_start_at = startUnix(month_one);
-
-		console.log(one_start_at);
-		console.log(nowTimeStamp);
-
 		if (nowTimeStamp > one_start_at) {
 			this.endAnswer = true;
 		}
-		console.log(this.endAnswer);
-		// this.appMsgModal = true;
-		// this.uid = 470665;
-		// this.activity_id = 4;
-		if (typeof contact === 'undefined') {
-			uni.showToast({
-				title: '请下载全民体育APP参与活动',
-				icon: 'none',
-				mask: true
-			});
-		} else {
+		
+		// if (typeof contact === 'undefined') {
+		// 	uni.showToast({
+		// 		title: '请下载全民体育APP参与活动',
+		// 		icon: 'none',
+		// 		mask: true
+		// 	});
+		// } else {
 			if (option.uid !== '' && option.uid !== 'null' && option.uid !== undefined) {
 				uni.setStorageSync('uid', option.uid);
 				uni.setStorageSync('token', option.token);
@@ -254,7 +231,9 @@ export default {
 				this.uid = uni.getStorageSync('uid');
 				this.token = uni.getStorageSync('token');
 				this.ns_device_id = uni.getStorageSync('ns_device_id');
-				this.checkQuizStatus(this.uid, this.$question.activity_id);
+				this.getUserPointDetail(this.uid);
+				this.getTeamList();
+				// this.checkQuizStatus(this.uid, this.$question.activity_id);
 			} else {
 				this.getTeamList();
 				this.loginAppStatus = false;
@@ -267,22 +246,71 @@ export default {
 					});
 				};
 			}
-		}
-		this.getTeamList();
+		// }
+		// this.getTeamList();
 	},
 	methods: {
+		bet:function(){
+			let that = this;
+			let data = {
+				uid:that.uid,
+				activity_id:that.$question.activity_id,
+				team_quiz_id:that.selectTeamId,
+				option_id:that.selectOptionId,
+				expect_earn_points:that.expectEarnPoints,
+				user_points:that.userPoints,
+				bet_points:that.betPoints
+			}
+			uni.request({
+				url:base.sq + '/activity/api.quiz/addQuizLog',
+				data:data,
+				method:'POST',
+				success:res=>{
+					console.log(res)
+					if(res.statusCode == 200){
+						if(res.data.code == 0){
+							uni.showToast({
+								title:'success',
+								icon:'none'
+							})
+							that.quizModal = false;
+							that.getUserPointDetail(that.uid);
+						}else{
+							uni.showToast({
+								title:res.data.info,
+								icon:'none'
+							})
+						}
+						
+					}else{
+						uni.showToast({
+							title:res.errMsg,
+							icon:'none'
+						})
+					}
+				}
+			})
+		},
+		changeBetPoints:function(point){
+			let that =this;
+			that.betPoints = point;
+			that.expectEarnPoints = point*that.selectOdds;
+		},
 		bindChange:function(e){
 			console.log(e)
+			let that = this;
+			that.expectEarnPoints = e*that.selectOdds;
 		},
 		showQuizModal: function() {
-			this.quizModal = true;
+			let that = this;
+			that.quizModal = true;
+			that.expectEarnPoints = that.betPoints*that.selectOdds;
 		},
 		closeQuizModal: function() {
 			this.quizModal = false;
 		},
 		loginApp() {
 			contact.requireLogin();
-			// console.log('relogin');
 		},
 		// 发送验证码
 		sendCode(mobile) {
@@ -535,6 +563,31 @@ export default {
 			this.infoModal = false;
 			this.quizStatus = true;
 		},
+		getUserPointDetail:function(uid){
+			let data = {
+				uid:uid
+			}
+			uni.request({
+				url:base.sq + '/activity/api.UserPoints/detail',
+				data:data,
+				method:"GET",
+				success:res=> {
+					console.log(res)
+					if(res.statusCode == 200){
+						if(res.data.code == 0){
+							let that = this;
+							that.userPoints = res.data.data.points;
+						}
+					}else{
+						uni.showToast({
+							title:res.errMsg,
+							icon:'none'
+						})
+					}
+				}
+			})
+			
+		},
 		checkQuizStatus: function(uid, activity_id) {
 			let data = {
 				uid: uid,
@@ -559,21 +612,20 @@ export default {
 				}
 			});
 		},
-
-		getUserQuizLogs(uid, activity_id) {
+		getUserBetLogs(uid, activity_id){
 			uni.request({
-				url: base.sq + '/activity/api.quiz/getUserQuizLogs',
+				url: base.sq + '/activity/api.QuizLog/userBetList',
 				data: {
 					uid: uid,
 					activity_id: activity_id
 				},
 				method: 'POST',
 				success: res => {
-					// console.log(res);
+					console.log(res);
 					if (res.statusCode === 200) {
 						if (res.data.code === 0) {
-							this.userQuizLogs = res.data.data;
-							console.log(this.userQuizLogs);
+							this.userBetList = res.data.data;
+						
 						} else {
 							uni.showToast({
 								title: res.data.info,
@@ -589,37 +641,13 @@ export default {
 				}
 			});
 		},
-		sOption(teamId, result) {
+		// 选择答案
+		sOption(teamId,optionId,odds) {
 			let that = this;
-			that.teamId = teamId;
-
-			var key = 'team_' + teamId;
-			var teamList = this.teamList;
-			var a = teamId + '_' + result;
-
-			teamList.forEach(item => {
-				if (item.id === teamId) {
-					item.checkValue = a;
-				}
-			});
-			// todos  two days
-			this.$forceUpdate((this.teamList = teamList));
-			// this.teamList = teamList;
-
-			var selectList = this.selectList;
-			var optionObject = {
-				team_id: teamId,
-				result: result
-			};
-
-			for (var i = 0; i < selectList.length; i++) {
-				var team_id = selectList[i]['team_id'];
-				if (team_id == teamId) {
-					selectList.splice(i, 1);
-				}
-			}
-			selectList.push(optionObject);
-			this.selectList = selectList;
+			that.selectOptionId = optionId;
+			that.selectTeamId = teamId;
+			that.selectOdds = odds;
+			
 		},
 		closeRuleModal() {
 			this.ruleModal = false;
@@ -650,7 +678,8 @@ export default {
 		},
 		changeLogsModal() {
 			this.logsModal = true;
-			this.getUserQuizLogs(this.uid, this.$question.activity_id);
+			this.getUserBetLogs(this.uid,this.$question.activity_id);
+			
 			let cssStr = 'overflow-y: hidden; height: 100%;';
 			document.getElementsByTagName('html')[0].style.cssText = cssStr;
 			document.body.style.cssText = cssStr;
@@ -732,9 +761,9 @@ export default {
 		},
 		getTeamList: function() {
 			uni.request({
-				url: base.sq + '/activity/api.quiz/teamList',
+				url: base.sq + '/activity/api.quiz/getTeamQuizList',
 				data: {
-					round: this.round
+					// round: this.round
 				},
 				method: 'GET',
 				success: res => {
@@ -742,32 +771,6 @@ export default {
 					if (res.statusCode === 200) {
 						if (res.data.code === 0) {
 							var list = res.data.data;
-							this.teamList = list;
-							// console.log(list);
-						}
-					} else {
-						uni.showToast({
-							title: 'server error',
-							icon: 'none'
-						});
-					}
-				}
-			});
-		},
-		getUserQuizTeamList: function(uid, activity_id) {
-			uni.request({
-				url: base.sq + '/activity/api.quiz/getUserQuizTeamList',
-				data: {
-					uid: uid,
-					activity_id: activity_id
-				},
-				method: 'POST',
-				success: res => {
-					console.log(res);
-					if (res.statusCode === 200) {
-						if (res.data.code === 0) {
-							var list = res.data.data;
-
 							this.teamList = list;
 							// console.log(list);
 						}
@@ -1008,18 +1011,7 @@ export default {
 }
 
 .option-active {
-	background-color: #fa6c1e;
-	color: #ffffff !important;
-	border: none !important;
-}
-.option-active-wrong {
-	background-color: #ff4f15;
-	color: #ffffff !important;
-	border: none !important;
-}
-
-.option-active-right {
-	background-color: #29a518;
+	background-color: #fa6c1e !important;
 	color: #ffffff !important;
 	border: none !important;
 }
@@ -1027,7 +1019,6 @@ export default {
 .option-item {
 	float: left;
 	width: 30%;
-	/* height: 100rpx; */
 	margin-left: 2%;
 
 	border: 1px solid rgba(0, 160, 233, 1);
