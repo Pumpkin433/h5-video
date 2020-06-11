@@ -5,13 +5,12 @@
 			<view class="flex-item index-top-r">
 				<view class="right-icon" v-if="loginAppStatus" @click="changeLogsModal()">竞猜记录</view>
 				<view class="right-icon" v-if="!loginAppStatus" @click="loginApp">竞猜记录</view>
-				<!-- <view class="right-icon" v-if="!loginAppStatus" @click="changeLogsModal">竞猜记录</view> -->
 			</view>
 		</view>
 
 		<view class=" uni-column question-bg">
 			<view class="question-bg-title">
-				<!-- <view class="flex-item flex-item-V question-title">德甲第 {{ round }} 轮</view> -->
+				<view class="flex-item flex-item-V question-title">我的积分：{{userPoints}} 积分</view>
 				<!-- <view class="flex-item flex-item-V question-title-2">本轮竞猜截止时间：6月6日0点</view> -->
 			</view>
 
@@ -88,39 +87,7 @@
 			<view class="flex-item flex-item-V rule-copy"><button type="default" @click="copy('NationalSports')">复制微信号码</button></view>
 		</view>
 
-		<view class="logs-modal" v-show="logsModal" @click="closeLogsModal()"></view>
-		<view class="logs-modal-bg" v-show="logsModal">
-			<view class="flex-item  logs-title">竞猜记录</view>
-			<view class="uni-row uni-flex logs-1 ">
-				<view class="flex-item logs-1-1">时间</view>
-				<view class="flex-item logs-1-2">赛事</view>
-				<view class="flex-item logs-1-3">我的竞猜</view>
-				<view class="flex-item logs-1-4">结果</view>
-			</view>
-			<view class="flex-item logs-2">第31轮</view>
-			<scroll-view :scroll-top="scrollTop" scroll-y="true" class="logs-scroll-Y" @scrolltoupper="upper" @scrolltolower="lower" @scroll="scroll">
-				<view class="scroll-view-item logs-3" v-for="(log, i) in userBetList" :key="i">
-					<view class="uni-row uni-flex ">
-						<view class="flex-item logs-3-font logs-3-1">{{ log.competition_at }}</view>
-						<view class="flex-item logs-3-font logs-3-2">
-							{{ log.home_team_name }}
-							<br />
-							{{ log.guest_team_name }}
-						</view>
-						<view class="flex-item logs-3-font logs-3-3">
-							{{log.option}}
-						</view>
-						<view class="flex-item logs-3-font logs-3-4">
-							<!-- {{log.r_status}} -->
-							<text v-if="log.is_right == 0">未开</text>
-							<text class="logs-victory" v-if="log.is_right == 1">胜</text>
-							<text class="logs-fail" v-if="log.is_right == -1">负</text>
-						</view>
-					</view>
-				</view>
-			</scroll-view>
-		</view>
-
+		
 		<view class="info-modal" v-show="infoModal" @click="closeInfoModal()"></view>
 		<view class="info-modal-bg" v-show="infoModal">
 			<view class="flex-item  info-title">信息登记</view>
@@ -175,7 +142,7 @@ export default {
 			selectList: [],
 			ruleModal: false,
 			logsModal: false,
-			infoModal: false,
+			infoModal: true,
 			appMsgModal: false,
 			teamId: 0,
 			userQuizLogs: [],
@@ -215,13 +182,13 @@ export default {
 			this.endAnswer = true;
 		}
 		
-		// if (typeof contact === 'undefined') {
-		// 	uni.showToast({
-		// 		title: '请下载全民体育APP参与活动',
-		// 		icon: 'none',
-		// 		mask: true
-		// 	});
-		// } else {
+		if (typeof contact === 'undefined') {
+			uni.showToast({
+				title: '请下载全民体育APP参与活动',
+				icon: 'none',
+				mask: true
+			});
+		} else {
 			if (option.uid !== '' && option.uid !== 'null' && option.uid !== undefined) {
 				uni.setStorageSync('uid', option.uid);
 				uni.setStorageSync('token', option.token);
@@ -246,11 +213,72 @@ export default {
 					});
 				};
 			}
-		// }
+		}
 		// this.getTeamList();
 	},
 	methods: {
 		bet:function(){
+			var that = this
+			var uid = that.uid;
+			var activity_id = that.activity_id;
+			var ns_device_id = that.ns_device_id;
+			var token = that.token;
+			
+			let data = {
+				uid: uid,
+				activity_id: activity_id
+			};
+			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
+				.then(res => {
+					// console.log(res);
+					if (res.status == 200) {
+						// console.log(res.data.data.count);
+						let count = res.data.data.count;
+			
+						// 检查用户是否在数据库中
+						if (count <= 0) {
+							let req_url = base.bd + '/v3/user/info';
+							let headers = {
+								ns_device_id: ns_device_id,
+								uid: uid,
+								token: token
+							};
+							http.get(req_url, { headers: headers }).then(res => {
+								// console.log(res);
+								if (res.status == 200) {
+									if (res.data.Status == 1) {
+										let nickname = res.data.Data.nickname;
+										let mobile = res.data.Data.phone;
+										console.log(res);
+										if (mobile == '') {
+											this.infoModal = true;
+										} else {
+											this.addUserInfo(nickname, mobile);
+										}
+									}
+								} else {
+									uni.showToast({
+										title: 'server error',
+										icon: 'none'
+									});
+								}
+							});
+						}else{
+							that.addQuizLog();
+						}
+					} else {
+						uni.showToast({
+							title: 'server error',
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {})
+				.finally(() => {});
+			
+			
+		},
+		addQuizLog:function(){
 			let that = this;
 			let data = {
 				uid:that.uid,
@@ -261,6 +289,7 @@ export default {
 				user_points:that.userPoints,
 				bet_points:that.betPoints
 			}
+			
 			uni.request({
 				url:base.sq + '/activity/api.quiz/addQuizLog',
 				data:data,
@@ -270,11 +299,15 @@ export default {
 					if(res.statusCode == 200){
 						if(res.data.code == 0){
 							uni.showToast({
-								title:'success',
-								icon:'none'
+								title:'投注成功',
+								icon:'none',
+								success: () => {
+									that.infoModal = false;
+									that.quizModal = false;
+									that.getUserPointDetail(that.uid);
+								}
 							})
-							that.quizModal = false;
-							that.getUserPointDetail(that.uid);
+							
 						}else{
 							uni.showToast({
 								title:res.data.info,
@@ -417,49 +450,7 @@ export default {
 									if (res.status == 200) {
 										console.log(res);
 										//用户信息添加之后 添加用户竞猜日志
-										uni.request({
-											url: base.sq + '/activity/api.quiz/addUserQuizLog',
-											data: {
-												uid: uid,
-												activity_id: activity_id,
-												logs: JSON.stringify(logs)
-											},
-											method: 'POST',
-											success: res => {
-												console.log(res);
-												if (res.statusCode === 200) {
-													if (res.data.code === 0) {
-														uni.showToast({
-															title: '竞猜成功',
-															icon: 'none',
-															success: function() {
-																console.log(123);
-																that.quizStatus = true;
-																that.infoModal = false;
-															}
-														});
-														// this.quizStatus = true;
-														// this.infoModal = false;
-													} else {
-														uni.showToast({
-															title: res.data.info,
-															icon: 'none',
-															success: function() {
-																that.quizStatus = true;
-																that.infoModal = false;
-															}
-														});
-														return;
-													}
-												} else {
-													uni.showToast({
-														title: 'server error',
-														icon: 'none'
-													});
-													return;
-												}
-											}
-										});
+										that.addQuizLog();
 									} else {
 										uni.showToast({
 											title: 'server error',
@@ -471,20 +462,16 @@ export default {
 								.catch(error => {})
 								.finally(() => {});
 						} else {
-							var _self = this;
 							uni.showToast({
-								title: res.data.ErrMsg,
-								icon: 'none',
-								success: function() {}
+								title: 'service error',
+								icon: 'none'
 							});
-							return;
 						}
 					} else {
 						uni.showToast({
 							title: '验证码错误',
 							icon: 'none'
 						});
-						return;
 					}
 				}
 			});
@@ -516,39 +503,7 @@ export default {
 					if (res.status == 200) {
 						// console.log(res);
 						//用户信息添加之后 添加用户竞猜日志
-						uni.request({
-							url: base.sq + '/activity/api.quiz/addUserQuizLog',
-							data: {
-								uid: uid,
-								activity_id: activity_id,
-								logs: JSON.stringify(logs)
-							},
-							method: 'POST',
-							success: res => {
-								console.log(res);
-								if (res.statusCode === 200) {
-									if (res.data.code === 0) {
-										uni.showToast({
-											title: '竞猜成功',
-											icon: 'none'
-										});
-										// console.log(this.quizStatus);
-									} else {
-										uni.showToast({
-											title: res.data.info,
-											icon: 'none'
-										});
-										return;
-									}
-								} else {
-									uni.showToast({
-										title: 'server error',
-										icon: 'none'
-									});
-									return;
-								}
-							}
-						});
+						that.addQuizLog();
 					} else {
 						uni.showToast({
 							title: 'server error',
@@ -587,60 +542,7 @@ export default {
 				}
 			})
 			
-		},
-		checkQuizStatus: function(uid, activity_id) {
-			let data = {
-				uid: uid,
-				activity_id: activity_id
-			};
-			http.post(base.sq + '/activity/api.Quiz/checkUserQuizStatus', data).then(res => {
-				console.log(res);
-				if (res.status == 200) {
-					this.quizStatus = res.data.data.status;
-
-					if (res.data.data.status == true) {
-						this.quizStatus = true;
-						this.getUserQuizTeamList(uid, activity_id);
-					} else {
-						this.getTeamList();
-					}
-				} else {
-					uni.showToast({
-						title: 'server error',
-						icon: 'none'
-					});
-				}
-			});
-		},
-		getUserBetLogs(uid, activity_id){
-			uni.request({
-				url: base.sq + '/activity/api.QuizLog/userBetList',
-				data: {
-					uid: uid,
-					activity_id: activity_id
-				},
-				method: 'POST',
-				success: res => {
-					console.log(res);
-					if (res.statusCode === 200) {
-						if (res.data.code === 0) {
-							this.userBetList = res.data.data;
-						
-						} else {
-							uni.showToast({
-								title: res.data.info,
-								icon: 'none'
-							});
-						}
-					} else {
-						uni.showToast({
-							title: 'server error',
-							icon: 'none'
-						});
-					}
-				}
-			});
-		},
+		},	
 		// 选择答案
 		sOption(teamId,optionId,odds) {
 			let that = this;
@@ -667,97 +569,25 @@ export default {
 			document.body.scrollTop = this.pageScrollYoffset;
 			window.scroll(0, this.pageScrollYoffset);
 		},
-		closeLogsModal() {
-			this.logsModal = false;
-			let cssStr = 'overflow-y: auto; height: 100%;';
-			document.getElementsByTagName('html')[0].style.cssText = cssStr;
-			document.body.style.cssText = cssStr;
-			// 下面需要这两行代码，兼容不同浏览器
-			document.body.scrollTop = this.pageScrollYoffset;
-			window.scroll(0, this.pageScrollYoffset);
-		},
+		
 		changeLogsModal() {
-			this.logsModal = true;
-			this.getUserBetLogs(this.uid,this.$question.activity_id);
-			
-			let cssStr = 'overflow-y: hidden; height: 100%;';
-			document.getElementsByTagName('html')[0].style.cssText = cssStr;
-			document.body.style.cssText = cssStr;
+			var uid = uni.getStorageSync('uid');
+			uni.navigateTo({
+				url:'/pages/bundesliga/quizLogs?uid='+uid
+			})
+			// this.logsModal = true;
+			// let cssStr = 'overflow-y: hidden; height: 100%;';
+			// document.getElementsByTagName('html')[0].style.cssText = cssStr;
+			// document.body.style.cssText = cssStr;
 			// 下面需要这两行代码，兼容不同浏览器
-			document.body.scrollTop = this.pageScrollYoffset;
-			window.scroll(0, this.pageScrollYoffset);
+			// document.body.scrollTop = this.pageScrollYoffset;
+			// window.scroll(0, this.pageScrollYoffset);
 		},
 		closeInfoModal() {
 			this.infoModal = false;
 		},
 		addUserQuizLog: function() {
-			var that = this;
-
-			var uid = that.uid;
-			var activity_id = that.activity_id;
-			var ns_device_id = that.ns_device_id;
-			var token = that.token;
-
-			// 判断题目是否全部答完
-			var teamLength = that.teamList.length;
-			var selectLength = that.selectList.length;
-			if (teamLength > selectLength) {
-				uni.showToast({
-					title: '请继续答题',
-					icon: 'none'
-				});
-				return;
-			}
-
-			let data = {
-				uid: uid,
-				activity_id: activity_id
-			};
-			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
-				.then(res => {
-					// console.log(res);
-					if (res.status == 200) {
-						// console.log(res.data.data.count);
-						let count = res.data.data.count;
-
-						// 检查用户是否在数据库中
-						if (count <= 0) {
-							let req_url = base.bd + '/v3/user/info';
-							let headers = {
-								ns_device_id: ns_device_id,
-								uid: uid,
-								token: token
-							};
-							http.get(req_url, { headers: headers }).then(res => {
-								// console.log(res);
-								if (res.status == 200) {
-									if (res.data.Status == 1) {
-										let nickname = res.data.Data.nickname;
-										let mobile = res.data.Data.phone;
-										console.log(res);
-										if (mobile == '') {
-											this.infoModal = true;
-										} else {
-											this.addUserInfo(nickname, mobile);
-										}
-									}
-								} else {
-									uni.showToast({
-										title: 'server error',
-										icon: 'none'
-									});
-								}
-							});
-						}
-					} else {
-						uni.showToast({
-							title: 'server error',
-							icon: 'none'
-						});
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
+			
 		},
 		getTeamList: function() {
 			uni.request({
@@ -856,9 +686,9 @@ export default {
 .question-bg-title {
 	width: 708rpx;
 	margin: 0 auto;
-	margin-top: 20rpx;
+	margin-top: 10rpx;
 	border-radius: 30rpx;
-	background-color: rgba(50, 141, 255, 1);
+	background-color: #283E5A;
 }
 .team-item {
 	background-color: #ffffff;
@@ -908,7 +738,7 @@ export default {
 	line-height: 60rpx;
 	font-family: MF LingHei (Noncommercial);
 	font-weight: 400;
-	color: rgba(254, 254, 254, 1);
+	color: #FFFFFF;
 	text-shadow: 0px 3rpx 2rpx rgba(0, 0, 0, 0.29);
 }
 .question-title-2 {
@@ -1072,27 +902,30 @@ export default {
 	right: 0;
 	margin: auto;
 	width: 652rpx;
-	height: 700rpx;
-	background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center;
+	height: 650rpx;
+	/* background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center; */
+	background-color: #FFFFFF;
+	border-radius:30rpx;
 	background-size: 100% 100%;
 }
 .rule-title {
 	font-size: 32rpx;
 	font-family: MF LingHei (Noncommercial);
 	font-weight: bolder;
-	color: rgba(255, 255, 255, 1);
+	color: #333333;
 	line-height: 35rpx;
 	padding-top: 41rpx;
-	padding-left: 34rpx;
+
+	text-align: center;
 }
 .rule-content {
 	padding-left: 34rpx;
-	padding-top: 80rpx;
+	padding-top: 40rpx;
 	padding-right: 30rpx;
 	font-size: 28rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
-	color: rgba(255, 255, 255, 1);
+	color: #333333;
 }
 .rule-copy button {
 	width: 200rpx;
@@ -1235,14 +1068,16 @@ export default {
 	margin: auto;
 	width: 552rpx;
 	height: 700rpx;
-	background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center;
+	/* background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center; */
+	background:rgba(255,255,255,1);
+	border-radius:30px;
 	background-size: 100% 100%;
 }
 .info-title {
 	font-size: 30rpx;
 	font-family: MF LingHei (Noncommercial);
 	font-weight: 400;
-	color: rgba(255, 255, 255, 1);
+	color: #333333;
 	line-height: 35rpx;
 	padding-top: 31rpx;
 	padding-left: 34rpx;
@@ -1254,7 +1089,7 @@ export default {
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
-	color: rgba(255, 255, 255, 1);
+	color: #333333;
 }
 .info-content-mobile {
 	width: 90%;
@@ -1264,7 +1099,7 @@ export default {
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
-	color: rgba(255, 255, 255, 1);
+	color: #333333;
 	position: relative;
 }
 .info-content-code {
@@ -1275,7 +1110,7 @@ export default {
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
-	color: rgba(255, 255, 255, 1);
+	color: #333333;
 }
 
 .info-content-mobile button {
@@ -1306,7 +1141,7 @@ export default {
 }
 
 /deep/ .uni-input-placeholder {
-	color: #ffffff !important;
+	color: #333333 !important;
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
@@ -1320,15 +1155,16 @@ export default {
 }
 .info-button button {
 	margin: 0 auto;
-	width: 147rpx;
-	height: 50rpx;
-	line-height: 50rpx;
+	width: 262rpx;
+	height: 66rpx;
+	line-height: 66rpx;
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 1);
 	text-shadow: 0px 1px 0px rgba(130, 66, 0, 0.26);
-	background: url(https://aloss.hotforest.cn/bundesliga/info-button.png) no-repeat center;
+	background: url(https://aloss.hotforest.cn/bundesliga/quiz-button.png) no-repeat center;
+	background-size: 100% 100%;
 }
 .logs-scroll-Y {
 	width: 99%;

@@ -13,6 +13,11 @@
 				"navigationBarTitleText":"德甲竞猜"
 			}
 		},
+		
+		{
+		    "path" : "pages/bundesliga/quizLogs",
+		    "style" : {"navigationBarTitleText":"德甲竞猜"}
+		},
 		{
 			"path": "platforms/app-plus/speech/speech",
 			"style": {

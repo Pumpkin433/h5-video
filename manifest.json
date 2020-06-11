@@ -107,7 +107,7 @@
         "template" : "template.h5.html",
         "router" : {
             "mode" : "history",
-            "base" : "/bunliga/"
+            "base" : "/bun/"
         },
         "sdkConfigs" : {
             "maps" : {}
@@ -134,6 +134,6 @@
                 "enable" : true
             }
         },
-        "domain" : "bunliga.hotforest.cn"
+        "domain" : "bun.hotforest.cn"
     }
 }
