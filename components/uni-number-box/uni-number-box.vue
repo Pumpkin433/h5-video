@@ -3,7 +3,12 @@
 		<view @click="_calcValue('minus')" class="uni-numbox__minus">
 			<text class="uni-numbox--text" :class="{ 'uni-numbox--disabled': inputValue <= min || disabled }">-</text>
 		</view>
-		<input :disabled="disabled" @blur="_onBlur" class="uni-numbox__value" type="number" v-model="inputValue" />
+		<view class="points">
+			<input :disabled="disabled" @blur="_onBlur" class="uni-numbox__value" type="number" v-model="inputValue" />
+			<view class="point-icon">
+				<img src="https://aloss.hotforest.cn/bundesliga/point-icon.png" alt="img">
+			</view>
+		</view>
 		<view @click="_calcValue('plus')" class="uni-numbox__plus">
 			<text class="uni-numbox--text" :class="{ 'uni-numbox--disabled': inputValue >= max || disabled }">+</text>
 		</view>
@@ -126,22 +131,26 @@
 		display: flex;
 		/* #endif */
 		flex-direction: row;
-		height: 35px;
-		line-height: 35px;
-		width: 120px;
+		height: 50px;
+		line-height: 50px;
+		width: 180px;
+		margin: 0 auto;
+		margin-top: 20px;
 	}
 
 	.uni-numbox__value {
+		
 		background-color: #ffffff;
-		width: 40px;
-		height: 35px;
+		
 		text-align: center;
 		font-size: 32rpx;
-		border-width: 1rpx;
-		border-style: solid;
-		border-color: #e5e5e5;
-		border-left-width: 0;
-		border-right-width: 0;
+		
+		
+		width: 230rpx;
+		height: 57rpx;
+		border-radius: 43rpx;
+		border: 1rpx solid #007AFF;
+		margin-left: 10px;
 	}
 
 	.uni-numbox__minus {
@@ -151,21 +160,15 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		width: 35px;
-		height: 35px;
-		/* line-height: $box-line-height;
- */
-		/* text-align: center;
- */
+
 		font-size: 20px;
 		color: #333;
-		background-color: #f8f8f8;
-		border-width: 1rpx;
-		border-style: solid;
-		border-color: #e5e5e5;
-		border-top-left-radius: 6rpx;
-		border-bottom-left-radius: 6rpx;
-		border-right-width: 0;
+		
+		width: 43rpx;
+		height: 43rpx;
+		border-radius: 43rpx;
+		border: 1rpx solid #007AFF;
+		margin-top: 3px;
 	}
 
 	.uni-numbox__plus {
@@ -175,15 +178,14 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		width: 35px;
-		height: 35px;
-		border-width: 1rpx;
-		border-style: solid;
-		border-color: #e5e5e5;
-		border-top-right-radius: 6rpx;
-		border-bottom-right-radius: 6rpx;
-		background-color: #f8f8f8;
-		border-left-width: 0;
+		
+		width: 43rpx;
+		height: 43rpx;
+		border-radius: 43rpx;
+		border: 1rpx solid #007AFF;
+		
+		margin-left: 10px;
+		margin-top: 3px;
 	}
 
 	.uni-numbox--text {
@@ -193,5 +195,18 @@
 
 	.uni-numbox--disabled {
 		color: #c0c0c0;
+	}
+	.points{
+		position: relative;
+	}
+	.point-icon {
+		position: absolute;
+		width: 42rpx;
+		height: 42rpx;
+		left: 40rpx;
+		top: 10rpx;
+	}
+	.point-icon img{
+		width: 100%;
 	}
 </style>

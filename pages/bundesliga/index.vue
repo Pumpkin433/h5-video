@@ -7,15 +7,17 @@
 				<view class="right-icon" v-if="!loginAppStatus" @click="loginApp">竞猜记录</view>
 			</view>
 		</view>
+		
+		<view class="question-bg-title">
+			<view class="question-title-1">我的积分：</view>
+			<view class="question-title-2">{{userPoints}} 积分</view>
+		</view>
 
 		<view class=" uni-column question-bg">
-			<view class="question-bg-title">
-				<view class="flex-item flex-item-V question-title">我的积分：{{userPoints}} 积分</view>
-				<!-- <view class="flex-item flex-item-V question-title-2">本轮竞猜截止时间：6月6日0点</view> -->
-			</view>
+			
 
 			<view class="flex-item flex-item-v team-item" v-for="(team, i) in teamList" :key="i">
-				<view class="flex-item competition-time">{{ team.competition_format}}</view>
+				<view class="flex-item competition-time">德甲   {{ team.competition_format}}</view>
 				<!-- <view class="flex-item  join-person-count">参与人数:1000000</view> -->
 				<view class="uni-flex  question-title-3">
 					<view class="flex-item question-1">
@@ -46,26 +48,29 @@
 					 @click="sOption(team.id,option.id,option.odds)">
 						{{option.option}}
 						<br />
-						{{option.odds}}
+						<span :class="[selectOptionId == option.id ? 'option-active' : '']">{{option.odds}}</span>
 					</view>
 				</view>
 				<view class="flex-item flex-item-V question-button">
-					<button 
+					<view 
+					class="question-button-b"
 					v-if="loginAppStatus == true && selectTeamId === team.id " 
 					@click="showQuizModal()" type="default">
 					投注
-					</button>
-					<button
+					</view>
+					<view
+					class="question-button-b"
 					v-if="loginAppStatus == true &&  selectTeamId != team.id" 
 					type="default">
 					投注
-					</button>
-					<button
+					</view>
+					<view
+					class="question-button-b"
 					v-if="loginAppStatus == false" 
 					@click="loginApp"
 					type="default">
 					投注
-					</button>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -97,7 +102,25 @@
 				<button type="default" @click="sendCode(mobile)">验证码</button>
 			</view>
 			<view class="flex-item flex-item-V info-content-code"><input type="number" v-model="code" placeholder="请输入验证码" /></view>
-			<view class="info-button"><button type="default" @click="updateUserInfo()">确定</button></view>
+			<view class="info-button">
+				<!-- <button type="default" @click="updateUserInfo()">确定</button> -->
+				<view class="info-button-b" @click="updateUserInfo()">确定</view>
+			</view>
+		</view>
+		
+		<view class="toast-modal" v-show="toastModal" @click="closeToastModal()"></view>
+		<view class="toast-modal-bg" v-show="toastModal">
+			<view class=" toast-title">
+				{{toastTitle}}
+			</view>
+			<view class=" toast-content">
+				{{toastContent}}
+				<!-- <text>{{toastContent}}</text> -->
+			</view>
+			<view class="info-button">
+				<view class="info-button-b" @click="closeToastModal()">确定</view>
+				<!-- <button type="default" @click="closeToastModal()">确定</button> -->
+			</view>
 		</view>
 
 		<!-- 竞猜底部弹出框 -->
@@ -105,15 +128,33 @@
 		<view class="quiz-modal-bg" v-show="quizModal">
 			<view class="flex-item quiz-modal-1">我的积分：{{userPoints}} 积分</view>
 			<view class="quiz-modal-2">
-				<view class="quiz-modal-2-1" :class="betPoints==10 ? 'option-active' : '' " @click="changeBetPoints(10)">10积分</view>
-				<view class="quiz-modal-2-2" :class="betPoints==50 ? 'option-active' : '' " @click="changeBetPoints(50)">50积分</view>
-				<view class="quiz-modal-2-3" :class="betPoints==100 ? 'option-active' : '' " @click="changeBetPoints(100)">100积分</view>
+				<view class="quiz-modal-2-1" :class="betPoints==10 ? 'option-active' : '' " @click="changeBetPoints(10)">
+					<view class="point-icon">
+						<img src="https://aloss.hotforest.cn/bundesliga/point-icon.png" alt="img">
+					</view>
+					10积分
+				</view>
+				<view class="quiz-modal-2-2" :class="betPoints==50 ? 'option-active' : '' " @click="changeBetPoints(50)">
+					<view class="point-icon">
+						<img src="https://aloss.hotforest.cn/bundesliga/point-icon.png" alt="img">
+					</view>
+					50积分
+				</view>
+				<view class="quiz-modal-2-3" :class="betPoints==100 ? 'option-active' : '' " @click="changeBetPoints(100)">
+					<view class="point-icon">
+						<img src="https://aloss.hotforest.cn/bundesliga/point-icon.png" alt="img">
+					</view>
+					100积分
+				</view>
 			</view>
 			<view class="quiz-modal-3">
 				<uni-number-box @change="bindChange" :value="betPoints" :min="10" :max="100" :step="10"></uni-number-box>
 			</view>
 			<view class="quiz-modal-4">
-				<button @click="bet()">确认投注</button>
+				<view class="quiz-modal-4-b" @click="bet()">
+					确认投注
+				</view>
+				<!-- <button @click="bet()">确认投注</button> -->
 			</view>
 			<view class="quiz-modal-5">
 				预计赢取：
@@ -142,7 +183,7 @@ export default {
 			selectList: [],
 			ruleModal: false,
 			logsModal: false,
-			infoModal: true,
+			infoModal: false,
 			appMsgModal: false,
 			teamId: 0,
 			userQuizLogs: [],
@@ -151,13 +192,14 @@ export default {
 			token: null,
 			ns_device_id: null,
 			country_code: '+86',
-			activity_id: 4,
+			activity_id: 5,
 			name: '',
 			mobile: '',
 			code: '', // 验证码
 			quizStatus: false,
 			round: 30, //德甲竞猜场次
 			endAnswer: false,
+			// quizModal: false,
 			quizModal: false,
 			betPoints:10, // 投注积分 默认是10
 			selectOptionId:0, // 选择的选项id 
@@ -166,6 +208,9 @@ export default {
 			userPoints:0, //用户积分
 			expectEarnPoints:0, // 预计赢取积分
 			userBetList:[], // 用户下注记录
+			toastModal:false,
+			toastTitle:'',
+			toastContent:'',
 		};
 	},
 	components: { uniNumberBox },
@@ -214,7 +259,7 @@ export default {
 				};
 			}
 		}
-		// this.getTeamList();
+		this.getTeamList();
 	},
 	methods: {
 		bet:function(){
@@ -251,6 +296,7 @@ export default {
 										let mobile = res.data.Data.phone;
 										console.log(res);
 										if (mobile == '') {
+											this.quizModal = false;
 											this.infoModal = true;
 										} else {
 											this.addUserInfo(nickname, mobile);
@@ -309,10 +355,28 @@ export default {
 							})
 							
 						}else{
-							uni.showToast({
-								title:res.data.info,
-								icon:'none'
-							})
+							if(res.data.code == -1){
+								that.quizModal = false;
+								that.toastModal = true;
+								that.toastTitle = '积分不足';
+								that.toastContent = '很抱歉，由于你的积分不足无法进行竞猜'
+							}
+							if(res.data.code == -2){
+								that.quizModal = false;
+								that.toastModal = true;
+								that.toastTitle = '本场竞猜已经结束';
+								that.toastContent = '请选择其他竞猜场次进行投注'
+							}
+							if(res.data.code == -3){
+								that.quizModal = false;
+								that.toastModal = true;
+								that.toastTitle = '投注失败';
+								that.toastContent = '请检查网络问题'
+							}
+							// uni.showToast({
+							// 	title:res.data.info,
+							// 	icon:'none'
+							// })
 						}
 						
 					}else{
@@ -323,6 +387,9 @@ export default {
 					}
 				}
 			})
+		},
+		closeToastModal:function(){
+			this.toastModal = false;
 		},
 		changeBetPoints:function(point){
 			let that =this;
@@ -463,7 +530,7 @@ export default {
 								.finally(() => {});
 						} else {
 							uni.showToast({
-								title: 'service error',
+								title: '验证码错误',
 								icon: 'none'
 							});
 						}
@@ -679,17 +746,47 @@ export default {
 .question-bg {
 	background-size: 100% 100%;
 	width: 100%;
+	
 	margin: 0 auto;
-	margin-top: 40%;
-	background-color: rgb(56, 30, 128);
+	margin-top: 4%;
+	/* background-color: rgb(56, 30, 128); */
+	background: -moz-linear-gradient(top, rgba(56, 30, 128) 0%, #381e80 100%) ;
+	    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#381e80), color-stop(100%,#381e80))  ;
+	    background: -webkit-linear-gradient(top, #381e80 0%,#381e80 100%) ;
+	    background: -o-linear-gradient(top, #381e80 0%,#381e80 100%) ;
+	    background: -ms-linear-gradient(top, #381e80 0%,#381e80 100%) ;
 }
 .question-bg-title {
 	width: 708rpx;
+	height: 50rpx;
 	margin: 0 auto;
-	margin-top: 10rpx;
-	border-radius: 30rpx;
-	background-color: #283E5A;
+	margin-top:38%
 }
+
+.question-title-1{
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	line-height:50rpx;
+	float: left;
+}
+.question-title-2{
+	float: left;
+	width: 246rpx;
+	height: 50rpx;
+	background:rgba(40,62,90,1);
+	border-radius:25px;
+	
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	line-height:50rpx;
+	text-align: center;
+
+}
+
 .team-item {
 	background-color: #ffffff;
 	width: 708rpx;
@@ -712,7 +809,7 @@ export default {
 }
 .competition-time {
 	float: left;
-	width: 40%;
+	width: 100%;
 	height: 80rpx;
 	font-size: 30rpx;
 	font-family: Lantinghei SC;
@@ -732,22 +829,6 @@ export default {
 	margin: auto;
 }
 
-.question-title {
-	text-align: center;
-	font-size: 40rpx;
-	line-height: 60rpx;
-	font-family: MF LingHei (Noncommercial);
-	font-weight: 400;
-	color: #FFFFFF;
-	text-shadow: 0px 3rpx 2rpx rgba(0, 0, 0, 0.29);
-}
-.question-title-2 {
-	text-align: center;
-	font-size: 24rpx;
-	font-family: Lantinghei SC;
-	font-weight: 600;
-	color: rgba(255, 241, 161, 1);
-}
 
 .question-title-3 {
 	width: 100%;
@@ -860,16 +941,24 @@ export default {
 	font-weight: bolder;
 	color: rgba(50, 141, 255, 1);
 }
-
-.question-button {
-	margin-top: 50rpx;
-	margin-bottom: 30rpx;
+.option-item span{
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(102,102,102,1);
 }
-.question-button button {
+.question-button {
+	margin-top: 40rpx;
+	margin-bottom: 30rpx;
+	text-align: center;
+}
+.question-button-b {
+	margin: 0 auto;
 	background: url(https://aloss.hotforest.cn/bundesliga/quiz-button.png) no-repeat center;
 	background-size: 100% 100%;
 	width: 365rpx;
 	height: 92rpx;
+	line-height: 92rpx;
 
 	font-size: 36rpx;
 	font-family: Lantinghei SC;
@@ -1153,6 +1242,20 @@ export default {
 .info-button-quiz-active {
 	background: #888888 !important;
 }
+.info-button-b{
+	margin: 0 auto;
+	width: 262rpx;
+	height: 66rpx;
+	line-height: 66rpx;
+	font-size: 24rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	text-shadow: 0px 1px 0px rgba(130, 66, 0, 0.26);
+	background: url(https://aloss.hotforest.cn/bundesliga/quiz-button.png) no-repeat center;
+	background-size: 100% 100%;
+	text-align: center;
+}
 .info-button button {
 	margin: 0 auto;
 	width: 262rpx;
@@ -1173,7 +1276,7 @@ export default {
 
 .quiz-modal {
 	position: fixed;
-	z-index: 100;
+	z-index: 90;
 	top: 0;
 	left: 0;
 	bottom: 0;
@@ -1182,7 +1285,7 @@ export default {
 }
 .quiz-modal-bg {
 	position: fixed;
-	z-index: 110;
+	z-index: 100;
 	width: 100%;
 	height: 500rpx;
 	bottom: 0;
@@ -1199,34 +1302,47 @@ export default {
 .quiz-modal-2 {
 	width: 100%;
 	height: 80rpx;
-	/* padding: 0rpx 40rpx; */
 }
 .quiz-modal-2-1 {
 	float: left;
-	width: 20%;
+	width: 22%;
+	padding-right: 3%;
 	height: 100%;
 	line-height: 80rpx;
-	margin-left: 10%;
+	margin-left: 2%;
 	background: rgba(255, 255, 255, 1);
 	border: 1px solid rgba(0, 160, 233, 1);
-	border-radius: 29rpx;
-	text-align: center;
+	border-radius: 80rpx;
+	text-align: right;
 
 	font-size: 28rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
+	position: relative;
+}
+.point-icon {
+	position: absolute;
+	width: 42rpx;
+	height: 42rpx;
+	left: 20rpx;
+	top: 20rpx;
+}
+.point-icon img{
+	width: 100%;
 }
 .quiz-modal-2-2 {
+	position: relative;
 	float: left;
-	width: 20%;
+	width: 22%;
+	padding-right: 3%;
 	height: 100%;
 	line-height: 80rpx;
-	margin-left: 10%;
+	margin-left: 5%;
 	background: rgba(255, 255, 255, 1);
 	border: 1px solid rgba(0, 160, 233, 1);
-	border-radius: 29rpx;
-	text-align: center;
+	border-radius: 80rpx;
+	text-align: right;
 
 	font-size: 28rpx;
 	font-family: Lantinghei SC;
@@ -1234,15 +1350,17 @@ export default {
 	color: rgba(51, 51, 51, 1);
 }
 .quiz-modal-2-3 {
+	position: relative;
 	float: left;
-	width: 20%;
+	width: 22%;
+	padding-right: 3%;
 	height: 100%;
 	line-height: 80rpx;
-	margin-left: 10%;
+	margin-left: 5%;
 	background: rgba(255, 255, 255, 1);
 	border: 1px solid rgba(0, 160, 233, 1);
-	border-radius: 29rpx;
-	text-align: center;
+	border-radius: 80rpx;
+	text-align: right;
 
 	font-size: 28rpx;
 	font-family: Lantinghei SC;
@@ -1254,18 +1372,18 @@ export default {
 	width: 100%;
 	height: 100rpx;
 }
-.uni-numbox{
-	margin: 0 auto;
-	margin-top: 20rpx;
-}
+
 .quiz-modal-4{
 	width: 100%;
 }
-.quiz-modal-4 button{
+.quiz-modal-4-b{
+	text-align: center;
 	background: url(https://aloss.hotforest.cn/bundesliga/quiz-button.png) no-repeat center;
 	background-size: 100% 100%;
 	width: 365rpx;
 	height: 92rpx;
+	line-height: 92rpx;
+	margin: 0 auto;
 	
 	font-size: 36rpx;
 	font-family: Lantinghei SC;
@@ -1288,4 +1406,53 @@ export default {
 .quiz-modal-5 span{
 	color: #FF4242;
 }
+
+.toast-modal {
+	position: fixed;
+	z-index: 100;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.6);
+}
+.toast-modal-bg {
+	position: fixed;
+	z-index: 110;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	margin: auto;
+	width: 652rpx;
+	height: 400rpx;
+	/* background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center; */
+	background-color: #FFFFFF;
+	border-radius:30rpx;
+	background-size: 100% 100%;
+}
+
+.toast-title {
+	height: 80rpx;
+	text-align: center;
+	font-size:36rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(250,108,30,1);
+	line-height:80rpx;
+	margin-top: 20rpx;
+}
+.toast-content{
+	width: 100%;
+	text-align: center;
+	font-size:26rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(51,51,51,1);
+	line-height:35rpx;
+	margin-top: 70rpx;
+	word-wrap:break-word;
+	word-break:normal; 
+}
+
 </style>

@@ -27,7 +27,7 @@
 				<view class="logs-list-content-item">
 					<text v-if="bet.is_right == -1" class="logs-wrong">-{{bet.bet_points}}</text>
 					<text v-if="bet.is_right == 1" class="logs-right">+{{bet.expect_earn_points}}</text>
-					<text v-if="bet.is_right == 0">未开</text>
+					<text v-if="bet.is_right == 0">待开奖</text>
 				</view>
 			</view>
 		</view>
