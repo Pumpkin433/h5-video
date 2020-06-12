@@ -456,8 +456,7 @@ export default {
 			var country_code = that.country_code;
 			var code = that.code;
 			var name = that.name;
-			var logs = that.selectList;
-
+			
 			if (name.length < 1 || name.length > 20) {
 				uni.showToast({
 					title: '请输入1到20个字符长度的名字',
@@ -550,10 +549,9 @@ export default {
 		addUserInfo: function(name, mobile) {
 			var that = this;
 			var uid = that.uid;
-			var activity_id = that.$question.activity_id;
+			var activity_id = that.activity_id;
 			var ns_device_id = that.ns_device_id;
-
-			var logs = that.selectList;
+			
 			var user_type = 1;
 
 			let data = {
@@ -568,7 +566,7 @@ export default {
 			http.post(base.sq + '/activity/api.Users/add', data)
 				.then(res => {
 					if (res.status == 200) {
-						// console.log(res);
+						console.log(res);
 						//用户信息添加之后 添加用户竞猜日志
 						that.addQuizLog();
 					} else {
@@ -813,10 +811,10 @@ export default {
 	height: 80rpx;
 	font-size: 30rpx;
 	font-family: Lantinghei SC;
-	font-weight: 600;
+	font-weight: bolder;
 	color: rgba(153, 153, 153, 1);
 	line-height: 80rpx;
-	margin-left: 10%;
+	margin-left: 5%;
 }
 .team-answer {
 	width: 90%;

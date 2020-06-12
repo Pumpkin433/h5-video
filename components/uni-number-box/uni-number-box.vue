@@ -149,7 +149,7 @@
 		width: 230rpx;
 		height: 57rpx;
 		border-radius: 43rpx;
-		border: 1rpx solid #007AFF;
+		border: 1rpx solid rgba(0, 160, 233, 1);
 		margin-left: 10px;
 	}
 
@@ -166,8 +166,9 @@
 		
 		width: 43rpx;
 		height: 43rpx;
+		line-height: 43rpx;
 		border-radius: 43rpx;
-		border: 1rpx solid #007AFF;
+		border: 1rpx solid rgba(0, 160, 233, 1);
 		margin-top: 3px;
 	}
 
@@ -182,7 +183,7 @@
 		width: 43rpx;
 		height: 43rpx;
 		border-radius: 43rpx;
-		border: 1rpx solid #007AFF;
+		border: 1rpx solid rgba(0, 160, 233, 1);
 		
 		margin-left: 10px;
 		margin-top: 3px;
@@ -191,6 +192,7 @@
 	.uni-numbox--text {
 		font-size: 40rpx;
 		color: #333;
+		line-height: 43rpx;
 	}
 
 	.uni-numbox--disabled {

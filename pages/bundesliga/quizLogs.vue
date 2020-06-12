@@ -15,7 +15,8 @@
 			
 			<view class="logs-list-content" v-for="(bet,i)  in userBetList" :key="i">
 				<view class="logs-list-content-item">
-					{{bet.competition_at}}
+					<!-- {{bet.competition_at}} -->
+					{{bet.competition_format}}
 				</view>
 				<view class="logs-list-content-item">
 					{{bet.home_team_name}} <br>
@@ -25,9 +26,9 @@
 					{{bet.option}}
 				</view>
 				<view class="logs-list-content-item">
-					<text v-if="bet.is_right == -1" class="logs-wrong">-{{bet.bet_points}}</text>
-					<text v-if="bet.is_right == 1" class="logs-right">+{{bet.expect_earn_points}}</text>
-					<text v-if="bet.is_right == 0">待开奖</text>
+					<text v-if="bet.is_right == -1" class="logs-wrong">-{{bet.bet_points}}  <br> <span>投注 {{bet.bet_points}}</span></text>
+					<text v-if="bet.is_right == 1" class="logs-right">+{{bet.expect_earn_points}}  <br> <span>投注 {{bet.bet_points}}</span></text>
+					<text v-if="bet.is_right == 0">待开奖 <br> <span>投注 {{bet.bet_points}}</span></text>
 				</view>
 			</view>
 		</view>
@@ -148,6 +149,12 @@
 	font-weight:600;
 	color:rgba(51,51,51,1);
 }	
+.logs-list-content-item span{
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(153,153,153,1);
+}
 .logs-right{
 	color: #F42F2F;
 }
