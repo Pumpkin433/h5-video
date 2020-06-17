@@ -7,25 +7,24 @@
 		
 		<view class="logs-list">
 			<view class="logs-list-top">
-				<view class="logs-list-top-item">时间</view>
-				<view class="logs-list-top-item">赛事</view>
-				<view class="logs-list-top-item">我的竞猜</view>
-				<view class="logs-list-top-item">结果</view>
+				<view class="logs-list-top-item-1">时间</view>
+				<view class="logs-list-top-item-2">赛事</view>
+				<view class="logs-list-top-item-3">我的竞猜</view>
+				<view class="logs-list-top-item-4">结果</view>
 			</view>
 			
 			<view class="logs-list-content" v-for="(bet,i)  in userBetList" :key="i">
-				<view class="logs-list-content-item">
-					<!-- {{bet.competition_at}} -->
+				<view class="logs-list-content-item-1">
 					{{bet.competition_format}}
 				</view>
-				<view class="logs-list-content-item">
+				<view class="logs-list-content-item-2">
 					{{bet.home_team_name}} <br>
 					{{bet.guest_team_name}}
 				</view>
-				<view class="logs-list-content-item">
+				<view class="logs-list-content-item-3">
 					{{bet.option}}
 				</view>
-				<view class="logs-list-content-item">
+				<view class="logs-list-content-item-4">
 					<text v-if="bet.is_right == -1" class="logs-wrong">-{{bet.bet_points}}  <br> <span>投注 {{bet.bet_points}}</span></text>
 					<text v-if="bet.is_right == 1" class="logs-right">+{{bet.expect_earn_points}}  <br> <span>投注 {{bet.bet_points}}</span></text>
 					<text v-if="bet.is_right == 0">待开奖 <br> <span>投注 {{bet.bet_points}}</span></text>
@@ -46,6 +45,7 @@
 		},
 		onLoad(option) {
 			this.uid = option.uid;
+			// this.uid = 470673;
 		
 			this.getUserBetLogs(this.uid,this.$question.activity_id);
 		},
@@ -106,8 +106,8 @@
 	position: absolute;
 	left: 40rpx;
 	top: 20rpx;
-	width: 45rpx;
-	height: 45rpx;
+	width: 50rpx;
+	height: 50rpx;
 	background: url(https://aloss.hotforest.cn/bundesliga/button-back.png) no-repeat center;
 	background-size: 100% 100%;
 }
@@ -120,13 +120,45 @@
 	background:rgba(51,142,255,1);
 	border-radius:25rpx;
 }
-
-.logs-list-top-item {
+.logs-list-top-item-1 {
 	float: left;
 	width: 25%;
 	height: 50rpx;
 	text-align: center;
-	
+	line-height: 50rpx;
+	font-size:26rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+}
+.logs-list-top-item-2 {
+	float: left;
+	width: 35%;
+	height: 50rpx;
+	text-align: center;
+	line-height: 50rpx;
+	font-size:26rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+}
+.logs-list-top-item-3 {
+	float: left;
+	width: 20%;
+	height: 50rpx;
+	text-align: center;
+	line-height: 50rpx;
+	font-size:26rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+}
+.logs-list-top-item-4 {
+	float: left;
+	width: 20%;
+	height: 50rpx;
+	text-align: center;
+	line-height: 50rpx;
 	font-size:26rpx;
 	font-family:Lantinghei SC;
 	font-weight:600;
@@ -137,10 +169,10 @@
 	width:90%;
 	margin: 0 auto;
 }
-.logs-list-content-item{
+.logs-list-content-item-1{
 	float: left;
 	width: 25%;
-	height: 115rpx;
+	height: 135rpx;
 	text-align: center;
 	border-bottom:1px solid  #39B8BF;
 	margin-top: 20rpx;
@@ -149,7 +181,44 @@
 	font-weight:600;
 	color:rgba(51,51,51,1);
 }	
-.logs-list-content-item span{
+.logs-list-content-item-2{
+	float: left;
+	width: 35%;
+	height: 135rpx;
+	text-align: center;
+	border-bottom:1px solid  #39B8BF;
+	margin-top: 20rpx;
+	font-size:26rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(51,51,51,1);
+}	
+.logs-list-content-item-3{
+	float: left;
+	width: 20%;
+	height: 135rpx;
+	text-align: center;
+	border-bottom:1px solid  #39B8BF;
+	margin-top: 20rpx;
+	font-size:26rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(51,51,51,1);
+}	
+.logs-list-content-item-4{
+	float: left;
+	width: 20%;
+	height: 135rpx;
+	text-align: center;
+	border-bottom:1px solid  #39B8BF;
+	margin-top: 20rpx;
+	font-size:26rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(51,51,51,1);
+}	
+
+.logs-list-content-item-4 span{
 	font-size:24rpx;
 	font-family:Lantinghei SC;
 	font-weight:600;

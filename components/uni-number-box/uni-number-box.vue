@@ -3,11 +3,14 @@
 		<view @click="_calcValue('minus')" class="uni-numbox__minus">
 			<text class="uni-numbox--text" :class="{ 'uni-numbox--disabled': inputValue <= min || disabled }">-</text>
 		</view>
+		
 		<view class="points">
-			<input :disabled="disabled" @blur="_onBlur" class="uni-numbox__value" type="number" v-model="inputValue" />
+			<input :disabled="disabled"   @blur="_onBlur" class="uni-numbox__value"
+			type="number" v-model="inputValue" />
 			<view class="point-icon">
 				<img src="https://aloss.hotforest.cn/bundesliga/point-icon.png" alt="img">
 			</view>
+			<view class="points-bg"></view>
 		</view>
 		<view @click="_calcValue('plus')" class="uni-numbox__plus">
 			<text class="uni-numbox--text" :class="{ 'uni-numbox--disabled': inputValue >= max || disabled }">+</text>
@@ -49,11 +52,15 @@
 			disabled: {
 				type: Boolean,
 				default: false
+			},
+			readOnly:{
+				type: Boolean,
+				default:true
 			}
 		},
 		data() {
 			return {
-				inputValue: 0
+				inputValue: 10
 			};
 		},
 		watch: {
@@ -68,6 +75,8 @@
 		},
 		created() {
 			this.inputValue = +this.value;
+		},
+		onLoad() {
 		},
 		methods: {
 			_calcValue(type) {
@@ -153,6 +162,10 @@
 		margin-left: 10px;
 	}
 
+.uni-numbox__value_disabled{
+	color: #333333;
+}
+
 	.uni-numbox__minus {
 		/* #ifndef APP-NVUE */
 		display: flex;
@@ -197,6 +210,15 @@
 
 	.uni-numbox--disabled {
 		color: #c0c0c0;
+	}
+	.points-bg{
+	/* 	position: fixed;
+		z-index: 1000; */
+		/* background-color: #000000; */
+		position: absolute;
+		width: 240rpx;
+		height: 60rpx;
+		top: 0;
 	}
 	.points{
 		position: relative;

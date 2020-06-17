@@ -115,7 +115,7 @@
         "async" : {
             "timeout" : 20000
         },
-        "title" : "德甲竞猜",
+        "title" : "全民体育有奖竞猜",
         "devServer" : {
             "port" : 80,
             "disableHostCheck" : true,

@@ -15,9 +15,8 @@
 
 		<view class=" uni-column question-bg">
 			
-
 			<view class="flex-item flex-item-v team-item" v-for="(team, i) in teamList" :key="i">
-				<view class="flex-item competition-time">德甲   {{ team.competition_format}}</view>
+				<view class="flex-item competition-time">{{ team.competition_format}}</view>
 				<!-- <view class="flex-item  join-person-count">参与人数:1000000</view> -->
 				<view class="uni-flex  question-title-3">
 					<view class="flex-item question-1">
@@ -79,15 +78,15 @@
 		<view class="rule-modal-bg" v-show="ruleModal">
 			<view class="flex-item  rule-title">游戏规则</view>
 			<view class="flex-item rule-content">
-				1.本轮竞猜将于6月6日0点关闭竞猜通道
+				1.您可以利用积分选择支持的选项，如果选择正确，则按照选择时的回报率返还积分，赢取的积分可以换取丰富的礼品
 				<br />
-				2.猜对任意5场比赛结果，即可进入后补中奖名单待定
+				2.当您支持的选项为正确答案是，您获得的积分数=投入的积分*回报赔率，如果出现小数的情况采取只舍不入的原则
 				<br />
-				3.系统将随机抽取10位待定中奖用户，奖励每人30元现金红包
+				3. 如果出现比赛取消，推迟，延期，暂停等特殊情况，竞猜视为无效，并返还您的积分
 				<br />
-				4.赛事结束后3日内，将公布获奖用户名单
+				4.比赛结果以90分钟内数据为准，所有竞猜结果的计算均以全民体育数据为准，如有疑问，请联系客服
 				<br />
-				5.获奖用户，请添加全民体育官方微信（NationalSports）领取相应奖励
+				5.客服微信：NationalSports
 			</view>
 			<view class="flex-item flex-item-V rule-copy"><button type="default" @click="copy('NationalSports')">复制微信号码</button></view>
 		</view>
@@ -96,14 +95,13 @@
 		<view class="info-modal" v-show="infoModal" @click="closeInfoModal()"></view>
 		<view class="info-modal-bg" v-show="infoModal">
 			<view class="flex-item  info-title">信息登记</view>
-			<view class="flex-item info-content"><input type="text" v-model="name" placeholder="请输入姓名" /></view>
+			<!-- <view class="flex-item info-content"><input type="text" v-model="name" placeholder="请输入姓名" /></view> -->
 			<view class="flex-item flex-item-V info-content-mobile">
 				<input type="number" v-model="mobile" placeholder="请输入手机号" />
 				<button type="default" @click="sendCode(mobile)">验证码</button>
 			</view>
 			<view class="flex-item flex-item-V info-content-code"><input type="number" v-model="code" placeholder="请输入验证码" /></view>
 			<view class="info-button">
-				<!-- <button type="default" @click="updateUserInfo()">确定</button> -->
 				<view class="info-button-b" @click="updateUserInfo()">确定</view>
 			</view>
 		</view>
@@ -115,11 +113,9 @@
 			</view>
 			<view class=" toast-content">
 				{{toastContent}}
-				<!-- <text>{{toastContent}}</text> -->
 			</view>
 			<view class="info-button">
 				<view class="info-button-b" @click="closeToastModal()">确定</view>
-				<!-- <button type="default" @click="closeToastModal()">确定</button> -->
 			</view>
 		</view>
 
@@ -148,13 +144,12 @@
 				</view>
 			</view>
 			<view class="quiz-modal-3">
-				<uni-number-box @change="bindChange" :value="betPoints" :min="10" :max="100" :step="10"></uni-number-box>
+				<uni-number-box   @change="bindChange"  :value="betPoints" :min="10" :max="100" :step="10"></uni-number-box>
 			</view>
 			<view class="quiz-modal-4">
 				<view class="quiz-modal-4-b" @click="bet()">
 					确认投注
 				</view>
-				<!-- <button @click="bet()">确认投注</button> -->
 			</view>
 			<view class="quiz-modal-5">
 				预计赢取：
@@ -199,8 +194,8 @@ export default {
 			quizStatus: false,
 			round: 30, //德甲竞猜场次
 			endAnswer: false,
-			// quizModal: false,
 			quizModal: false,
+			// quizModal: false,
 			betPoints:10, // 投注积分 默认是10
 			selectOptionId:0, // 选择的选项id 
 			selectTeamId:0, //正在操作的竞猜teamid
@@ -269,59 +264,68 @@ export default {
 			var ns_device_id = that.ns_device_id;
 			var token = that.token;
 			
-			let data = {
-				uid: uid,
-				activity_id: activity_id
-			};
-			http.post(base.sq + '/activity/api.users/checkUidStatus', data)
-				.then(res => {
-					// console.log(res);
-					if (res.status == 200) {
-						// console.log(res.data.data.count);
-						let count = res.data.data.count;
-			
-						// 检查用户是否在数据库中
-						if (count <= 0) {
-							let req_url = base.bd + '/v3/user/info';
-							let headers = {
-								ns_device_id: ns_device_id,
-								uid: uid,
-								token: token
-							};
-							http.get(req_url, { headers: headers }).then(res => {
-								// console.log(res);
-								if (res.status == 200) {
-									if (res.data.Status == 1) {
-										let nickname = res.data.Data.nickname;
-										let mobile = res.data.Data.phone;
-										console.log(res);
-										if (mobile == '') {
-											this.quizModal = false;
-											this.infoModal = true;
-										} else {
-											this.addUserInfo(nickname, mobile);
+			if(that.userPoints < that.betPoints){
+				that.quizModal = false;
+				that.toastModal = true;
+				that.toastTitle = '积分不足';
+				that.toastContent = '很抱歉，由于你的积分不足无法进行竞猜'
+			}else{
+				let data = {
+					uid: uid,
+					activity_id: activity_id
+				};
+				
+				http.post(base.sq + '/activity/api.users/checkUidStatus', data)
+					.then(res => {
+						// console.log(res);
+						if (res.status == 200) {
+							// console.log(res.data.data.count);
+							let count = res.data.data.count;
+				
+							// 检查用户是否在数据库中
+							if (count <= 0) {
+								let req_url = base.bd + '/v3/user/info';
+								let headers = {
+									ns_device_id: ns_device_id,
+									uid: uid,
+									token: token
+								};
+								http.get(req_url, { headers: headers }).then(res => {
+									// console.log(res);
+									if (res.status == 200) {
+										if (res.data.Status == 1) {
+											let nickname = res.data.Data.nickname;
+											let mobile = res.data.Data.phone;
+											console.log(res);
+											if (mobile == '') {
+												that.quizModal = false;
+												that.infoModal = true;
+												that.name = nickname;
+											} else {
+												that.addUserInfo(nickname, mobile);
+											}
 										}
+									} else {
+										uni.showToast({
+											title: 'server error',
+											icon: 'none'
+										});
 									}
-								} else {
-									uni.showToast({
-										title: 'server error',
-										icon: 'none'
-									});
-								}
+								});
+							}else{
+								that.addQuizLog();
+							}
+						} else {
+							uni.showToast({
+								title: 'server error',
+								icon: 'none'
 							});
-						}else{
-							that.addQuizLog();
 						}
-					} else {
-						uni.showToast({
-							title: 'server error',
-							icon: 'none'
-						});
-					}
-				})
-				.catch(error => {})
-				.finally(() => {});
-			
+					})
+					.catch(error => {})
+					.finally(() => {});
+					
+			}
 			
 		},
 		addQuizLog:function(){
@@ -373,6 +377,12 @@ export default {
 								that.toastTitle = '投注失败';
 								that.toastContent = '请检查网络问题'
 							}
+							if(res.data.code == -4){
+								that.quizModal = false;
+								that.toastModal = true;
+								that.toastTitle = '每个选项只可投注一次';
+								that.toastContent = '请选择竞猜场次其他选项进行投注'
+							}
 							// uni.showToast({
 							// 	title:res.data.info,
 							// 	icon:'none'
@@ -397,14 +407,16 @@ export default {
 			that.expectEarnPoints = point*that.selectOdds;
 		},
 		bindChange:function(e){
-			console.log(e)
+			// console.log(e)
 			let that = this;
-			that.expectEarnPoints = e*that.selectOdds;
+			that.betPoints = e;
+			that.expectEarnPoints = Math.floor(e*that.selectOdds);
+			
 		},
 		showQuizModal: function() {
 			let that = this;
 			that.quizModal = true;
-			that.expectEarnPoints = that.betPoints*that.selectOdds;
+			that.expectEarnPoints = Math.floor(that.betPoints*that.selectOdds) ;
 		},
 		closeQuizModal: function() {
 			this.quizModal = false;
@@ -456,14 +468,7 @@ export default {
 			var country_code = that.country_code;
 			var code = that.code;
 			var name = that.name;
-			
-			if (name.length < 1 || name.length > 20) {
-				uni.showToast({
-					title: '请输入1到20个字符长度的名字',
-					icon: 'none'
-				});
-				return;
-			}
+		
 			if (mobile.length != 11) {
 				uni.showToast({
 					title: '请输入11位手机号码',
@@ -541,9 +546,7 @@ export default {
 					}
 				}
 			});
-			// this.quizStatus =
-			console.log(that.infoModal);
-			console.log(that.quizStatus);
+		
 		},
 		// 手机号非空时
 		addUserInfo: function(name, mobile) {
@@ -698,7 +701,7 @@ export default {
 
 <style>
 .index-bg {
-	background: url(https://aloss.hotforest.cn/bundesliga/index-bg.png) no-repeat center;
+	background: url(https://aloss.hotforest.cn/bundesliga/index-bg-2.png) no-repeat center;
 	background-size: 100% 100%;
 	height: 100%;
 }
@@ -716,29 +719,29 @@ export default {
 }
 .left-icon {
 	text-align: center;
-	background: url(https://aloss.hotforest.cn/bundesliga/left-icon.png) no-repeat center;
+	background: url(https://aloss.hotforest.cn/bundesliga/left-icon-2.png) no-repeat center;
 	background-size: 100% 100%;
-	width: 134rpx;
-	height: 55rpx;
+	width: 168rpx;
+	height: 63rpx;
 
-	font-size: 22rpx;
+	font-size: 30rpx;
 	font-family: MF LingHei (Noncommercial);
 	font-weight: 400;
 	color: rgba(146, 251, 255, 1);
-	line-height: 55rpx;
+	line-height: 63rpx;
 }
 .right-icon {
 	margin-left: auto;
 	text-align: center;
-	background: url(https://aloss.hotforest.cn/bundesliga/right-icon.png) no-repeat center;
+	background: url(https://aloss.hotforest.cn/bundesliga/right-icon-2.png) no-repeat center;
 	background-size: 100% 100%;
-	width: 134rpx;
-	height: 55rpx;
-	font-size: 22rpx;
+	width:168rpx;
+	height: 63rpx;
+	font-size: 30rpx;
 	font-family: MF LingHei (Noncommercial);
 	font-weight: 400;
 	color: rgba(146, 251, 255, 1);
-	line-height: 55rpx;
+	line-height: 63rpx;
 }
 
 .question-bg {
@@ -812,7 +815,7 @@ export default {
 	font-size: 30rpx;
 	font-family: Lantinghei SC;
 	font-weight: bolder;
-	color: rgba(153, 153, 153, 1);
+	color: #333333;
 	line-height: 80rpx;
 	margin-left: 5%;
 }
@@ -989,14 +992,14 @@ export default {
 	right: 0;
 	margin: auto;
 	width: 652rpx;
-	height: 650rpx;
+	height:860rpx;
 	/* background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center; */
 	background-color: #FFFFFF;
 	border-radius:30rpx;
 	background-size: 100% 100%;
 }
 .rule-title {
-	font-size: 32rpx;
+	font-size: 36rpx;
 	font-family: MF LingHei (Noncommercial);
 	font-weight: bolder;
 	color: #333333;
@@ -1009,7 +1012,7 @@ export default {
 	padding-left: 34rpx;
 	padding-top: 40rpx;
 	padding-right: 30rpx;
-	font-size: 28rpx;
+	font-size: 30rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: #333333;
@@ -1154,10 +1157,10 @@ export default {
 	right: 0;
 	margin: auto;
 	width: 552rpx;
-	height: 700rpx;
+	height: 500rpx;
 	/* background: url(https://aloss.hotforest.cn/bundesliga/modal-1.png) no-repeat center; */
 	background:rgba(255,255,255,1);
-	border-radius:30px;
+	border-radius:30rpx;
 	background-size: 100% 100%;
 }
 .info-title {

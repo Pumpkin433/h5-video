@@ -4,19 +4,19 @@
 		{
 			"path":"pages/bundesliga/index",
 			"style":{
-				"navigationBarTitleText": "德甲竞猜"
+				"navigationBarTitleText": "全民体育有奖竞猜"
 			}
 		},
 		{
 			"path":"pages/bundesliga/mid",
 			"style":{
-				"navigationBarTitleText":"德甲竞猜"
+				"navigationBarTitleText":"全民体育有奖竞猜"
 			}
 		},
 		
 		{
 		    "path" : "pages/bundesliga/quizLogs",
-		    "style" : {"navigationBarTitleText":"德甲竞猜"}
+		    "style" : {"navigationBarTitleText":"全民体育有奖竞猜"}
 		},
 		{
 			"path": "platforms/app-plus/speech/speech",
@@ -64,7 +64,7 @@
 		"navigationStyle": "custom",
 		"pageOrientation": "portrait",
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "德甲竞猜",
+		"navigationBarTitleText": "全民体育有奖竞猜",
 		"navigationBarBackgroundColor": "#000000",
 		"backgroundColor": "#F8F8F8",
 		"backgroundColorTop": "#000000",
