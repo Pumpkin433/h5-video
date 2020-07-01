@@ -2,21 +2,22 @@
 	"pages": [
 		// pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path":"pages/bundesliga/index",
+			"path":"pages/index/index",
 			"style":{
 				"navigationBarTitleText": "全民体育有奖竞猜"
 			}
 		},
 		{
-			"path":"pages/bundesliga/mid",
+			"path":"pages/index/video",
+			"style":{
+				"navigationBarTitleText": "全民体育有奖竞猜"
+			}
+		},
+		{
+			"path":"pages/mid/mid",
 			"style":{
 				"navigationBarTitleText":"全民体育有奖竞猜"
 			}
-		},
-		
-		{
-		    "path" : "pages/bundesliga/quizLogs",
-		    "style" : {"navigationBarTitleText":"全民体育有奖竞猜"}
 		},
 		{
 			"path": "platforms/app-plus/speech/speech",

@@ -8,35 +8,6 @@
             // #ifdef APP-PLUS
             // 检测升级
             // #endif
-			
-			if (typeof contact !== 'undefined') {
-				
-				//分享成功 答题机会加 1
-				contact.onShareDone =  function() {
-					
-					// alert(uni.getStorageSync('uid'))
-					let data = {
-						uid: uni.getStorageSync('uid'),
-						activity_id: 1,
-						type: 1
-					} 
-					
-					http.post(base.sq + '/activity/api.UsersAnswerChance/update', data)
-						.then(res => {
-							console.log(res);
-							if (res.status == 200) {
-								
-								// alert(res.data.data.updateRow)
-							} else {
-								return alert('server error');
-							}
-						})
-						.catch(error => {})
-						.finally(() => {});
-					
-				}
-				
-			}
 
         },
         onShow: function() {

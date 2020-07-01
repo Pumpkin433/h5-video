@@ -1,0 +1,177 @@
+<template>
+	<view class="index-bg">
+		
+		<view class="uni-flex uni-column video-item" v-if="videoList" v-for="(video, k) in videoList" :key="k">
+			<view class="flex-item">
+				<view class="uni-padding-wrap uni-common-mt">
+					<view>
+						<video
+							class="myVideo"
+							:id="video.id + ''"
+							:poster="video.cover_url"
+							:src="video.source_url"
+							@error="videoErrorCallback"
+							@fullscreenchange="fullscreenchange"
+							:title="video.title"
+							object-fit="contain"
+							@play="playing"
+							:data-id="video.id + ''"
+						>
+						</video>
+					</view>
+				</view>
+			</view>
+			<view class="flex-item video-title">
+				<text @click="turnVideoDetail(video.id)">{{ video.title }}</text>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+import base from '../../utils/base.js';
+
+export default {
+	data() {
+		return {
+			videoList: [],
+			src: '',
+			
+		};
+	},
+	onReady: function(res) {
+		// #ifndef MP-ALIPAY
+		// this.videoContext = uni.createVideoContext('myVideo');
+		// console.log(this.videoContext)
+		// #endif
+	},
+	onLoad(option) {
+		var that = this;
+		that.getVideoList();
+	},
+	methods: {
+		getVideoList: function() {
+			var that = this;
+			uni.request({
+				url: base.sq + '/activity/api.Video/getList',
+				success: res => {
+					console.log(res);
+					if (res.statusCode === 200) {
+						if (res.data.code == 0) {
+							that.videoList = res.data.data;
+						} else {
+							uni.showToast({
+								title: res.data.info,
+								icon: 'none'
+							});
+						}
+					} else {
+						uni.showToast({
+							title: '服务出错',
+							icon: 'none'
+						});
+					}
+				}
+			});
+		},
+		turnVideoDetail: function(videoId) {
+			console.log(videoId);
+			uni.navigateTo({
+				url: '/pages/index/video?id=' + videoId
+			});
+		},
+		playing: function(e) {
+			// console.log(e)
+			// 获取当前视频id
+			let currentId = e.currentTarget.dataset.id;
+			// console.log(typeof(currentId))
+			// uni.createVideoContext获取视频上下文对象
+			this.videoContent = uni.createVideoContext(currentId);
+			// 获取json对象并遍历, 停止非当前视频
+			let trailer = this.videoList;
+			for (let i = 0; i < trailer.length; i++) {
+				let temp = trailer[i].id;
+				// console.log(typeof(temp))
+				// console.log(temp)
+				if (temp !== parseInt(currentId)) {
+					uni.createVideoContext(temp + '').pause();
+				}
+			}
+		},
+		sendDanmu: function() {
+			this.videoContext.sendDanmu({
+				text: this.danmuValue,
+				color: this.getRandomColor()
+			});
+			this.danmuValue = '';
+		},
+		videoErrorCallback: function(e) {
+			uni.showModal({
+				content: e.target.errMsg,
+				showCancel: false
+			});
+		},
+		fullscreenchange: function(e) {
+			// event.detail = { fullScreen: true, direction: 'horizontal' };
+		},
+		getRandomColor: function() {
+			const rgb = [];
+			for (let i = 0; i < 3; ++i) {
+				let color = Math.floor(Math.random() * 256).toString(16);
+				color = color.length == 1 ? '0' + color : color;
+				rgb.push(color);
+			}
+			return '#' + rgb.join('');
+		},
+		 sliderChange(e) {
+		            console.log('value 发生变化：' + e.detail.value)
+		 }
+	}
+};
+</script>
+
+<style>
+.index-bg {
+	height: 100%;
+	background-color: #ffffff;
+}
+.video-item {
+	background-color: #ffffff;
+}
+.myVideo {
+	width: 100% !important;
+	/* height: 420rpx; */
+}
+.uni-padding-wrap {
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+.video-title {
+	font-size: 24rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(51, 51, 51, 1);
+	padding: 10rpx 33rpx 20rpx 22rpx;
+}
+.back-icon {
+	margin-top: 30rpx;
+	padding-left: 26rpx;
+}
+.back-icon img {
+	width: 55rpx;
+	height: 55rpx;
+}
+
+
+
+/deep/ .uni-video-cover-play-button{
+	width: 180rpx;
+	height: 180rpx;
+	border-radius: 180rpx;
+	background-image: url(https://aloss.hotforest.cn/video/start.png) !important;
+}
+/deep/ .uni-video-cover-duration{
+	display: none;
+}
+</style>

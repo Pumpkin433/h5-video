@@ -107,7 +107,7 @@
         "template" : "template.h5.html",
         "router" : {
             "mode" : "history",
-            "base" : "/bun/"
+            "base" : "/video/"
         },
         "sdkConfigs" : {
             "maps" : {}
@@ -134,6 +134,6 @@
                 "enable" : true
             }
         },
-        "domain" : "bun.hotforest.cn"
+        "domain" : "video.hotforest.cn"
     }
 }
