@@ -59,6 +59,10 @@
 			}
 		}
 	   
+        ,{
+            "path" : "pages/index/videoY",
+            "style" : {}
+        }
     ],
 	"subPackages": [],
 	"globalStyle": {

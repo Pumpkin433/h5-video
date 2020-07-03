@@ -1,15 +1,11 @@
 <template>
 	<view class="video-bg">
-		<!-- <view class=" uni-flex uni-column back-icon">
-			<img @click="backIndex" src="https://aloss.hotforest.cn/video/back-icon.png" alt="back">
-		</view> -->
-		
 		<view class="uni-flex uni-column video-container" >
-			<view class="flex-item" @touchstart="showVideoTitle" 
+			<view class="flex-item" style="height: 100%;" @touchstart="showVideoTitle" 
 			@touchend="hideVideoTitle"
 			>
-				<view class="uni-padding-wrap uni-common-mt">
-					<view v-if="video">
+				<view class="uni-padding-wrap uni-common-mt" style="height: 100%;">
+					<view v-if="video" style="height: 100%;">
 						<video
 							id="myVideo"
 							:poster="video.cover_url"
@@ -30,15 +26,14 @@
 					</view>
 				</view>
 			</view>
-			
-		</view>
-		<view class="uni-flex uni-column comment-container" >
 			<view class="flex-item video-title">
 				{{video.title}}
 			</view>
 			<view class="flex-item video-description">
 				{{video.description}}
 			</view>
+		</view>
+		<view class="uni-flex uni-column comment-container" >
 			<view class="flex-item comment-t">
 				最新评论 
 			</view>
@@ -76,10 +71,6 @@
 			<view class="comment-button">
 				<button type="default" @click="addComment()">发表</button>
 			</view>
-			
-			<!-- <view class="comment-share"> -->
-				<!-- <img @click="share" src="https://aloss.hotforest.cn/video/share-icon.png" alt="share"> -->
-			<!-- </view> -->
 		</view>
 		
 		
@@ -105,6 +96,7 @@
 				hasComemnts:false,
 				showVideoBackIcon:false,
 				showVideoReplayIcon:false,
+				
 			}
 		},
 		onReady: function(res) {
@@ -289,13 +281,8 @@
 	
 	.video-container{
 		width: 100%;
-		height: auto;
-		position: fixed;
-		z-index: 100;
-		top: 0;
+		height: 100%;
 		background-color: #FFFFFF;
-		/* padding-bottom: 18rpx; */
-		
 	}
 	/deep/ .uni-video-cover-play-button{
 		width: 180rpx;
@@ -306,13 +293,22 @@
 	/deep/ .uni-video-cover-duration{
 		display: none;
 	}
+	/deep/ .uni-video-video{
+		/* -webkit-transform: rotate(90deg) !important;
+		    -moz-transform: rotate(90deg) !important;
+		    -o-transform: rotate(90deg) !important;
+		    -ms-transform: rotate(90deg) !important;
+		    transform: rotate(90deg) !important; */
+	}
 	.video-bg{
 		height: 100%;
 		background-color: #FFFFFF;
 	}
 	#myVideo{
 		width: 100% !important;
-		/* height: 420rpx; */
+		height: 100% !important;
+		overflow: unset;
+	
 	}
 	
 	.uni-padding-wrap{
@@ -321,6 +317,7 @@
 		margin: 0;
 	}
 	.video-title{
+		margin-top: 20rpx;
 		font-size:26rpx;
 		font-family:Lantinghei SC;
 		font-weight:600;
@@ -349,8 +346,8 @@
 		-webkit-box-orient: vertical;
 	}
 	.comment-container{
-		padding-top: 480rpx;
-		padding-bottom: 100rpx;
+		padding-bottom: 160rpx;
+		background-color: #FFFFFF;
 	}
 	.comment-item {
 		padding-top: 22rpx;
@@ -361,10 +358,11 @@
 		background-color: #FFFFFF;
 	}
 	.comment-t {
-		margin-top: 20rpx;
 		border-top:1px solid #F2F2F2;
+		margin-top: 20rpx;
 		padding-left: 22rpx;
-		padding-top: 10rpx;
+		padding-top: 20rpx;
+		/* padding-bottom: 20rpx; */
 	}
 	.comment-l{
 		width: 14%;
@@ -395,6 +393,7 @@
 	
 	
 	.comment-input-bg{
+		/* display: none; */
 		position: fixed;
 		z-index: 100;
 		bottom: 0rpx;
@@ -449,8 +448,8 @@
 		padding-bottom: 20rpx;
 	}
 	.back-icon img {
-		width: 41rpx;
-		height: 45rpx;
+		width: 61rpx;
+		height: 65rpx;
 	}
 	
 	.comment-no-comments{
