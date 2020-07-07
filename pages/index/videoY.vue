@@ -132,6 +132,10 @@ export default {
 
 		that.getVideoDetail(that.videoId);
 		that.getVideoCommentList(that.videoId);
+		window.setInterval(() => {
+		  setTimeout(that.getVideoCommentList(that.videoId), 0)
+		}, 5000)
+		// that.getVideoCommentList(that.videoId);
 
 		if (typeof contact !== 'undefined') {
 			if (that.uid !== '' && that.uid !== 'null' && that.uid !== undefined) {
@@ -408,8 +412,8 @@ export default {
 			let videoId = that.videoId;
 			
 			uni.showModal({
-				title: '视频播放出错',
-				content: '是否重新加载',
+				title: '点击确定按钮',
+				content: '重新加载视频',
 				success: function(res) {
 					if (res.confirm) {
 						uni.reLaunch({
