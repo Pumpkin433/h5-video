@@ -179,9 +179,21 @@ export default {
 				};
 			}
 		}
-
-		
-		
+	},
+	onPullDownRefresh() {
+	        console.log('refresh');
+			var that = this;
+			let uid = that.uid;
+			let token = that.token;
+			let ns_device_id = that.ns_device_id;
+			let videoId = that.videoId;
+			
+			uni.reLaunch({
+				url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
+			});
+	        setTimeout(function () {
+	            uni.stopPullDownRefresh();
+	        }, 1000);
 	},
 	methods: {
 		timeUp:function(){
@@ -390,7 +402,26 @@ export default {
 		videoErrorCallback: function(e) {
 			console.log(e)
 			var that = this;
-			that.showVideoReplayIcon = true;
+			let uid = that.uid;
+			let token = that.token;
+			let ns_device_id = that.ns_device_id;
+			let videoId = that.videoId;
+			
+			uni.showModal({
+				title: '视频播放出错',
+				content: '是否重新加载',
+				success: function(res) {
+					if (res.confirm) {
+						uni.reLaunch({
+							url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
+						});
+						console.log('确定');
+					} else if (res.cancel) {
+						console.log('取消');
+					}
+				}
+			});
+			// that.showVideoReplayIcon = true;
 		},
 		videoTimeUpdate:function(){
 			

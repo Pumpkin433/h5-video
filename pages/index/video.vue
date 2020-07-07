@@ -361,23 +361,25 @@ export default {
 		videoErrorCallback: function(e) {
 			console.log(e);
 			var that = this;
+			let uid = that.uid;
+			let token = that.token;
+			let ns_device_id = that.ns_device_id;
+			let videoId = that.videoId;
+			
 			uni.showModal({
 				title: '视频播放出错',
 				content: '是否重新加载',
 				success: function(res) {
 					if (res.confirm) {
-						that.videoContext.play();
+						uni.reLaunch({
+							url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
+						});
 						console.log('确定');
 					} else if (res.cancel) {
 						console.log('取消');
 					}
 				}
 			});
-			
-			// uni.showModal({
-			// 	content: e.target.errMsg,
-			// 	showCancel: false
-			// });
 		},
 		videoTimeUpdate:function(){
 			
