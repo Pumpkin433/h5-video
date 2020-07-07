@@ -6,7 +6,7 @@
 
 <script>
 	export default {
-		name:'mid',
+		name:'midY',
 		onShow(){
 			
 		},
@@ -18,13 +18,13 @@
 			uni.setStorageSync('uid',uid)
 			uni.setStorageSync('token',token)
 			uni.setStorageSync('ns_device_id',ns_device_id)
+			uni.setStorageSync('ns_device_id',videoId)
 			
 			console.log(uid)
 			console.log(token)
 			console.log(ns_device_id)
-			console.log(videoId)
 			uni.reLaunch({
-				url:'/pages/index/video?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&id='+videoId
+				url:'/pages/index/videoY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&id='+videoId
 			})
 		}
 	}

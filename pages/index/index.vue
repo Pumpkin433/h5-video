@@ -41,51 +41,51 @@ export default {
 		// 		mask: true
 		// 	});
 		// } else {
-			if (that.uid !== '' && that.uid !== 'null' && that.uid !== undefined) {
-				uni.setStorageSync('uid', that.uid);
-				uni.setStorageSync('token', that.token);
-				uni.setStorageSync('ns_device_id', that.ns_device_id);
-				this.loginAppStatus = true;	
+			// if (that.uid !== '' && that.uid !== 'null' && that.uid !== undefined) {
+				// uni.setStorageSync('uid', that.uid);
+				// uni.setStorageSync('token', that.token);
+				// uni.setStorageSync('ns_device_id', that.ns_device_id);
+				// this.loginAppStatus = true;	
 				
-				let req_url = base.bd + '/v3/user/info';
-				let headers = {
-					ns_device_id: that.ns_device_id,
-					uid: that.uid,
-					token: that.token
-				};
-				uni.request({
-					url:req_url,
-					header:headers,
-					method:'GET',
-					success:function(res){
-						console.log(res);
-						if(res.statusCode == 200){
-							if (res.data.Status == 1) {
-								let avatar_url = res.data.Data.avatar_url;
-								let nickname = res.data.Data.nickname;
-								let mobile = res.data.Data.phone;
+				// let req_url = base.bd + '/v3/user/info';
+				// let headers = {
+				// 	ns_device_id: that.ns_device_id,
+				// 	uid: that.uid,
+				// 	token: that.token
+				// };
+				// uni.request({
+				// 	url:req_url,
+				// 	header:headers,
+				// 	method:'GET',
+				// 	success:function(res){
+				// 		console.log(res);
+				// 		if(res.statusCode == 200){
+				// 			if (res.data.Status == 1) {
+				// 				let avatar_url = res.data.Data.avatar_url;
+				// 				let nickname = res.data.Data.nickname;
+				// 				let mobile = res.data.Data.phone;
 								
-								that.addUserInfo(nickname, mobile,avatar_url);
-							}
-						}else{
-							uni.showToast({
-								title: '服务器错误',
-								icon: 'none'
-							});
-						}
-					}
-				})
+				// 				that.addUserInfo(nickname, mobile,avatar_url);
+				// 			}
+				// 		}else{
+				// 			uni.showToast({
+				// 				title: '服务器错误',
+				// 				icon: 'none'
+				// 			});
+				// 		}
+				// 	}
+				// })
 				
 				
-			} else {
-				this.loginAppStatus = false;
-				contact.onLoginDone = function(uid, token) {
-					let ns_device_id = uni.getStorageSync('ns_device_id');
-					uni.reLaunch({
-						url: '/pages/mid/mid?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
-					});
-				};
-			}
+			// } else {
+				// this.loginAppStatus = false;
+				// contact.onLoginDone = function(uid, token) {
+				// 	let ns_device_id = uni.getStorageSync('ns_device_id');
+				// 	uni.reLaunch({
+				// 		url: '/pages/mid/mid?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id
+				// 	});
+				// };
+			// }
 		// }
 		
 		that.getVideoList();
@@ -117,8 +117,8 @@ export default {
 		},
 		turnVideoDetail: function(videoId,videoType) {
 			var that = this;
-			let loginAppStatus = that.loginAppStatus;
-			if(loginAppStatus){
+			// let loginAppStatus = that.loginAppStatus;
+			// if(loginAppStatus){
 				let data = {
 					uid:that.uid,
 					activity_id:that.activity_id,
@@ -133,12 +133,12 @@ export default {
 						if(res.statusCode == 200){
 							if(videoType===1){
 								uni.navigateTo({
-									url: '/pages/index/video?id=' + videoId+'&uid='+that.uid+'&token='+that.token+'&ns_device_id='+that.ns_device_id
+									url: '/pages/index/video?id=' + videoId +'&uid='+that.uid+'&token='+that.token+'&ns_device_id='+that.ns_device_id
 								});
 							}
 							if(videoType === 2){
 								uni.navigateTo({
-									url: '/pages/index/videoY?id=' + videoId+'&uid='+that.uid+'&token='+that.token+'&ns_device_id='+that.ns_device_id
+									url: '/pages/index/videoY?id=' + videoId + '&uid='+that.uid+'&token='+that.token+'&ns_device_id='+that.ns_device_id
 								});
 							}
 							
@@ -151,9 +151,9 @@ export default {
 					}
 				})
 				
-			}else{
-				contact.requireLogin();
-			}
+			// }else{
+			// 	contact.requireLogin();
+			// }
 			
 		},
 		addUserInfo:function(name, mobile,avatar_url){

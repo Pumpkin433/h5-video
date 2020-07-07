@@ -11,22 +11,6 @@
 	</view>
 </template>
 <script>
-	/**
-	 * Countdown 倒计时
-	 * @description 倒计时组件
-	 * @tutorial https://ext.dcloud.net.cn/plugin?id=25
-	 * @property {String} backgroundColor 背景色
-	 * @property {String} color 文字颜色
-	 * @property {Number} day 天数
-	 * @property {Number} hour 小时
-	 * @property {Number} minute 分钟
-	 * @property {Number} second 秒
-	 * @property {Boolean} showDay = [true|false] 是否显示天数
-	 * @property {Boolean} showColon = [true|false] 是否以冒号为分隔符
-	 * @property {String} splitorColor 分割符号颜色
-	 * @event {Function} timeup 倒计时时间到触发事件
-	 * @example <uni-countdown :day="1" :hour="1" :minute="12" :second="40"></uni-countdown>
-	 */
 	export default {
 		name: 'UniCountdown',
 		props: {
@@ -164,7 +148,11 @@
 		}
 	}
 </script>
-<style scoped>
+<style lang="scss" scoped>
+	@import '~@/uni.scss';
+	$countdown-height: 48rpx;
+	$countdown-width: 52rpx;
+
 	.uni-countdown {
 		/* #ifndef APP-NVUE */
 		display: flex;
@@ -179,9 +167,9 @@
 		display: flex;
 		/* #endif */
 		justify-content: center;
-		line-height: 48rpx;
+		line-height: $countdown-height;
 		padding: 5rpx;
-		font-size: 24rpx;
+		font-size: $uni-font-size-sm;
 	}
 
 	.uni-countdown__number {
@@ -190,11 +178,11 @@
 		/* #endif */
 		justify-content: center;
 		align-items: center;
-		width: 52rpx;
-		height: 48rpx;
-		line-height: 48rpx;
+		width: $countdown-width;
+		height: $countdown-height;
+		line-height: $countdown-height;
 		margin: 5rpx;
 		text-align: center;
-		font-size: 24rpx;
+		font-size: $uni-font-size-sm;
 	}
 </style>
