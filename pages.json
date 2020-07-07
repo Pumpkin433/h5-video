@@ -19,10 +19,6 @@
 			}
 		},
 		{
-		    "path" : "pages/index/video3",
-		    "style" : {}
-		},
-		{
 			"path":"pages/mid/mid",
 			"style":{
 				"navigationBarTitleText":"全民体育视频直播"
