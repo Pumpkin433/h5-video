@@ -127,7 +127,7 @@ export default {
 		that.token = option.token;
 		that.ns_device_id = option.ns_device_id;
 		
-		let start_time = new Date('2020/7/8 20:30:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
+		let start_time = new Date('2020/7/8  18:10:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
 		// let start_time = new Date('2020/7/7 20:30:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
 		let now_time = new Date().getTime();//获取到当前时间，再转成时间戳
 		let sec = Math.round((start_time - now_time) / 1000);//用开始时间戳减去当前时间戳 在处于 1000
