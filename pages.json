@@ -8,6 +8,12 @@
 			}
 		},
 		{
+		    "path" : "pages/index/v",
+		    "style" : {
+				"enablePullDownRefresh": true
+			}
+		},
+		{
 			"path":"pages/index/video",
 			"style":{
 				"navigationBarTitleText": "全民体育视频直播"

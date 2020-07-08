@@ -4,44 +4,17 @@
 			<view class="flex-item" style="height: 100%;" @touchstart="showVideoTitle" @touchend="hideVideoTitle">
 				<view class="uni-padding-wrap uni-common-mt" style="height: 100%;">
 					<view v-if="video" style="height: 100%;">
-						<video
-							id="myVideo"
-							:poster="video.cover_url"
-							:src="video.source_url"
-							@error="videoErrorCallback"
-							@play="videoPlay"
-							@ended="videoEnd"
-							:controls="controlsValue"
-							autoplay="true"
-							object-fit="contain"
-							:enable-progress-gesture="false"
-							:page-gesture="false"
-						>
-							<!-- <cover-view class="back-icon" v-if="showVideoBackIcon"> -->
-								<!-- <img @click="backIndex" src="https://aloss.hotforest.cn/video/video-back-icon.png" alt="back" /> -->
-							<!-- </cover-view> -->
-							<!-- <cover-view class="muted-icon" v-if="showMutedIcon" :class="mutedActivited ? 'muted-icon-active' : '' ">
-								<text v-if="mutedActivited" class="muted-icon-active"  @click="cancelVideoMuted">静音</text>
-								<text v-if="!mutedActivited"   @click="videoMuted">静音</text>
-							</cover-view> -->
-							<cover-view class="video-replay" v-if="showVideoReplayIcon" @click="videoReplay">
-								<img src="https://aloss.hotforest.cn/video/start.png" alt="重播" />
-							</cover-view>
-							<cover-view class="video-error" v-if="showVideoErrorIcon" @click="videoErrorReplay">
-								<img src="https://aloss.hotforest.cn/video/start.png" alt="视频出错" />
-							</cover-view>
-							<!-- 修改颜色 -->
-							<cover-view class="countdown-bg" v-if="showCountdown">
-								<view class="countdown-1">
-									<img src="@/static/video/qmty-logo.png" alt="logo">
-								</view>
-								<view class="countdown-2">直播即将开始</view>
-								<view class="countdown-3">
-									<uni-countdown @timeup="timeUp" :show-day="false" :hour="hour" :minute="minute" :second="second"></uni-countdown>			
-								</view>
-								
-							</cover-view>
-						</video>
+						<div class="plyr__video-embed" id="player">
+						  <iframe
+						    :src="video.source_url"
+							:data-poster="video.cover_url"
+							playsinline
+							controls 
+						    allowfullscreen
+						    allowtransparency
+						    allow="autoplay"
+						  ></iframe>
+						</div>
 					</view>
 				</view>
 			</view>
@@ -68,12 +41,23 @@
 		</view>
 
 		<view class="comment-input-bg">
-			<view class="comment-input">
-				<!-- <textarea v-if="!showCommentInput" @blur="bindTextAreaBlur" focus maxlength="200" v-model="commentContent"   placeholder="我想说的话" /> -->
-				<input  type="text"  v-model="commentContent" placeholder="我想说的话" />
-			</view>
+			<div class="m-share"></div>
+			<view class="comment-input"><input type="text" v-model="commentContent" placeholder="我想说的话" /></view>
 			<view class="comment-button"><button type="default" @click="addComment()">发表</button></view>
 		</view>
+		
+		<!-- 修改颜色 -->
+		<view class="countdown-bg" v-if="showCountdown">
+			<view class="countdown-1">
+				<img src="@/static/video/qmty-logo.png" alt="logo">
+			</view>
+			<view class="countdown-2">直播即将开始</view>
+			<view class="countdown-3">
+				<uni-countdown @timeup="timeUp" :show-day="false" :hour="hour" :minute="minute" :second="second"></uni-countdown>			
+			</view>
+			
+		</view>
+		
 		
 	</view>
 </template>
@@ -83,6 +67,7 @@ import base from '../../utils/base.js';
 import Mshare from 'm-share';
 import uniCountdown from '@/components/uni-countdown/uni-countdown.vue'
 import { startUnix, endUnix } from '@/common/util.js';
+import Plyr from '@/static/js/plyr.js';
 
 export default {
 	data() {
@@ -98,8 +83,7 @@ export default {
 			ns_device_id: '',
 			hasComemnts: false,
 			showVideoBackIcon: false,
-			showVideoReplayIcon: false, // 显示重播按钮
-			showVideoErrorIcon:false, //显示视频错误按钮
+			showVideoReplayIcon: false,
 			loginAppStatus: false, //登陆app状态
 			mutedValue:true,
 			controlsValue:true,
@@ -108,27 +92,31 @@ export default {
 			hour:0,
 			minute:0,
 			second:0,
-			showCountdown:false,
-			showCommentInput:true,
+			showCountdown:false
 		};
 	},
 	components: {uniCountdown},
 	onReady: function(res) {
 		// #ifndef MP-ALIPAY
-		this.videoContext = uni.createVideoContext('myVideo');
+		// this.videoContext = uni.createVideoContext('myVideo');
 		// #endif
+		
+		
 	},
 	onLoad(option) {
+		const player = new Plyr('#player');
+		// Expose player so        can be used from the console
+		window.player = player;
+		
 		var that = this;
 		// that.videoId = option.id;
-		that.videoId = 1;
+		that.videoId = 2;
 		that.uid = option.uid;
 		// that.uid = 470225;
 		that.token = option.token;
 		that.ns_device_id = option.ns_device_id;
 		
-		let start_time = new Date('2020/7/8 20:30:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
-		// let start_time = new Date('2020/7/7 20:30:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
+		let start_time = new Date('2020/7/7 12:40:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
 		let now_time = new Date().getTime();//获取到当前时间，再转成时间戳
 		let sec = Math.round((start_time - now_time) / 1000);//用开始时间戳减去当前时间戳 在处于 1000
 		that.second = sec;
@@ -138,7 +126,6 @@ export default {
 
 		that.getVideoDetail(that.videoId);
 		that.getVideoCommentList(that.videoId);
-		that.addVideoLog();
 		// window.setInterval(() => {
 		//   setTimeout(that.getVideoCommentList(that.videoId), 0)
 		// }, 5000)
@@ -192,7 +179,7 @@ export default {
 		}
 	},
 	onPullDownRefresh() {
-	        // console.log('refresh');
+	        console.log('refresh');
 			var that = this;
 			// let uid = that.uid;
 			// let token = that.token;
@@ -208,14 +195,6 @@ export default {
 	        }, 1000);
 	},
 	methods: {
-		bindTextAreaBlur:function(){
-			console.log('focus')
-			// this.showCommentInput = true
-		},
-		focusInput:function(){
-			console.log('input focus')
-			this.showCommentInput = false
-		},
 		timeUp:function(){
 			console.log('timeup')
 			this.showCountdown = false;
@@ -228,7 +207,6 @@ export default {
 		hideVideoTitle: function() {
 			console.log('hide');
 			var that = this;
-			that.showCommentInput = true;
 			setTimeout(function() {
 				that.showVideoBackIcon = false;
 				that.showMutedIcon = false;
@@ -423,31 +401,26 @@ export default {
 		videoErrorCallback: function(e) {
 			console.log(e)
 			var that = this;
-			that.showVideoErrorIcon = true;
-		},
-		addVideoLog:function(){
-			var that = this;
-			let data = {
-				uid:that.uid,
-				activity_id:that.activity_id,
-				video_id:that.videoId
-			}
-			uni.request({
-				url:base.sq+'/activity/api.Video/addLog',
-				method:'POST',
-				data:data,
-				success:function(res){
-					console.log(res)
-					if(res.statusCode == 200){
-						
-					}else{
-						uni.showToast({
-							title: '服务器错误',
-							icon: 'none'
+			let uid = that.uid;
+			let token = that.token;
+			let ns_device_id = that.ns_device_id;
+			let videoId = that.videoId;
+			
+			uni.showModal({
+				title: '点击确定按钮',
+				content: '重新加载视频',
+				success: function(res) {
+					if (res.confirm) {
+						uni.reLaunch({
+							url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
 						});
+						console.log('确定');
+					} else if (res.cancel) {
+						console.log('取消');
 					}
 				}
-			})
+			});
+			// that.showVideoReplayIcon = true;
 		},
 		videoTimeUpdate:function(){
 			
@@ -474,18 +447,6 @@ export default {
 			console.log('replay');
 			this.videoContext.play();
 			this.showVideoReplayIcon = false;
-		},
-		videoErrorReplay:function(){
-			var that = this;
-			that.showVideoErrorIcon = false;
-			let uid = that.uid;
-			let token = that.token;
-			let ns_device_id = that.ns_device_id;
-			let videoId = that.videoId;
-			
-			uni.reLaunch({
-				url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
-			});
 		}
 	}
 };
@@ -529,9 +490,8 @@ export default {
 	margin: 0;
 }
 .video-title {
-	height: 50rpx;
 	margin-top: 20rpx;
-	font-size: 28rpx;
+	font-size: 26rpx;
 	font-family: Lantinghei SC;
 	font-weight: 600;
 	color: rgba(51, 51, 51, 1);
@@ -545,12 +505,12 @@ export default {
 	-webkit-box-orient: vertical;
 }
 .video-description {
-	font-size: 26rpx;
+	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 200;
 	color: rgba(102, 102, 102, 1);
 	line-height: 35rpx;
-	padding: 0 33rpx 0 22rpx;
+	padding: 18rpx 33rpx 0 22rpx;
 	height: 120rpx;
 
 	overflow: hidden;
@@ -618,15 +578,6 @@ export default {
 .comment-input {
 	width: 78%;
 	float: left;
-}
-.comment-input textarea {
-	width: 90%;
-	margin: 0 auto;
-	/* height: 55rpx !important; */
-	line-height: 55rpx !important;
-	background: rgba(241, 241, 241, 1);
-	border-radius: 20rpx;
-	text-indent: 30rpx;
 }
 .comment-input input {
 	width: 90%;
@@ -706,21 +657,6 @@ export default {
 .video-replay img {
 	width: 100%;
 }
-.video-error {
-	width: 100rpx;
-	height: 100rpx;
-	position: absolute;
-	margin: auto;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	font-size: 28rpx;
-	color: #0a98d5;
-}
-.video-error img {
-	width: 100%;
-}
 .muted-icon {
 	position: absolute;
 	width: 80rpx;
@@ -740,7 +676,7 @@ export default {
 .countdown-bg{
 	position: absolute;
 	top: 0;
-	background-color: rgba(0,0 ,0, 1);
+	background-color: rgba(0,0 ,0, 0.6);
 	z-index: 1;
 	width: 100%;
 	height: 100%;
