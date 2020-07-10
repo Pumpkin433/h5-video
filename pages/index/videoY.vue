@@ -11,14 +11,18 @@
 							@error="videoErrorCallback"
 							@play="videoPlay"
 							@ended="videoEnd"
+							@timeupdate="videoTimeupdate"
 							:controls="controlsValue"
+							enable-danmu
+							danmu-btn
+							:danmu-list="danmuList"
 							autoplay="true"
 							object-fit="contain"
 							:enable-progress-gesture="false"
 							:page-gesture="false"
 						>
 							<!-- <cover-view class="back-icon" v-if="showVideoBackIcon"> -->
-								<!-- <img @click="backIndex" src="https://aloss.hotforest.cn/video/video-back-icon.png" alt="back" /> -->
+							<!-- <img @click="backIndex" src="https://aloss.hotforest.cn/video/video-back-icon.png" alt="back" /> -->
 							<!-- </cover-view> -->
 							<!-- <cover-view class="muted-icon" v-if="showMutedIcon" :class="mutedActivited ? 'muted-icon-active' : '' ">
 								<text v-if="mutedActivited" class="muted-icon-active"  @click="cancelVideoMuted">静音</text>
@@ -32,14 +36,9 @@
 							</cover-view>
 							<!-- 修改颜色 -->
 							<cover-view class="countdown-bg" v-if="showCountdown">
-								<view class="countdown-1">
-									<img src="@/static/video/qmty-logo.png" alt="logo">
-								</view>
+								<view class="countdown-1"><img src="@/static/video/qmty-logo.png" alt="logo" /></view>
 								<view class="countdown-2">直播即将开始</view>
-								<view class="countdown-3">
-									<uni-countdown @timeup="timeUp" :show-day="false" :hour="hour" :minute="minute" :second="second"></uni-countdown>			
-								</view>
-								
+								<view class="countdown-3"><uni-countdown @timeup="timeUp" :show-day="false" :hour="hour" :minute="minute" :second="second"></uni-countdown></view>
 							</cover-view>
 						</video>
 					</view>
@@ -70,18 +69,18 @@
 		<view class="comment-input-bg">
 			<view class="comment-input">
 				<!-- <textarea v-if="!showCommentInput" @blur="bindTextAreaBlur" focus maxlength="200" v-model="commentContent"   placeholder="我想说的话" /> -->
-				<input  type="text"  v-model="commentContent" placeholder="我想说的话" />
+				<input type="text" v-model="commentContent" placeholder="我想说的话" />
 			</view>
-			<view class="comment-button"><button type="default" @click="addComment()">发表</button></view>
+			<!-- <view class="comment-button"><button type="default" @click="addComment()">发表</button></view> -->
+			<view class="comment-button"><button type="default" @click="addDanmu()">发表</button></view>
 		</view>
-		
 	</view>
 </template>
 
 <script>
 import base from '../../utils/base.js';
 import Mshare from 'm-share';
-import uniCountdown from '@/components/uni-countdown/uni-countdown.vue'
+import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
 import { startUnix, endUnix } from '@/common/util.js';
 
 export default {
@@ -99,20 +98,23 @@ export default {
 			hasComemnts: false,
 			showVideoBackIcon: false,
 			showVideoReplayIcon: false, // 显示重播按钮
-			showVideoErrorIcon:false, //显示视频错误按钮
+			showVideoErrorIcon: false, //显示视频错误按钮
 			loginAppStatus: false, //登陆app状态
-			mutedValue:true,
-			controlsValue:true,
-			mutedActivited:true,
-			showMutedIcon:false,
-			hour:0,
-			minute:0,
-			second:0,
-			showCountdown:false,
-			showCommentInput:true,
+			mutedValue: true,
+			controlsValue: true,
+			mutedActivited: true,
+			showMutedIcon: false,
+			hour: 0,
+			minute: 0,
+			second: 0,
+			showCountdown: false,
+			showCommentInput: true,
+			danmuList: [],
+			danmuValue: '',
+			videoCurrentTime: ''
 		};
 	},
-	components: {uniCountdown},
+	components: { uniCountdown },
 	onReady: function(res) {
 		// #ifndef MP-ALIPAY
 		this.videoContext = uni.createVideoContext('myVideo');
@@ -121,29 +123,29 @@ export default {
 	onLoad(option) {
 		var that = this;
 		// that.videoId = option.id;
-		that.videoId = 1;
+		that.videoId = 2;
 		that.uid = option.uid;
 		// that.uid = 470225;
 		that.token = option.token;
 		that.ns_device_id = option.ns_device_id;
-		
-		let start_time = new Date('2020/7/8  18:10:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
-		// let start_time = new Date('2020/7/7 20:30:00').getTime();//开始时间 先把时间转成默认格式，再转成时间戳
-		let now_time = new Date().getTime();//获取到当前时间，再转成时间戳
-		let sec = Math.round((start_time - now_time) / 1000);//用开始时间戳减去当前时间戳 在处于 1000
+
+		let start_time = new Date('2020/7/8  18:10:00').getTime(); //开始时间 先把时间转成默认格式，再转成时间戳
+		let now_time = new Date().getTime(); //获取到当前时间，再转成时间戳
+		let sec = Math.round((start_time - now_time) / 1000); //用开始时间戳减去当前时间戳 在处于 1000
 		that.second = sec;
-		if(sec >= 0){
+		if (sec >= 0) {
 			that.showCountdown = true;
 		}
-
+		
+		that.getVideoDanmuList(that.videoId);
 		that.getVideoDetail(that.videoId);
 		that.getVideoCommentList(that.videoId);
 		that.addVideoLog();
+		
 		// window.setInterval(() => {
 		//   setTimeout(that.getVideoCommentList(that.videoId), 0)
 		// }, 5000)
-		// that.getVideoCommentList(that.videoId);
-
+		
 		if (typeof contact !== 'undefined') {
 			if (that.uid !== '' && that.uid !== 'null' && that.uid !== undefined) {
 				uni.setStorageSync('uid', that.uid);
@@ -185,39 +187,39 @@ export default {
 				contact.onLoginDone = function(uid, token) {
 					// let ns_device_id = uni.getStorageSync('ns_device_id');
 					uni.reLaunch({
-						url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + that.ns_device_id+'&videoId='+that.videoId
+						url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + that.ns_device_id + '&videoId=' + that.videoId
 					});
 				};
 			}
 		}
 	},
 	onPullDownRefresh() {
-	        // console.log('refresh');
-			var that = this;
-			// let uid = that.uid;
-			// let token = that.token;
-			// let ns_device_id = that.ns_device_id;
-			// let videoId = that.videoId;
-			
-			// uni.reLaunch({
-			// 	url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
-			// });
-			that.getVideoCommentList(that.videoId);
-	        setTimeout(function () {
-	            uni.stopPullDownRefresh();
-	        }, 1000);
+		
+		var that = this;
+		// let uid = that.uid;
+		// let token = that.token;
+		// let ns_device_id = that.ns_device_id;
+		// let videoId = that.videoId;
+
+		// uni.reLaunch({
+		// 	url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
+		// });
+		that.getVideoCommentList(that.videoId);
+		setTimeout(function() {
+			uni.stopPullDownRefresh();
+		}, 1000);
 	},
 	methods: {
-		bindTextAreaBlur:function(){
-			console.log('focus')
+		bindTextAreaBlur: function() {
+			console.log('focus');
 			// this.showCommentInput = true
 		},
-		focusInput:function(){
-			console.log('input focus')
-			this.showCommentInput = false
+		focusInput: function() {
+			console.log('input focus');
+			this.showCommentInput = false;
 		},
-		timeUp:function(){
-			console.log('timeup')
+		timeUp: function() {
+			console.log('timeup');
 			this.showCountdown = false;
 		},
 		showVideoTitle: function() {
@@ -295,12 +297,60 @@ export default {
 					if (res.statusCode === 200) {
 						if (res.data.code == 0) {
 							that.video = res.data.data;
-							if(that.video.is_live == 1){
-								that.controlsValue = false
+							if (that.video.is_live == 1) {
+								that.controlsValue = false;
 							}
-							if(that.video.is_live == 0){
+							if (that.video.is_live == 0) {
 								that.controlsValue = true;
 							}
+						} else {
+							uni.showToast({
+								title: res.data.info,
+								icon: 'none'
+							});
+						}
+					} else {
+						uni.showToast({
+							title: '服务出错',
+							icon: 'none'
+						});
+					}
+				}
+			});
+		},
+		addDanmu: function() {
+			var that = this;
+			let data = {
+				activity_id: that.activity_id,
+				uid: that.uid,
+				video_id: that.videoId,
+				parent_id: 0,
+				content: that.commentContent,
+				color: that.getRandomColor(),
+				danmu_time: that.videoCurrentTime
+			};
+			uni.request({
+				url: base.sq + '/activity/api.Video/addComment',
+				data: data,
+				method: 'POST',
+				success: res => {
+					console.log(res);
+					if (res.statusCode === 200) {
+						if (res.data.code == 0) {
+							that.videoContext.sendDanmu({
+								text: that.uid + ':' + that.commentContent,
+								color: that.getRandomColor()
+							});
+							that.getVideoDanmuList(that.videoId);
+							that.commentContent = '';
+							// uni.showToast({
+							// 	title: '留言成功',
+							// 	icon: 'none',
+							// 	success: () => {
+							// 		that.getVideoCommentList(that.videoId);
+							// 		that.commentContent = '';
+							// 	}
+							// });
 						} else {
 							uni.showToast({
 								title: res.data.info,
@@ -355,7 +405,9 @@ export default {
 						uid: that.uid,
 						video_id: that.videoId,
 						parent_id: 0,
-						content: that.commentContent
+						content: that.commentContent,
+						color: that.getRandomColor(),
+						danmu_time: that.videoCurrentTime
 					};
 					uni.request({
 						url: base.sq + '/activity/api.Video/addComment',
@@ -365,14 +417,20 @@ export default {
 							console.log(res);
 							if (res.statusCode === 200) {
 								if (res.data.code == 0) {
-									uni.showToast({
-										title: '留言成功',
-										icon: 'none',
-										success: () => {
-											that.getVideoCommentList(that.videoId);
-											that.commentContent = '';
-										}
+									that.videoContext.sendDanmu({
+										text: that.uid + ':' + that.commentContent,
+										color: that.getRandomColor()
 									});
+									that.getVideoDanmuList(that.videoId);
+									that.commentContent = '';
+									// uni.showToast({
+									// 	title: '留言成功',
+									// 	icon: 'none',
+									// 	success: () => {
+									// 		that.getVideoCommentList(that.videoId);
+									// 		that.commentContent = '';
+									// 	}
+									// });
 								} else {
 									uni.showToast({
 										title: res.data.info,
@@ -392,6 +450,30 @@ export default {
 				}
 			}
 		},
+		getVideoDanmuList: function(videoId) {
+			var that = this;
+			let data = {
+				activity_id: that.activity_id,
+				video_id: videoId
+			};
+			uni.request({
+				url: base.sq + '/activity/api.Video/getVideoDanmuList',
+				data: data,
+				method: 'GET',
+				success: function(res) {
+					if (res.statusCode == 200) {
+						if (res.data.code == 0) {
+							  that.danmuList = res.data.data;
+						}
+					} else {
+						uni.showToast({
+							title: '服务器错误',
+							icon: 'none'
+						});
+					}
+				}
+			});
+		},
 		getVideoCommentList: function(videoId) {
 			var that = this;
 			let data = {
@@ -403,8 +485,7 @@ export default {
 				data: data,
 				method: 'GET',
 				success: function(res) {
-					console.log(res);
-					if (res.statusCode === 200) {
+					if (res.statusCode == 200) {
 						if (res.data.code == 0) {
 							that.commentList = res.data.data;
 							if (that.commentList.length > 0) {
@@ -421,49 +502,46 @@ export default {
 			});
 		},
 		videoErrorCallback: function(e) {
-			console.log(e)
+			console.log(e);
 			var that = this;
 			that.showVideoErrorIcon = true;
 		},
-		addVideoLog:function(){
+		addVideoLog: function() {
 			var that = this;
 			let data = {
-				uid:that.uid,
-				activity_id:that.activity_id,
-				video_id:that.videoId
-			}
+				uid: that.uid,
+				activity_id: that.activity_id,
+				video_id: that.videoId
+			};
 			uni.request({
-				url:base.sq+'/activity/api.Video/addLog',
-				method:'POST',
-				data:data,
-				success:function(res){
-					console.log(res)
-					if(res.statusCode == 200){
-						
-					}else{
+				url: base.sq + '/activity/api.Video/addLog',
+				method: 'POST',
+				data: data,
+				success: function(res) {
+					console.log(res);
+					if (res.statusCode == 200) {
+					} else {
 						uni.showToast({
 							title: '服务器错误',
 							icon: 'none'
 						});
 					}
 				}
-			})
+			});
 		},
-		videoTimeUpdate:function(){
-			
+		videoTimeupdate: function(event) {
+			this.videoCurrentTime = Math.floor(event.detail.currentTime);
 		},
-		cancelVideoMuted:function(){
-			this.mutedValue=false
+		cancelVideoMuted: function() {
+			this.mutedValue = false;
 			this.mutedActivited = false;
-			console.log(this.mutedValue)
 		},
-		videoMuted:function(){
-			this.mutedValue=true
+		videoMuted: function() {
+			this.mutedValue = true;
 			this.mutedActivited = true;
-			console.log(this.mutedValue)
 		},
 		videoPlay: function() {
-			console.log('video-play')
+			console.log('video-play');
 		},
 		videoEnd: function() {
 			console.log('video-end');
@@ -475,17 +553,26 @@ export default {
 			this.videoContext.play();
 			this.showVideoReplayIcon = false;
 		},
-		videoErrorReplay:function(){
+		videoErrorReplay: function() {
 			var that = this;
 			that.showVideoErrorIcon = false;
 			let uid = that.uid;
 			let token = that.token;
 			let ns_device_id = that.ns_device_id;
 			let videoId = that.videoId;
-			
+
 			uni.reLaunch({
-				url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id+'&videoId='+videoId
+				url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id + '&videoId=' + videoId
 			});
+		},
+		getRandomColor: function() {
+			const rgb = [];
+			for (let i = 0; i < 3; ++i) {
+				let color = Math.floor(Math.random() * 256).toString(16);
+				color = color.length == 1 ? '0' + color : color;
+				rgb.push(color);
+			}
+			return '#' + rgb.join('');
 		}
 	}
 };
@@ -730,64 +817,63 @@ export default {
 	font-size: 28rpx;
 	text-align: center;
 	line-height: 40rpx;
-	background-color: rgba(0,0,0,0.5);
-	color: #EEEEEE;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #eeeeee;
 }
-.muted-icon-active{
+.muted-icon-active {
 	color: #0a98d5;
 }
 
-.countdown-bg{
+.countdown-bg {
 	position: absolute;
 	top: 0;
-	background-color: rgba(0,0 ,0, 1);
+	background-color: rgba(0, 0, 0, 1);
 	z-index: 1;
 	width: 100%;
 	height: 100%;
 	text-align: center;
 	/* display: none; */
 }
-.countdown-1{
+.countdown-1 {
 	margin-top: 240rpx;
 }
-.countdown-1 img{
+.countdown-1 img {
 	width: 230rpx;
 	height: 175rpx;
 }
-.countdown-2{
+.countdown-2 {
 	margin-top: 82rpx;
-	font-size:104rpx;
-	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(255,255,255,1);
-	line-height:104rpx;
+	font-size: 104rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	line-height: 104rpx;
 }
-.countdown-3{
+.countdown-3 {
 	margin-top: 97rpx;
 }
-/deep/ .uni-countdown{
+/deep/ .uni-countdown {
 	justify-content: center;
 }
-/deep/ .uni-countdown__number{
-	font-size:130rpx;
-	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(255,255,255,1);
-	line-height:130rpx;
+/deep/ .uni-countdown__number {
+	font-size: 130rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	line-height: 130rpx;
 	width: auto;
 	height: auto;
-	color: #FFFFff !important;
+	color: #ffffff !important;
 	background-color: unset !important;
 }
-/deep/ .uni-countdown__splitor{
-	color: #FFFFFF !important;
-	font-size:130rpx;
-	font-family:Lantinghei SC;
-	font-weight:600;
-	color:rgba(255,255,255,1);
-	line-height:100rpx;
+/deep/ .uni-countdown__splitor {
+	color: #ffffff !important;
+	font-size: 130rpx;
+	font-family: Lantinghei SC;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 1);
+	line-height: 100rpx;
 	width: auto;
 	height: auto;
 }
-
 </style>
