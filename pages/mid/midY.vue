@@ -7,10 +7,16 @@
 <script>
 	export default {
 		name:'midY',
+		data(){
+			return {
+				
+			}
+		},
 		onShow(){
 			
 		},
 		onLoad(option){
+			var that = this;
 			let uid = option.uid;
 			let token = option.token;
 			let ns_device_id = option.ns_device_id;

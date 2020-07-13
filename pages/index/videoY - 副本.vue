@@ -44,17 +44,26 @@
 					</view>
 				</view>
 			</view>
-			<!-- <view class="flex-item video-title">{{ video.title }}</view> -->
-			<!-- <view class="flex-item video-description">{{ video.description }}</view> -->
+			<view class="flex-item video-title">{{ video.title }}</view>
+			<view class="flex-item video-description">{{ video.description }}</view>
 		</view>
-		<view class="uni-flex uni-column comment-container" id="comment-list">
-			<view class="flex-item comment-t">留言抽取 李秋平老师亲笔签名的篮球</view>
+		<view class="uni-flex uni-column comment-container">
+			<view class="flex-item comment-t">最新评论</view>
 
-			<!-- <view v-if="!hasComemnts" class="flex-item comment-no-comments">
+			<view v-if="!hasComemnts" class="flex-item comment-no-comments">
 				<view class="comment-no-comments-img"><img src="https://aloss.hotforest.cn/video/no-comments-icon.png" alt="无评论图" /></view>
 				<view class="comment-no-comments-text">暂无评论，说说你的看法</view>
 			</view>
-			 -->
+			<view class="flex-item comment-item" v-if="hasComemnts" v-for="(comment, k) in commentList" :key="k">
+				<view class="comment-l">
+					<img v-if="comment.avatar_url != ''" :src="comment.avatar_url" alt="avatar" />
+					<img v-if="comment.avatar_url == '' || comment.avatar_url== null" src="https://aloss.hotforest.cn/web/default-header.png" alt="avatar" />
+				</view>
+				<view class="comment-r">
+					<view class="flex-item comment-r-1">{{ comment.name }}</view>
+					<view class="flex-item comment-r-2">{{ comment.content }}</view>
+				</view>
+			</view>
 		</view>
 
 		<view class="comment-input-bg">
@@ -134,17 +143,10 @@ export default {
 			console.log(msg);
 			let text = msg.content;
 			let nickname = msg.nickname;
-		
-			
-			var obj = document.getElementById('comment-list');
-			var str = '<view style="width:100%;color:#ffffff;font-size:36rpx;">'+ nickname +' ：' + text +'</view>'	
-			document.getElementById("comment-list").innerHTML+=str
-			obj.scrollTop = obj.scrollHeight;
-		
-			// that.videoContext.sendDanmu({
-			// 	text: nickname + '：' + text,
-			// 	color: that.getRandomColor()
-			// });
+			that.videoContext.sendDanmu({
+				text: nickname + '：' + text,
+				color: that.getRandomColor()
+			});
 		});
 
 		socket.on('disconnect', function() {
@@ -342,37 +344,37 @@ export default {
 		},
 		addDanmu: function() {
 			var that = this;
-			// if (typeof contact === 'undefined') {
-			// 	uni.showModal({
-			// 		title: '如需留言请下载全民体育',
-			// 		content: 'APP留言还可以参加抽奖活动哦~',
-			// 		success: function(res) {
-			// 			if (res.confirm) {
-			// 				//openinstall app唤醒
-			// 				var data = OpenInstall.parseUrlParams();
-			// 				new OpenInstall(
-			// 					{
-			// 						/*appKey必选参数，openinstall平台为每个应用分配的ID*/
-			// 						appKey: 'y346df',
-			// 						/*openinstall初始化完成的回调函数，可选*/
-			// 						onready: function() {
-			// 							var m = this;
-			// 							/*在app已安装的情况尝试拉起app*/
-			// 							m.wakeupOrInstall();
-			// 						}
-			// 					},
-			// 					data
-			// 				);
+			if (typeof contact === 'undefined') {
+				uni.showModal({
+					title: '如需留言请下载全民体育',
+					content: 'APP留言还可以参加抽奖活动哦~',
+					success: function(res) {
+						if (res.confirm) {
+							//openinstall app唤醒
+							var data = OpenInstall.parseUrlParams();
+							new OpenInstall(
+								{
+									/*appKey必选参数，openinstall平台为每个应用分配的ID*/
+									appKey: 'y346df',
+									/*openinstall初始化完成的回调函数，可选*/
+									onready: function() {
+										var m = this;
+										/*在app已安装的情况尝试拉起app*/
+										m.wakeupOrInstall();
+									}
+								},
+								data
+							);
 
-			// 				console.log('确定');
-			// 			} else if (res.cancel) {
-			// 				console.log('取消');
-			// 			}
-			// 		}
-			// 	});
-			// } else {
-			// 	let loginAppStatus = that.loginAppStatus;
-			// 	if (loginAppStatus) {
+							console.log('确定');
+						} else if (res.cancel) {
+							console.log('取消');
+						}
+					}
+				});
+			} else {
+				let loginAppStatus = that.loginAppStatus;
+				if (loginAppStatus) {
 					let data = {
 						activity_id: that.activity_id,
 						uid: that.uid,
@@ -412,10 +414,10 @@ export default {
 							}
 						}
 					});
-			// 	} else {
-			// 		contact.requireLogin();
-			// 	}
-			// }
+				} else {
+					contact.requireLogin();
+				}
+			}
 		},
 		addComment: function() {
 			var that = this;
@@ -659,7 +661,7 @@ export default {
 }
 #myVideo {
 	width: 100% !important;
-	height: 90% !important;
+	height: 100% !important;
 	overflow: unset;
 }
 
@@ -700,17 +702,8 @@ export default {
 	-webkit-box-orient: vertical;
 }
 .comment-container {
-	position: fixed;
-	z-index: 1000;
-	bottom: 140rpx;
-	height: 30%;
-	width: 100%;
-	overflow: scroll;
-	white-space:normal;
-	word-wrap:break-word;
-	word-break:break-all;
-	/* padding-bottom: 160rpx; */
-	background-color: rgba(0,0,0,0.3);
+	padding-bottom: 160rpx;
+	background-color: #ffffff;
 }
 .comment-item {
 	padding-top: 22rpx;
@@ -718,14 +711,13 @@ export default {
 	padding-right: 22rpx;
 	padding-bottom: 22rpx;
 	border-bottom: 1px solid #f2f2f2;
-	/* background-color: #ffffff; */
+	background-color: #ffffff;
 }
 .comment-t {
-	color: #FFFFFF;
-	/* border-top: 1px solid #f2f2f2; */
-	/* margin-top: 20rpx; */
+	border-top: 1px solid #f2f2f2;
+	margin-top: 20rpx;
 	padding-left: 22rpx;
-	/* padding-top: 20rpx; */
+	padding-top: 20rpx;
 	/* padding-bottom: 20rpx; */
 }
 .comment-l {
@@ -746,15 +738,13 @@ export default {
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 200;
-	color: #FFFFFF;
-	/* color: rgba(102, 102, 102, 1); */
+	color: rgba(102, 102, 102, 1);
 }
 .comment-r-2 {
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 200;
-	color: #FFFFFF;
-	/* color: rgba(51, 51, 51, 1); */
+	color: rgba(51, 51, 51, 1);
 }
 
 .comment-input-bg {
