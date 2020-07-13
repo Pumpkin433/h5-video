@@ -137,7 +137,7 @@ export default {
 		
 			
 			var obj = document.getElementById('comment-list');
-			var str = '<view style="width:100%;color:#ffffff;font-size:36rpx;">'+ nickname +' ：' + text +'</view>'	
+			var str = '<view style="width:100%;color:#ffffff;font-size:16px;">'+ nickname +' ：' + text +'</view>'	
 			document.getElementById("comment-list").innerHTML+=str
 			obj.scrollTop = obj.scrollHeight;
 		
@@ -725,6 +725,7 @@ export default {
 	/* border-top: 1px solid #f2f2f2; */
 	/* margin-top: 20rpx; */
 	padding-left: 22rpx;
+	font-size: 32rpx;
 	/* padding-top: 20rpx; */
 	/* padding-bottom: 20rpx; */
 }
