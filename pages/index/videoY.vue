@@ -59,12 +59,13 @@
 
 		<view class="comment-input-bg">
 			<view class="comment-input">
-				<!-- <textarea v-if="!showCommentInput" @blur="bindTextAreaBlur" focus maxlength="200" v-model="commentContent"   placeholder="我想说的话" /> -->
 				<input type="text" v-model="commentContent" placeholder="我想说的话" />
 			</view>
 			<!-- <view class="comment-button"><button type="default" @click="addComment()">发表</button></view> -->
 			<view class="comment-button"><button type="default" @click="addDanmu()">发表</button></view>
 		</view>
+		
+		
 	</view>
 </template>
 
@@ -73,6 +74,7 @@ import base from '../../utils/base.js';
 import Mshare from 'm-share';
 import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
 import { startUnix, endUnix } from '@/common/util.js';
+import io from 'socket.io-client';
 
 export default {
 	data() {
@@ -129,6 +131,12 @@ export default {
 		var socket = that.danmuSockets;
 		socket.on('connect', function() {
 			console.log('connect');
+			// let nickname = msg.nickname ?? '游客';
+			// var obj = document.getElementById('comment-list');
+			// var str = '<view style="width:100%;color:#ffffff;font-size:16px;">欢迎'+ nickname +'，光临全民体育直播间！'+ '</view>'	
+			// document.getElementById("comment-list").innerHTML+=str
+			// obj.scrollTop = obj.scrollHeight;
+					
 		});
 		socket.on('danmu message', function(msg) {
 			console.log(msg);
@@ -342,37 +350,37 @@ export default {
 		},
 		addDanmu: function() {
 			var that = this;
-			// if (typeof contact === 'undefined') {
-			// 	uni.showModal({
-			// 		title: '如需留言请下载全民体育',
-			// 		content: 'APP留言还可以参加抽奖活动哦~',
-			// 		success: function(res) {
-			// 			if (res.confirm) {
-			// 				//openinstall app唤醒
-			// 				var data = OpenInstall.parseUrlParams();
-			// 				new OpenInstall(
-			// 					{
-			// 						/*appKey必选参数，openinstall平台为每个应用分配的ID*/
-			// 						appKey: 'y346df',
-			// 						/*openinstall初始化完成的回调函数，可选*/
-			// 						onready: function() {
-			// 							var m = this;
-			// 							/*在app已安装的情况尝试拉起app*/
-			// 							m.wakeupOrInstall();
-			// 						}
-			// 					},
-			// 					data
-			// 				);
+			if (typeof contact === 'undefined') {
+				uni.showModal({
+					title: '如需留言请下载全民体育',
+					content: 'APP留言还可以参加抽奖活动哦~',
+					success: function(res) {
+						if (res.confirm) {
+							//openinstall app唤醒
+							var data = OpenInstall.parseUrlParams();
+							new OpenInstall(
+								{
+									/*appKey必选参数，openinstall平台为每个应用分配的ID*/
+									appKey: 'y346df',
+									/*openinstall初始化完成的回调函数，可选*/
+									onready: function() {
+										var m = this;
+										/*在app已安装的情况尝试拉起app*/
+										m.wakeupOrInstall();
+									}
+								},
+								data
+							);
 
-			// 				console.log('确定');
-			// 			} else if (res.cancel) {
-			// 				console.log('取消');
-			// 			}
-			// 		}
-			// 	});
-			// } else {
-			// 	let loginAppStatus = that.loginAppStatus;
-			// 	if (loginAppStatus) {
+							console.log('确定');
+						} else if (res.cancel) {
+							console.log('取消');
+						}
+					}
+				});
+			} else {
+				let loginAppStatus = that.loginAppStatus;
+				if (loginAppStatus) {
 					let data = {
 						activity_id: that.activity_id,
 						uid: that.uid,
@@ -412,10 +420,10 @@ export default {
 							}
 						}
 					});
-			// 	} else {
-			// 		contact.requireLogin();
-			// 	}
-			// }
+				} else {
+					contact.requireLogin();
+				}
+			}
 		},
 		addComment: function() {
 			var that = this;
@@ -701,8 +709,9 @@ export default {
 }
 .comment-container {
 	position: fixed;
-	z-index: 1000;
-	bottom: 140rpx;
+	z-index: 100;
+	/* bottom: 140rpx; */
+	bottom: 10%;
 	height: 30%;
 	width: 100%;
 	overflow: scroll;
@@ -763,14 +772,18 @@ export default {
 	position: fixed;
 	z-index: 100;
 	bottom: 0rpx;
-	padding-top: 20rpx;
-	padding-bottom: 40rpx;
+	/* padding-top: 20rpx; */
+	/* padding-bottom: 40rpx; */
 	width: 100%;
+	height: 10%;
 	background-color: #ffffff;
 }
 .comment-input {
 	width: 78%;
+	height: 100%;
 	float: left;
+	display: flex;
+	align-items: center;
 }
 .comment-input textarea {
 	width: 90%;
@@ -791,11 +804,15 @@ export default {
 }
 .comment-button {
 	width: 18%;
+	height: 100%;
+	display: flex;
+	align-items: center;
 	float: left;
 }
 .comment-button button {
 	width: 137rpx;
 	height: 55rpx;
+	
 	background: rgba(216, 73, 73, 1);
 	border-radius: 28rpx;
 	line-height: 55rpx;
@@ -948,4 +965,6 @@ export default {
 /deep/ .uni-video-danmu-item {
 	font-size: 36rpx !important;
 }
+
+
 </style>
