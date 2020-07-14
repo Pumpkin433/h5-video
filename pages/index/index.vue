@@ -25,7 +25,7 @@ export default {
 			token: '',
 			ns_device_id: '',
 			loginAppStatus: false ,//登陆app状态
-			activity_id:6,
+			activity_id:7,
 		};
 	},
 	onLoad(option) {

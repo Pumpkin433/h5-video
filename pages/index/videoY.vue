@@ -13,6 +13,7 @@
 							@ended="videoEnd"
 							@timeupdate="videoTimeupdate"
 							:controls="controlsValue"
+							:muted="mutedValue"
 							enable-danmu
 							danmu-btn
 							:danmu-list="danmuList"
@@ -48,7 +49,7 @@
 			<!-- <view class="flex-item video-description">{{ video.description }}</view> -->
 		</view>
 		<view class="uni-flex uni-column comment-container" id="comment-list">
-			<view class="flex-item comment-t">留言抽取 李秋平老师亲笔签名的篮球</view>
+			<view class="flex-item comment-t">李秋平老师做客全民体育，直播间留言有机会抽取李秋平老师签名篮球</view>
 
 			<!-- <view v-if="!hasComemnts" class="flex-item comment-no-comments">
 				<view class="comment-no-comments-img"><img src="https://aloss.hotforest.cn/video/no-comments-icon.png" alt="无评论图" /></view>
@@ -65,6 +66,9 @@
 			<view class="comment-button"><button type="default" @click="addDanmu()">发表</button></view>
 		</view>
 		
+		<view class="video-refresh">
+			<uni-icons type="refresh" size="30" color="#ffffff" @click="videoRefresh"></uni-icons>
+		</view>
 		
 	</view>
 </template>
@@ -84,7 +88,7 @@ export default {
 			src: '',
 			commentContent: '',
 			commentList: [],
-			activity_id: 6,
+			activity_id: 7,
 			uid: '',
 			nickname: '',
 			token: '',
@@ -94,7 +98,7 @@ export default {
 			showVideoReplayIcon: false, // 显示重播按钮
 			showVideoErrorIcon: false, //显示视频错误按钮
 			loginAppStatus: false, //登陆app状态
-			mutedValue: true,
+			mutedValue: false, //静音
 			controlsValue: true,
 			mutedActivited: true,
 			showMutedIcon: false,
@@ -145,7 +149,7 @@ export default {
 		
 			
 			var obj = document.getElementById('comment-list');
-			var str = '<view style="width:100%;color:#ffffff;font-size:16px;">'+ nickname +' ：' + text +'</view>'	
+			var str = '<view style="color:#ffffff;font-size:16px;padding-left:10px;">'+ nickname +' ：' + text +'</view>'	
 			document.getElementById("comment-list").innerHTML+=str
 			obj.scrollTop = obj.scrollHeight;
 		
@@ -160,7 +164,7 @@ export default {
 		});
 
 		// that.videoId = option.id;
-		that.videoId = 2;
+		that.videoId = 4;
 		that.uid = option.uid;
 		// that.uid = 470225;
 		that.token = option.token;
@@ -427,7 +431,6 @@ export default {
 		},
 		addComment: function() {
 			var that = this;
-
 			if (typeof contact === 'undefined') {
 				uni.showModal({
 					title: '如需留言请下载全民体育',
@@ -565,6 +568,7 @@ export default {
 			console.log(e);
 			var that = this;
 			that.showVideoErrorIcon = true;
+			that.mutedValue = true;
 		},
 		addVideoLog: function() {
 			var that = this;
@@ -608,6 +612,17 @@ export default {
 			var that = this;
 			this.showVideoReplayIcon = true;
 		},
+		videoRefresh:function(){
+			var that = this;
+			let uid = that.uid;
+			let token = that.token;
+			let ns_device_id = that.ns_device_id;
+			let videoId = that.videoId;
+			
+			uni.reLaunch({
+				url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id + '&videoId=' + videoId
+			});
+		},
 		videoReplay: function() {
 			console.log('replay');
 			this.videoContext.play();
@@ -645,6 +660,9 @@ export default {
 	height: 100%;
 	background-color: #ffffff;
 }
+/deep/ .uni-video-container{
+	
+}
 /deep/ .uni-video-cover-play-button {
 	width: 180rpx;
 	height: 180rpx;
@@ -655,6 +673,7 @@ export default {
 	display: none;
 }
 /deep/ .uni-video-video {
+	height: auto !important;
 	/* -webkit-transform: rotate(90deg) !important;
 		    -moz-transform: rotate(90deg) !important;
 		    -o-transform: rotate(90deg) !important;
@@ -710,15 +729,16 @@ export default {
 .comment-container {
 	position: fixed;
 	z-index: 100;
-	/* bottom: 140rpx; */
+
 	bottom: 10%;
-	height: 30%;
-	width: 100%;
+	height: 400rpx;
+	border-top-right-radius: 40rpx;
+	
+	width: 90%;
 	overflow: scroll;
 	white-space:normal;
 	word-wrap:break-word;
 	word-break:break-all;
-	/* padding-bottom: 160rpx; */
 	background-color: rgba(0,0,0,0.3);
 }
 .comment-item {
@@ -727,16 +747,11 @@ export default {
 	padding-right: 22rpx;
 	padding-bottom: 22rpx;
 	border-bottom: 1px solid #f2f2f2;
-	/* background-color: #ffffff; */
 }
 .comment-t {
 	color: #FFFFFF;
-	/* border-top: 1px solid #f2f2f2; */
-	/* margin-top: 20rpx; */
 	padding-left: 22rpx;
 	font-size: 32rpx;
-	/* padding-top: 20rpx; */
-	/* padding-bottom: 20rpx; */
 }
 .comment-l {
 	width: 14%;
@@ -966,5 +981,12 @@ export default {
 	font-size: 36rpx !important;
 }
 
-
+.video-refresh{
+	position: fixed;
+	z-index: 100;
+	right: 0;
+	bottom: 14%;
+	width: 10%;
+	text-align: center;
+}
 </style>

@@ -77,7 +77,7 @@ export default {
 			src: '',
 			commentContent: '',
 			commentList: [],
-			activity_id: 6,
+			activity_id: 7,
 			uid: '',
 			token: '',
 			ns_device_id: '',
