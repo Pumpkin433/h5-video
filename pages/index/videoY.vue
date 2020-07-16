@@ -1206,7 +1206,9 @@ export default {
 	background:rgba(255,255,255,0);
 	border:2px solid rgba(255, 255, 255, 1);
 	border-radius:30rpx;
+	color: #FFFFFF;
 }
+
 .video-otp-2 button{
 	position: absolute;
 	width:137rpx;
@@ -1248,6 +1250,7 @@ export default {
 	border:2px solid rgba(255, 255, 255, 1);
 	border-radius:30rpx;
 	margin: 0 auto;
+	color: #FFFFFF;
 }
 
 .video-otp-4{
