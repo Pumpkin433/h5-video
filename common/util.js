@@ -123,12 +123,36 @@ var dateUtils = {
 	}
 }
 
+function getKey() {
+	var date = new Date();
+	var year = date.getUTCFullYear().toString().substr(2, 2);
+	var month = String(date.getUTCMonth() + 1);
+	if (month.length == 1)
+		month = '0' + month;
+
+	var day = String(date.getUTCDate());
+	if (day.length == 1)
+		day = '0' + day;
+	return `${year}-${month}-${day}`
+}
+
+function encryptByDES(message, key) {
+	var keyHex = CryptoJS.enc.Utf8.parse(key);
+	encrypted = CryptoJS.DES.encrypt(message, keyHex, {
+		iv: keyHex,
+		mode: CryptoJS.mode.CBC
+	});
+	return CryptoJS.enc.Base64.stringify(encrypted.ciphertext);
+}
+
 module.exports = {
 	formatTime: formatTime,
 	formatLocation: formatLocation,
 	dateUtils: dateUtils,
 	randomWord: randomWord,
 	randomOption: randomOption,
-	startUnix:startUnix,
-	endUnix:endUnix,
+	startUnix: startUnix,
+	endUnix: endUnix,
+	getKey:getKey,
+	encryptByDES:encryptByDES,
 }

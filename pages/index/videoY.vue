@@ -5,6 +5,7 @@
 				<view class="uni-padding-wrap uni-common-mt" style="height: 100%;">
 					<view v-if="video" style="height: 100%;">
 						<video
+							x5-video-player-type="h5-page"
 							id="myVideo"
 							:poster="video.cover_url"
 							:src="video.source_url"
@@ -22,13 +23,7 @@
 							:enable-progress-gesture="false"
 							:page-gesture="false"
 						>
-							<!-- <cover-view class="back-icon" v-if="showVideoBackIcon"> -->
-							<!-- <img @click="backIndex" src="https://aloss.hotforest.cn/video/video-back-icon.png" alt="back" /> -->
-							<!-- </cover-view> -->
-							<!-- <cover-view class="muted-icon" v-if="showMutedIcon" :class="mutedActivited ? 'muted-icon-active' : '' ">
-								<text v-if="mutedActivited" class="muted-icon-active"  @click="cancelVideoMuted">静音</text>
-								<text v-if="!mutedActivited"   @click="videoMuted">静音</text>
-							</cover-view> -->
+							
 							<cover-view class="video-replay" v-if="showVideoReplayIcon" @click="videoReplay">
 								<img src="https://aloss.hotforest.cn/video/start.png" alt="重播" />
 							</cover-view>
@@ -45,29 +40,35 @@
 					</view>
 				</view>
 			</view>
-			<!-- <view class="flex-item video-title">{{ video.title }}</view> -->
-			<!-- <view class="flex-item video-description">{{ video.description }}</view> -->
+			
 		</view>
 		<view class="uni-flex uni-column comment-container" id="comment-list">
-			<view class="flex-item comment-t">李秋平老师做客全民体育，直播间留言有机会抽取李秋平老师签名篮球</view>
-
-			<!-- <view v-if="!hasComemnts" class="flex-item comment-no-comments">
-				<view class="comment-no-comments-img"><img src="https://aloss.hotforest.cn/video/no-comments-icon.png" alt="无评论图" /></view>
-				<view class="comment-no-comments-text">暂无评论，说说你的看法</view>
-			</view>
-			 -->
+			<view class="flex-item comment-t">{{video.title}}</view>
 		</view>
 
 		<view class="comment-input-bg">
-			<view class="comment-input">
-				<input type="text" v-model="commentContent" placeholder="我想说的话" />
+			<view class="comment-input"><input type="text" request v-model="commentContent" placeholder="我想说的话" /></view>
+			<view class="comment-button">
+				<button  type="default" @click="addDanmu()">发表</button>
 			</view>
-			<!-- <view class="comment-button"><button type="default" @click="addComment()">发表</button></view> -->
-			<view class="comment-button"><button type="default" @click="addDanmu()">发表</button></view>
 		</view>
+
+		<view class="video-refresh"><uni-icons type="refresh" size="30" color="#ffffff" @click="videoRefresh"></uni-icons></view>
 		
-		<view class="video-refresh">
-			<uni-icons type="refresh" size="30" color="#ffffff" @click="videoRefresh"></uni-icons>
+		<!-- otplogin -->
+		<view v-if="showLoginModal" class="video-otp-bg" @click="closeLoginModal"></view>
+		<view class="video-otp" v-if="showLoginModal">
+			<view class="video-otp-1">账号登录</view>
+			<view class="video-otp-2">
+				<input type="number" request  v-model="mobile" placeholder="手机号码">
+				<button type="default" @click="sendSms(mobile)">验证码</button>
+			</view>
+			<view class="video-otp-3">
+				<input type="text" v-model="code" placeholder="验证码">
+			</view>
+			<view class="video-otp-4">
+				<button type="default" @click="otpLogin(mobile,code)">登录</button>
+			</view>
 		</view>
 		
 	</view>
@@ -77,7 +78,7 @@
 import base from '../../utils/base.js';
 import Mshare from 'm-share';
 import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
-import { startUnix, endUnix } from '@/common/util.js';
+import { startUnix, endUnix,getKey,encryptByDES } from '@/common/util.js';
 import io from 'socket.io-client';
 
 export default {
@@ -93,11 +94,18 @@ export default {
 			nickname: '',
 			token: '',
 			ns_device_id: '',
+			mobile:'', //手机号
+			code:'', //验证码
+			account:'', //账号
+			password:'', // 密码
+			uid:'', 
 			hasComemnts: false,
 			showVideoBackIcon: false,
 			showVideoReplayIcon: false, // 显示重播按钮
 			showVideoErrorIcon: false, //显示视频错误按钮
 			loginAppStatus: false, //登陆app状态
+			showLoginModal:false, 
+			loginWebStatus:false,
 			mutedValue: false, //静音
 			controlsValue: true,
 			mutedActivited: true,
@@ -128,45 +136,10 @@ export default {
 	},
 	onLoad(option) {
 		var that = this;
-		// var socket = io(that.ioUrl);
-		if(that.danmuSockets == ''){
-			that.danmuSockets = io(that.ioUrl);
-		}
-		var socket = that.danmuSockets;
-		socket.on('connect', function() {
-			console.log('connect');
-			// let nickname = msg.nickname ?? '游客';
-			// var obj = document.getElementById('comment-list');
-			// var str = '<view style="width:100%;color:#ffffff;font-size:16px;">欢迎'+ nickname +'，光临全民体育直播间！'+ '</view>'	
-			// document.getElementById("comment-list").innerHTML+=str
-			// obj.scrollTop = obj.scrollHeight;
-					
-		});
-		socket.on('danmu message', function(msg) {
-			console.log(msg);
-			let text = msg.content;
-			let nickname = msg.nickname;
 		
-			
-			var obj = document.getElementById('comment-list');
-			var str = '<view style="color:#ffffff;font-size:16px;padding-left:10px;">'+ nickname +' ：' + text +'</view>'	
-			document.getElementById("comment-list").innerHTML+=str
-			obj.scrollTop = obj.scrollHeight;
-		
-			// that.videoContext.sendDanmu({
-			// 	text: nickname + '：' + text,
-			// 	color: that.getRandomColor()
-			// });
-		});
-
-		socket.on('disconnect', function() {
-			console.log('disconnect');
-		});
-
 		// that.videoId = option.id;
 		that.videoId = 4;
 		that.uid = option.uid;
-		// that.uid = 470225;
 		that.token = option.token;
 		that.ns_device_id = option.ns_device_id;
 
@@ -177,9 +150,7 @@ export default {
 		if (sec >= 0) {
 			that.showCountdown = true;
 		}
-		if (that.controlsValue) {
-			// that.getVideoDanmuList(that.videoId);
-		}
+
 		that.getVideoDetail(that.videoId);
 		that.getVideoCommentList(that.videoId);
 		that.addVideoLog();
@@ -208,8 +179,9 @@ export default {
 								let avatar_url = res.data.Data.avatar_url;
 								let nickname = res.data.Data.nickname;
 								let mobile = res.data.Data.phone;
+								let user_type = 1;
 								that.nickname = nickname;
-								that.addUserInfo(nickname, mobile, avatar_url);
+								that.addUserInfo(nickname, mobile, avatar_url,user_type);
 							}
 						} else {
 							uni.showToast({
@@ -220,7 +192,11 @@ export default {
 					}
 				});
 			} else {
-				var that = this;
+				let nickname = '游客'
+				let mobile = '';
+				let avatar_url = '';
+				let user_type = 4; //游客
+				that.addUserInfo(nickname, mobile, avatar_url,user_type);
 				that.loginAppStatus = false;
 				contact.onLoginDone = function(uid, token) {
 					uni.reLaunch({
@@ -228,7 +204,48 @@ export default {
 					});
 				};
 			}
+		}else{
+			var showLoginModal = uni.getStorageSync('showLoginModal');
+			var loginWebStatus = uni.getStorageSync('loginWebStatus');
+			if(loginWebStatus){
+				 that.uid = uni.getStorageSync('uid');
+				 that.nickname = uni.getStorageSync('nickname');
+				 that.token = uni.getStorageSync('token');
+				 that.ns_device_id = 'web'
+				 
+				that.loginWebStatus = loginWebStatus
+				that.showLoginModal = showLoginModal
+			}
+			
 		}
+		
+		that.danmuSockets = io(that.ioUrl);
+		var socket = that.danmuSockets;
+		socket.on('connect', function() {
+			console.log('connect');
+		});
+		socket.on('danmu message', function(msg) {
+			console.log(msg);
+			let text = msg.content;
+			let nickname = msg.nickname;
+		
+			if(text !== ''){
+				var obj = document.getElementById('comment-list');
+				var str = '<view style="color:#ffffff;font-size:16px;padding-left:10px;">'+ nickname +' ：' + text +'</view>'
+				document.getElementById("comment-list").innerHTML+=str
+				obj.scrollTop = obj.scrollHeight;
+			}
+		
+			that.videoContext.sendDanmu({
+				text: nickname + '：' + text,
+				color: that.getRandomColor()
+			});
+		});
+		
+		socket.on('disconnect', function() {
+			console.log('disconnect');
+		});
+		
 	},
 	onPullDownRefresh() {
 		var that = this;
@@ -284,13 +301,11 @@ export default {
 				url: '/'
 			});
 		},
-		addUserInfo: function(name, mobile, avatar_url) {
+		addUserInfo: function(name, mobile, avatar_url,user_type) {
 			var that = this;
 			var uid = that.uid;
 			var activity_id = that.activity_id;
 			var ns_device_id = that.ns_device_id;
-
-			var user_type = 1;
 
 			let data = {
 				uid: uid,
@@ -354,34 +369,54 @@ export default {
 		},
 		addDanmu: function() {
 			var that = this;
+		
 			if (typeof contact === 'undefined') {
-				uni.showModal({
-					title: '如需留言请下载全民体育',
-					content: 'APP留言还可以参加抽奖活动哦~',
-					success: function(res) {
-						if (res.confirm) {
-							//openinstall app唤醒
-							var data = OpenInstall.parseUrlParams();
-							new OpenInstall(
-								{
-									/*appKey必选参数，openinstall平台为每个应用分配的ID*/
-									appKey: 'y346df',
-									/*openinstall初始化完成的回调函数，可选*/
-									onready: function() {
-										var m = this;
-										/*在app已安装的情况尝试拉起app*/
-										m.wakeupOrInstall();
+				
+				if(that.loginWebStatus){
+					let data = {
+						activity_id: that.activity_id,
+						uid: that.uid,
+						video_id: that.videoId,
+						parent_id: 0,
+						content: that.commentContent,
+						color: that.getRandomColor(),
+						danmu_time: that.videoCurrentTime
+					};
+					uni.request({
+						url: base.sq + '/activity/api.Video/addComment',
+						data: data,
+						method: 'POST',
+						success: res => {
+							// console.log(res);
+							if (res.statusCode === 200) {
+								if (res.data.code == 0) {
+									var sockets = that.danmuSockets;
+									let danmu_data = {
+										'content':that.commentContent,
+										'nickname':that.nickname
 									}
-								},
-								data
-							);
-
-							console.log('确定');
-						} else if (res.cancel) {
-							console.log('取消');
+									sockets.emit('danmu message', danmu_data);
+									that.getVideoCommentList(that.videoId);
+									that.commentContent = '';
+								} else {
+									// uni.showToast({
+									// 	title: res.data.info,
+									// 	icon: 'none'
+									// });
+								}
+							} else {
+								uni.showToast({
+									title: '服务出错',
+									icon: 'none'
+								});
+							}
 						}
-					}
-				});
+					});
+					
+				}else{
+					that.showLoginModal = true;
+				}
+				
 			} else {
 				let loginAppStatus = that.loginAppStatus;
 				if (loginAppStatus) {
@@ -618,7 +653,7 @@ export default {
 			let token = that.token;
 			let ns_device_id = that.ns_device_id;
 			let videoId = that.videoId;
-			
+
 			uni.reLaunch({
 				url: '/pages/mid/midY?uid=' + uid + '&token=' + token + '&ns_device_id=' + ns_device_id + '&videoId=' + videoId
 			});
@@ -649,19 +684,159 @@ export default {
 			}
 			// return '#' + rgb.join('');
 			return '#FFFFFF'
+		},
+		sendSms:function(mobile){
+			//发送手机验证码
+			var that = this;
+			var headers = {
+				ns_device_id:that.ns_device_id,
+				phone:mobile,
+				country_code:'+86'
+			}
+			uni.request({
+				url:base.bd + '/SendLoginSms',
+				method:"GET",
+				header:headers,
+				success: (res) => {
+					console.log(res)
+					if(res.statusCode==200){
+						if(res.data.Status == 1){
+								uni.showToast({
+									title:'验证码发送成功',
+									icon:"success"
+								})
+						}
+					}else{
+						uni.showToast({
+							title:"服务器错误",
+							icon:'none'
+						})
+					}
+				}
+			})
+		},
+		otpLogin:function(mobile,code){
+			var that = this;
+			var key = getKey();
+			var ns_device_id = 'web'
+			
+			var headers = {
+				ns_device_id: ns_device_id,
+				"Access-Control-Allow-Origin":"*",
+				"Content-Type":"text/plain",
+			}
+			var data = {
+				"ns_device_id": ns_device_id,
+				  "phone": mobile,
+				  "country_code": "+86",
+				  "code": code,
+				  "device_id": "website",
+				  "platform": "web"
+			}
+			
+			var text = encryptByDES(JSON.stringify(data),key);
+	
+			uni.request({
+				url:base.bd+'/v3/otp/login',
+				method:"POST",
+				data:text,
+				header:headers,
+				success: (res) => {
+					// console.log(res)
+					if(res.statusCode==200){
+						if(res.data.Status==1){
+							let account = res.data.Data.account;
+							let password = res.data.Data.password;
+							that.webLogin(account,password);
+						}else{
+							uni.showToast({
+								title:res.data.ErrMsg,
+								icon:'none'
+							})
+						}
+					}else{
+						uni.showToast({
+							title:'服务错误',
+							icon:'none'
+						})
+					}
+				}
+			})
+		},
+		webLogin:function(account,password){
+			var that = this;
+			var key = getKey();
+			var ns_device_id = 'web'
+			var headers = {
+				ns_device_id: ns_device_id,
+				"Access-Control-Allow-Origin":"*",
+				"Content-Type":"text/plain",
+			}
+			let data = {
+				"ns_device_id": ns_device_id,
+				  "type": 1,
+				  "account": account,
+				  "password": password,
+				  "secret": "web"
+			}
+			var text = encryptByDES(JSON.stringify(data),key);
+			
+			uni.request({
+				url:base.bd+'/v3/user/login',
+				method:"POST",
+				header:headers,
+				data:text,
+				success: (res) => {
+					console.log(res)
+					if(res.statusCode==200){
+						if(res.data.Status == 1){
+							that.avatar_url = res.data.Data.avatar_url;
+							that.uid = res.data.Data.uid;
+							that.token = res.data.Data.token;
+							that.nickname = res.data.Data.nickname;
+							that.mobile = res.data.Data.phone;
+							uni.setStorageSync('uid',that.uid)
+							uni.setStorageSync('mobile',that.mobile)
+							uni.setStorageSync('nickname',that.nickname)
+							uni.setStorageSync('token',that.token)
+							uni.setStorageSync('loginWebStatus',true)
+							uni.setStorageSync('showLoginModal',false)
+							
+							that.addUserInfo(that.nickname, that.mobile, that.avatar_url,2)
+							that.loginWebStatus = true;
+							that.showLoginModal = false;
+						}else{
+							uni.showToast({
+								title:res.data.ErrMsg,
+								icon:'none'
+							})
+						}
+					}else{
+						uni.showToast({
+							title:'服务错误',
+							icon:'none'
+						})
+					}
+				}
+			})
+		},
+		closeLoginModal:function(){
+			var that = this;
+			that.showLoginModal = false;
 		}
-	}
+
+	},
+
 };
 </script>
 
 <style>
 .video-container {
 	width: 100%;
-	height: 100%;
+	height: 90%;
 	background-color: #ffffff;
 }
-/deep/ .uni-video-container{
-	
+/deep/ .uni-video-container {
 }
 /deep/ .uni-video-cover-play-button {
 	width: 180rpx;
@@ -686,7 +861,7 @@ export default {
 }
 #myVideo {
 	width: 100% !important;
-	height: 90% !important;
+	height: 100% !important;
 	overflow: unset;
 }
 
@@ -733,13 +908,13 @@ export default {
 	bottom: 10%;
 	height: 400rpx;
 	border-top-right-radius: 40rpx;
-	
+
 	width: 90%;
 	overflow: scroll;
-	white-space:normal;
-	word-wrap:break-word;
-	word-break:break-all;
-	background-color: rgba(0,0,0,0.3);
+	white-space: normal;
+	word-wrap: break-word;
+	word-break: break-all;
+	background-color: rgba(0, 0, 0, 0.3);
 }
 .comment-item {
 	padding-top: 22rpx;
@@ -749,7 +924,7 @@ export default {
 	border-bottom: 1px solid #f2f2f2;
 }
 .comment-t {
-	color: #FFFFFF;
+	color: #ffffff;
 	padding-left: 22rpx;
 	font-size: 32rpx;
 }
@@ -771,14 +946,14 @@ export default {
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 200;
-	color: #FFFFFF;
+	color: #ffffff;
 	/* color: rgba(102, 102, 102, 1); */
 }
 .comment-r-2 {
 	font-size: 24rpx;
 	font-family: Lantinghei SC;
 	font-weight: 200;
-	color: #FFFFFF;
+	color: #ffffff;
 	/* color: rgba(51, 51, 51, 1); */
 }
 
@@ -792,6 +967,7 @@ export default {
 	width: 100%;
 	height: 10%;
 	background-color: #ffffff;
+	
 }
 .comment-input {
 	width: 78%;
@@ -827,7 +1003,7 @@ export default {
 .comment-button button {
 	width: 137rpx;
 	height: 55rpx;
-	
+
 	background: rgba(216, 73, 73, 1);
 	border-radius: 28rpx;
 	line-height: 55rpx;
@@ -981,7 +1157,7 @@ export default {
 	font-size: 36rpx !important;
 }
 
-.video-refresh{
+.video-refresh {
 	position: fixed;
 	z-index: 100;
 	right: 0;
@@ -989,4 +1165,112 @@ export default {
 	width: 10%;
 	text-align: center;
 }
+.video-otp-bg{
+	position: fixed;
+	z-index: 111;
+	background-color: rgba(0,0,0,0.2);
+	width: 100%;
+	height: 100%;
+	top: 0;
+}
+.video-otp{
+	position: fixed;
+	z-index: 120;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	width: 505rpx;
+	height: 503rpx;
+	background: url(../../static/video/video-otp.png) no-repeat center;
+	background-size: 100% 100%;
+}
+.video-otp-1{
+	font-size:36rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	line-height:45rpx;
+	text-align: center;
+	margin-top: 35rpx;
+}
+.video-otp-2 {
+	margin-top: 50rpx;
+	position: relative;
+}
+.video-otp-2 input{
+	width: 450rpx;
+	height: 70rpx;
+	margin: 0 auto;
+	background:rgba(255,255,255,0);
+	border:2px solid rgba(255, 255, 255, 1);
+	border-radius:30rpx;
+}
+.video-otp-2 button{
+	position: absolute;
+	width:137rpx;
+	height:55rpx;
+	line-height: 55rpx;
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	background:rgba(216,73,73,1);
+	border-radius:28rpx;
+	top: 12rpx;
+	right: 30rpx;
+}
+/deep/ .video-otp-2 .uni-input-placeholder{
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	line-height:35rpx;
+	text-indent: 12rpx;
+}
+/deep/ .video-otp-3 .uni-input-placeholder{
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(255,255,255,1);
+	line-height:35rpx;
+	text-indent: 12rpx;
+}
+
+.video-otp-3{
+	margin-top: 33rpx;
+}
+.video-otp-3 input{
+	width:450rpx;
+	height:70rpx;
+	background:rgba(255,255,255,0);
+	border:2px solid rgba(255, 255, 255, 1);
+	border-radius:30rpx;
+	margin: 0 auto;
+}
+
+.video-otp-4{
+	margin-top: 70rpx;
+}
+.video-otp-4 button{
+	width:440rpx;
+	height:70rpx;
+	line-height: 70rpx;
+	background:rgba(253,208,70,1);
+	border-radius:30rpx;
+	
+	font-size:24rpx;
+	font-family:Lantinghei SC;
+	font-weight:600;
+	color:rgba(51,51,51,1);
+	-webkit-text-stroke:1px undefined;
+	text-stroke:1px undefined;
+}
+
+/deep/ .uni-video-danmu{
+	margin-bottom: auto !important;
+	height: 200rpx;
+}
+
 </style>
